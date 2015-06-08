@@ -49,8 +49,6 @@ from django.core.management.base import BaseCommand
 
 class Command(BaseCommand):
     
-    help = 'sync_distributors_and_products'
-    
     def handle(self, *args, **options):
         
         call_command('maintenance_mode', 'on')
