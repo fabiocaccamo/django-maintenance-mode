@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 
@@ -26,7 +27,10 @@ class MaintenanceModeMiddleware(object):
                 if url_re.match(request.path_info):
                     return None
             
-            return render_to_response(settings.MAINTENANCE_MODE_TEMPLATE, {}, context_instance=RequestContext(request), content_type='text/html')
+            if settings.MAINTENANCE_MODE_REDIRECT_URL:
+                return HttpResponseRedirect(settings.MAINTENANCE_MODE_REDIRECT_URL)
+            else:
+                return render_to_response(settings.MAINTENANCE_MODE_TEMPLATE, {}, context_instance=RequestContext(request), content_type='text/html')
         
         else:
             return None
