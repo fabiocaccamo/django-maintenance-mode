@@ -11,7 +11,7 @@ class MaintenanceModeMiddleware(object):
     
     def process_request(self, request):
         
-        if settings.MAINTENANCE_MODE or core.get_state():
+        if settings.MAINTENANCE_MODE or core.get_maintenance_mode():
             
             if hasattr(request, 'user'):
             

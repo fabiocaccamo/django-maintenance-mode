@@ -19,11 +19,11 @@ class Command(BaseCommand):
             arg_value = args[0].lower()
             
             if arg_value in ['on', 'yes', 'true', '1']:
-                core.set_state(True)
+                core.set_maintenance_mode(True)
                 return
                 
             elif arg_value in ['off', 'no', 'false', '0']:
-                core.set_state(False)
+                core.set_maintenance_mode(False)
                 return
                 
         print(self.help)

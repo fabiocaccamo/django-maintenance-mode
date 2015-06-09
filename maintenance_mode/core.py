@@ -1,22 +1,21 @@
 # -*- coding: utf-8 -*-
 
-from django.core.cache import get_cache
-
 from maintenance_mode import settings
 
 
-def get_state():
+def get_maintenance_mode():
     
-    cache = get_cache('default')
-    value = cache.get('maintenance_mode', False)
-    cache.close()
+    handler = open(settings.MAINTENANCE_MODE_STATE_FILE_PATH, 'r+')
+    value = int(handler.read())
+    handler.close()
+    
     return value
     
     
-def set_state(value):
+def set_maintenance_mode(value):
     
-    cache = get_cache('default')
-    cache.set('maintenance_mode', value, settings.MAINTENANCE_MODE_TIMEOUT)
-    cache.close()
+    handler = open(settings.MAINTENANCE_MODE_STATE_FILE_PATH, 'w+')
+    handler.write(str(int(value)))
+    handler.close()
     
     
