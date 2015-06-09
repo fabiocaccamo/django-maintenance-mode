@@ -20,6 +20,10 @@ class MaintenanceModeMiddleware(object):
                     return None
                 
                 if settings.MAINTENANCE_MODE_EXCLUDE_SUPERUSER and request.user.is_superuser:
+                    
+            for ip_address_re in settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES_RE:
+                
+                if ip_address_re.match(request.META['REMOTE_ADDR']):
                     return None
                     
             for url_re in settings.MAINTENANCE_MODE_IGNORE_URLS_RE:
