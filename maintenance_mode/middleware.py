@@ -16,10 +16,11 @@ class MaintenanceModeMiddleware(object):
             
             if hasattr(request, 'user'):
             
-                if settings.MAINTENANCE_MODE_EXCLUDE_STAFF and request.user.is_staff:
+                if settings.MAINTENANCE_MODE_IGNORE_STAFF and request.user.is_staff:
                     return None
                 
-                if settings.MAINTENANCE_MODE_EXCLUDE_SUPERUSER and request.user.is_superuser:
+                if settings.MAINTENANCE_MODE_IGNORE_SUPERUSER and request.user.is_superuser:
+                    return None
                     
             for ip_address_re in settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES_RE:
                 
