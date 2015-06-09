@@ -1,5 +1,9 @@
 # django-maintenance-mode
-django-maintenance-mode shows a 503 error page when maintenance-mode is on.
+django-maintenance-mode shows a 503 error page when **maintenance-mode** is **on**.
+
+It works at application level, so your django instance should be up.
+
+It doesn't use database and doesn't prevent database access.
 
 ##Installation
 
@@ -19,30 +23,39 @@ All these settings are optional, if not defined in ``settings.py`` the default v
 MAINTENANCE_MODE = False
 
 #if True the staff will not see the maintenance-mode page
-MAINTENANCE_MODE_EXCLUDE_STAFF = False
+MAINTENANCE_MODE_IGNORE_STAFF = False
 
 #if True the superuser will not see the maintenance-mode page
-MAINTENANCE_MODE_EXCLUDE_SUPERUSER = False
+MAINTENANCE_MODE_IGNORE_SUPERUSER = False
 
-#list of urls that will not be affected by the maintenance-mode page
+#list of ip-addresses that will not be affected by the maintenance-mode
+#ip-addresses will be used to compile regular expressions objects
+MAINTENANCE_MODE_IGNORE_IP_ADDRESSES = ()
+
+#list of urls that will not be affected by the maintenance-mode
 #urls will be used to compile regular expressions objects
 MAINTENANCE_MODE_IGNORE_URLS = ()
 
+#the absolute url where users will be redirected to during maintenance-mode
+MAINTENANCE_MODE_REDIRECT_URL = None
+
 #the template that will be shown by the maintenance-mode page
 MAINTENANCE_MODE_TEMPLATE = '503.html'
-
-#the timeout (in seconds) after which the maintenance-mode will be automatically deactivated
-#use it at your own risk
-MAINTENANCE_MODE_TIMEOUT = None
 ```
 
 ##Usage
 
 ####Python
-
 ```python
-# -*- coding: utf-8 -*-
+from maintenance_mode.core import get_maintenance_mode, set_maintenance_mode
 
+set_maintenance_mode(True)
+
+if get_maintenance_mode():
+    set_maintenance_mode(False)
+```
+or
+```python
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
@@ -61,6 +74,6 @@ class Command(BaseCommand):
         
 ```
 
-####Commands
+####Terminal
 
 Run ``python manage.py maintenance_mode <on|off>``
