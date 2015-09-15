@@ -7,14 +7,21 @@ def get_maintenance_mode():
     
     try:
         handler = open(settings.MAINTENANCE_MODE_STATE_FILE_PATH, 'r+')
-        value = int(handler.read())
-    except IOError:
-        # If the file doesn't exist we shouldn't throw this
-        return False
-    finally:
+        value = 0
+        
+        try:
+            value = int(handler.read())
+        
+        except ValueError:
+            pass
+            
         handler.close()
-    
-    return value
+        
+        return value
+        
+    except IOError:
+        
+        return False
     
     
 def set_maintenance_mode(value):
