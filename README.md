@@ -42,6 +42,15 @@ MAINTENANCE_MODE_REDIRECT_URL = None
 #the template that will be shown by the maintenance-mode page
 MAINTENANCE_MODE_TEMPLATE = '503.html'
 ```
+Add **maintenance_mode.urls** to ``urls.py`` if you want superusers able to set maintenance_mode using urls.
+
+```python
+urlpatterns = patterns('',
+    ...
+    url(r'^maintenance-mode/', include('maintenance_mode.urls')),
+    ...
+)
+```
 
 ##Usage
 
@@ -77,6 +86,12 @@ class Command(BaseCommand):
 ####Terminal
 
 Run ``python manage.py maintenance_mode <on|off>``
+
+####Urls
+
+``/maintenance-mode/off/``
+
+``/maintenance-mode/on/``
 
 ##License
 The MIT License (MIT)
