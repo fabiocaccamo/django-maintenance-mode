@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from django.core.urlresolvers import resolve, reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -14,8 +15,20 @@ class MaintenanceModeMiddleware(object):
         
         if settings.MAINTENANCE_MODE or core.get_maintenance_mode():
             
-            if hasattr(request, 'user'):
+            url_off = reverse('maintenance_mode_off')
             
+            try:
+                resolve(url_off)
+                
+                if url_off == request.path_info:
+                    return None
+                    
+            except NoReverseMatch:
+                #maintenance_mode.urls not added
+                pass
+                
+            if hasattr(request, 'user'):
+                
                 if settings.MAINTENANCE_MODE_IGNORE_STAFF and request.user.is_staff:
                     return None
                 
