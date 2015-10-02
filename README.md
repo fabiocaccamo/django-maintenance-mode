@@ -5,6 +5,10 @@ It works at application level, so your django instance should be up.
 
 It doesn't use database and doesn't prevent database access.
 
+##Requirements
+- Python 2.6, Python 2.7
+- Django 1.5 through Django 1.8
+
 ##Installation
 
 1. Run ``pip install django-maintenance-mode`` or [download django-maintenance-mode](http://pypi.python.org/pypi/django-maintenance-mode) and add the **maintenance_mode** package to your project
