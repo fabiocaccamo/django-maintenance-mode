@@ -48,9 +48,24 @@ class MaintenanceModeMiddleware(object):
             if settings.MAINTENANCE_MODE_REDIRECT_URL:
                 return HttpResponseRedirect(settings.MAINTENANCE_MODE_REDIRECT_URL)
             else:
-                return render_to_response(settings.MAINTENANCE_MODE_TEMPLATE, {}, context_instance=RequestContext(request), content_type='text/html')
-        
+                return render_to_response(settings.MAINTENANCE_MODE_TEMPLATE, self.get_request_context(request), context_instance=RequestContext(request), content_type='text/html')
+
         else:
             return None
-            
-            
+
+
+    def get_request_context(self, request):
+
+        if settings.MAINTENANCE_MODE_TEMPLATE_CONTEXT:
+
+            from importlib import import_module
+
+            func_path = settings.MAINTENANCE_MODE_TEMPLATE_CONTEXT
+            mod_name, func_name = func_path.rsplit('.',1)
+            mod = import_module(mod_name)
+            func = getattr(mod, func_name)
+
+            return func(request = request)
+        else:
+            return {}
+
