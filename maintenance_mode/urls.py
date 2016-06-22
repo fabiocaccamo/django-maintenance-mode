@@ -2,9 +2,11 @@
 
 from django.conf.urls import patterns, url
 
+from maintenance_mode import views
+
 
 urlpatterns = patterns('',
-    url(r'^off/$', 'maintenance_mode.views.maintenance_mode_off', name='maintenance_mode_off'), 
-    url(r'^on/$', 'maintenance_mode.views.maintenance_mode_on', name='maintenance_mode_on'), 
+    url(r'^off/$', views.maintenance_mode_off, name='maintenance_mode_off'),
+    url(r'^on/$', views.maintenance_mode_on, name='maintenance_mode_on'),
 )
 
