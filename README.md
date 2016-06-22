@@ -7,7 +7,7 @@ It doesn't use database and doesn't prevent database access.
 
 ##Requirements
 - Python 2.6, Python 2.7
-- Django 1.5 through Django 1.8
+- Django 1.5 through Django 1.9
 
 ##Installation
 
@@ -45,6 +45,9 @@ MAINTENANCE_MODE_REDIRECT_URL = None
 
 #the template that will be shown by the maintenance-mode page
 MAINTENANCE_MODE_TEMPLATE = '503.html'
+
+#the path of the function that will return the template context -> 'myapp.mymodule.myfunction'
+MAINTENANCE_MODE_TEMPLATE_CONTEXT = None
 ```
 Add **maintenance_mode.urls** to ``urls.py`` if you want superusers able to set maintenance_mode using urls.
 
@@ -74,22 +77,22 @@ from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-    
+
     def handle(self, *args, **options):
-        
+
         call_command('maintenance_mode', 'on')
-        
+
         #call your command(s)
-        
+
         call_command('maintenance_mode', 'off')
-        
-        
-        
+
+
+
 ```
 
 ####Terminal
 
-Run ``python manage.py maintenance_mode <on|off>`` 
+Run ``python manage.py maintenance_mode <on|off>``
 
 *(****This is not Heroku-friendly because*** *any execution of heroku run `manage.py` will be run on a separate worker dyno, not the web one. Therefore* ***the state-file is set but on the wrong machine****)*
 
