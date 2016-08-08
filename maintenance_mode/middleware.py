@@ -48,8 +48,9 @@ class MaintenanceModeMiddleware(object):
             if settings.MAINTENANCE_MODE_REDIRECT_URL:
                 return HttpResponseRedirect(settings.MAINTENANCE_MODE_REDIRECT_URL)
             else:
-                return render_to_response(settings.MAINTENANCE_MODE_TEMPLATE, self.get_request_context(request), context_instance=RequestContext(request), content_type='text/html')
-
+                response = render_to_response(settings.MAINTENANCE_MODE_TEMPLATE, self.get_request_context(request), context_instance=RequestContext(request), content_type='text/html')
+                response.status_code = 503
+                return response
         else:
             return None
 
