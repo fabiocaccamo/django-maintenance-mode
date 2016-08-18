@@ -15,9 +15,9 @@ class MaintenanceModeMiddleware(object):
 
         if settings.MAINTENANCE_MODE or core.get_maintenance_mode():
 
-            url_off = reverse('maintenance_mode_off')
-
             try:
+                url_off = reverse('maintenance_mode_off')
+
                 resolve(url_off)
 
                 if url_off == request.path_info:
