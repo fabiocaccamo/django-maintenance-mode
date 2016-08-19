@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from django.core.urlresolvers import resolve, reverse
+from django.core.urlresolvers import resolve, reverse, NoReverseMatch
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template import RequestContext
