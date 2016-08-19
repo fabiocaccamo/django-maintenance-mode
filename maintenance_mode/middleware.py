@@ -2,8 +2,7 @@
 
 from django.core.urlresolvers import resolve, reverse, NoReverseMatch
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render
 
 from maintenance_mode import core
 from maintenance_mode import settings
@@ -48,7 +47,7 @@ class MaintenanceModeMiddleware(object):
             if settings.MAINTENANCE_MODE_REDIRECT_URL:
                 return HttpResponseRedirect(settings.MAINTENANCE_MODE_REDIRECT_URL)
             else:
-                return render_to_response(settings.MAINTENANCE_MODE_TEMPLATE, self.get_request_context(request), context_instance=RequestContext(request), content_type='text/html', status=503)
+                return render(request, settings.MAINTENANCE_MODE_TEMPLATE, status=503)
 
         else:
             return None
