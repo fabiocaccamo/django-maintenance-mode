@@ -47,7 +47,8 @@ class MaintenanceModeMiddleware(object):
             if settings.MAINTENANCE_MODE_REDIRECT_URL:
                 return HttpResponseRedirect(settings.MAINTENANCE_MODE_REDIRECT_URL)
             else:
-                return render(request, settings.MAINTENANCE_MODE_TEMPLATE, status=503)
+                context = self.get_request_context(request)
+                return render(request, settings.MAINTENANCE_MODE_TEMPLATE, context, status=503)
 
         else:
             return None
