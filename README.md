@@ -7,7 +7,7 @@ It doesn't use database and doesn't prevent database access.
 
 ##Requirements
 - Python 2.6, Python 2.7
-- Django 1.5 through Django 1.9
+- Django 1.5 through Django 1.10
 
 ##Installation
 
