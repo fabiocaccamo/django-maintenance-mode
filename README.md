@@ -58,6 +58,23 @@ urlpatterns = patterns('',
     ...
 )
 ```
+Add **maintenance_mode.context_processors.maintenance_mode** to your context_processors list in ``settings.py`` if you want to access the maintenance_mode status in your templates.
+
+```python
+TEMPLATES = [
+    {
+        #...
+        'OPTIONS': {
+            'context_processors': [
+                #...
+                'maintenance_mode.context_processors.maintenance_mode',
+                #...
+            ],
+        },
+        #...
+    },
+]
+```
 
 ##Usage
 
@@ -88,6 +105,13 @@ class Command(BaseCommand):
 
 
 
+```
+
+####Templates
+```html
+{% if maintenance_mode %}
+<!-- html -->
+{% endif %}
 ```
 
 ####Terminal
