@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 
+import django
 from django.core.urlresolvers import NoReverseMatch, resolve, reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
-from django.template import RequestContext
+
+if django.VERSION < (1, 8):
+    from django.template import RequestContext
 
 from maintenance_mode import core
 from maintenance_mode import settings
@@ -48,7 +51,10 @@ class MaintenanceModeMiddleware(object):
             if settings.MAINTENANCE_MODE_REDIRECT_URL:
                 return HttpResponseRedirect(settings.MAINTENANCE_MODE_REDIRECT_URL)
             else:
-                return render_to_response(settings.MAINTENANCE_MODE_TEMPLATE, self.get_request_context(request), context_instance=RequestContext(request), content_type='text/html', status=503)
+                if django.VERSION < (1, 8):
+                    return render_to_response(settings.MAINTENANCE_MODE_TEMPLATE, self.get_request_context(request), context_instance=RequestContext(request), content_type='text/html', status=503)
+                else:
+                    return render_to_response(settings.MAINTENANCE_MODE_TEMPLATE, self.get_request_context(request), content_type='text/html', status=503)
 
         else:
             return None
