@@ -52,11 +52,11 @@ MAINTENANCE_MODE_TEMPLATE_CONTEXT = None
 Add **maintenance_mode.urls** to ``urls.py`` if you want superusers able to set maintenance_mode using urls.
 
 ```python
-urlpatterns = patterns('',
+urlpatterns = [
     ...
     url(r'^maintenance-mode/', include('maintenance_mode.urls')),
     ...
-)
+]
 ```
 Add **maintenance_mode.context_processors.maintenance_mode** to your context_processors list in ``settings.py`` if you want to access the maintenance_mode status in your templates.
 
