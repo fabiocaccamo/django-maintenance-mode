@@ -8,6 +8,8 @@ from django.shortcuts import render_to_response
 if django.VERSION < (1, 8):
     from django.template import RequestContext
 
+from django.utils.cache import add_never_cache_headers
+
 from maintenance_mode import core
 from maintenance_mode import settings
 
@@ -52,10 +54,12 @@ class MaintenanceModeMiddleware(object):
                 return HttpResponseRedirect(settings.MAINTENANCE_MODE_REDIRECT_URL)
             else:
                 if django.VERSION < (1, 8):
-                    return render_to_response(settings.MAINTENANCE_MODE_TEMPLATE, self.get_request_context(request), context_instance=RequestContext(request), content_type='text/html', status=503)
+                    response = render_to_response(settings.MAINTENANCE_MODE_TEMPLATE, self.get_request_context(request), context_instance=RequestContext(request), content_type='text/html', status=503)
                 else:
-                    return render_to_response(settings.MAINTENANCE_MODE_TEMPLATE, self.get_request_context(request), content_type='text/html', status=503)
+                    response = render_to_response(settings.MAINTENANCE_MODE_TEMPLATE, self.get_request_context(request), content_type='text/html', status=503)
 
+                add_never_cache_headers(response)
+                return response
         else:
             return None
 
