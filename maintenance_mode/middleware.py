@@ -54,7 +54,7 @@ class MaintenanceModeMiddleware(object):
                 return HttpResponseRedirect(settings.MAINTENANCE_MODE_REDIRECT_URL)
             else:
                 if django.VERSION < (1, 8):
-                    response = render_to_response(settings.MAINTENANCE_MODE_TEMPLATE, self.get_request_context(request), context_instance=RequestContext(request), content_type='text/html', status=503)
+                    response = render_to_response(settings.MAINTENANCE_MODE_TEMPLATE, self.get_request_context(request), context_instance=RequestContext(request), content_type='text/html')
                 else:
                     response = render_to_response(settings.MAINTENANCE_MODE_TEMPLATE, self.get_request_context(request), content_type='text/html', status=503)
 
