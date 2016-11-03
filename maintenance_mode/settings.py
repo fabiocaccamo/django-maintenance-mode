@@ -7,7 +7,7 @@ import re
 
 
 MAINTENANCE_MODE = getattr(settings, 'MAINTENANCE_MODE', False)
-MAINTENANCE_MODE_STATE_FILE_PATH = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'maintenance_mode_state.txt')
+MAINTENANCE_MODE_STATE_FILE_PATH = getattr(settings, 'MAINTENANCE_MODE_STATE_FILE_PATH', os.path.join(os.path.abspath(os.path.dirname(__file__)), 'maintenance_mode_state.txt'))
 
 MAINTENANCE_MODE_IGNORE_STAFF = getattr(settings, 'MAINTENANCE_MODE_IGNORE_STAFF', False)
 MAINTENANCE_MODE_IGNORE_SUPERUSER = getattr(settings, 'MAINTENANCE_MODE_IGNORE_SUPERUSER', False)
