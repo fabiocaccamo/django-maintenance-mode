@@ -9,9 +9,5 @@ env:
   - DJANGO_VERSION=1.10
   - DJANGO_VERSION=1.9
   - DJANGO_VERSION=1.8
-install:
-  - pip install coveralls
 script:
-  - coverage run --source=maintenance_mode manage.py test
-after_success:
-  - coveralls
+  - python manage.py test
