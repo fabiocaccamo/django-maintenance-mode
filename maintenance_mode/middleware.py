@@ -18,8 +18,10 @@ else:
     from django.utils.deprecation import MiddlewareMixin
     __MaintenanceModeMiddlewareBaseClass = MiddlewareMixin
 
-from maintenance_mode import core
-from maintenance_mode import settings
+from maintenance_mode import core, settings, utils
+
+import re
+import sys
 
 
 class MaintenanceModeMiddleware(__MaintenanceModeMiddlewareBaseClass):
@@ -48,42 +50,58 @@ class MaintenanceModeMiddleware(__MaintenanceModeMiddlewareBaseClass):
                 if settings.MAINTENANCE_MODE_IGNORE_SUPERUSER and request.user.is_superuser:
                     return None
 
-            for ip_address_re in settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES_RE:
+            if settings.MAINTENANCE_MODE_IGNORE_TEST:
 
-                if ip_address_re.match(request.META['REMOTE_ADDR']):
+                is_testing = len(sys.argv) > 1 and sys.argv[1] == 'test'
+
+                if is_testing:
                     return None
 
-            for url_re in settings.MAINTENANCE_MODE_IGNORE_URLS_RE:
+            if settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES:
 
-                if url_re.match(request.path_info):
-                    return None
+                for ip_address in settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES:
+
+                    ip_address_re = re.compile(ip_address)
+
+                    if ip_address_re.match(request.META['REMOTE_ADDR']):
+                        return None
+
+            if settings.MAINTENANCE_MODE_IGNORE_URLS:
+
+                for url in settings.MAINTENANCE_MODE_IGNORE_URLS:
+
+                    url_re = re.compile(url)
+
+                    if url_re.match(request.path_info):
+                        return None
 
             if settings.MAINTENANCE_MODE_REDIRECT_URL:
+
+                redirect_url_re = re.compile(settings.MAINTENANCE_MODE_REDIRECT_URL)
+
+                if redirect_url_re.match(request.path_info):
+                    return None
+
                 return HttpResponseRedirect(settings.MAINTENANCE_MODE_REDIRECT_URL)
+
             else:
+
+                request_context = {}
+
+                if settings.MAINTENANCE_MODE_TEMPLATE_CONTEXT:
+
+                    request_context_func = utils.import_function(settings.MAINTENANCE_MODE_TEMPLATE_CONTEXT)
+
+                    if request_context_func:
+                        request_context = request_context_func(request = request)
+
                 if django.VERSION < (1, 8):
-                    response = render_to_response(settings.MAINTENANCE_MODE_TEMPLATE, self.get_request_context(request), context_instance=RequestContext(request), content_type='text/html')
+                    response = render_to_response(settings.MAINTENANCE_MODE_TEMPLATE, request_context, context_instance=RequestContext(request), content_type='text/html')
                 else:
-                    response = render(request, settings.MAINTENANCE_MODE_TEMPLATE, context=self.get_request_context(request), content_type='text/html', status=503)
+                    response = render(request, settings.MAINTENANCE_MODE_TEMPLATE, context=request_context, content_type='text/html', status=503)
 
                 add_never_cache_headers(response)
                 return response
         else:
             return None
-
-
-    def get_request_context(self, request):
-
-        if settings.MAINTENANCE_MODE_TEMPLATE_CONTEXT:
-
-            from importlib import import_module
-
-            func_path = settings.MAINTENANCE_MODE_TEMPLATE_CONTEXT
-            mod_name, func_name = func_path.rsplit('.',1)
-            mod = import_module(mod_name)
-            func = getattr(mod, func_name)
-
-            return func(request = request)
-        else:
-            return {}
 
