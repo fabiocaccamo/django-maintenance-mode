@@ -44,6 +44,10 @@ MAINTENANCE_MODE_IGNORE_IP_ADDRESSES = ()
 #urls will be used to compile regular expressions objects
 MAINTENANCE_MODE_IGNORE_URLS = ()
 
+#if True the maintenance mode will not return 503 response while running tests
+#useful for running tests while maintenance mode is on, before opening the site to public use
+MAINTENANCE_MODE_IGNORE_TEST = False
+
 #the absolute url where users will be redirected to during maintenance-mode
 MAINTENANCE_MODE_REDIRECT_URL = None
 
