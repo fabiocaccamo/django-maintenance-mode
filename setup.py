@@ -15,6 +15,7 @@ setup(
     download_url='https://github.com/fabiocaccamo/django-maintenance-mode/archive/%s.tar.gz' % __version__,
     keywords = ['django', 'maintenance', 'mode', 'offline', 'under', '503', 'service', 'temporarily', 'unavailable'],
     requires=['django(>=1.4)'],
-    classifiers=[]
+    classifiers=[],
+    test_suite='runtests.runtests'
 )
 
