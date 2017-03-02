@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 
 
-def read_file(file_path):
+def read_file(file_path, default_content = ''):
 
     try:
         handler = open(file_path, 'r')
         content = handler.read()
         handler.close()
-        return content or ''
+        return content or default_content
 
     except IOError:
-        return None
+        return default_content
 
 def write_file(file_path, content):
 

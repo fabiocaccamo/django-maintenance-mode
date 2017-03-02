@@ -12,6 +12,7 @@ else:
 
 from maintenance_mode import core, io, middleware, settings, views
 
+import os
 import re
 
 
@@ -36,9 +37,11 @@ class MaintenanceModeTestCase(TestCase):
         self.client = Client()
         self.request_factory = RequestFactory()
 
+        self.__reset_state()
+
     def tearDown(self):
 
-        self.__reset_state();
+        self.__reset_state()
 
     def assertMaintenanceMode(self, response):
 
@@ -65,15 +68,20 @@ class MaintenanceModeTestCase(TestCase):
 
     def __reset_state(self):
 
-        core.set_maintenance_mode(False)
-        val = core.get_maintenance_mode()
-        self.assertFalse(val)
+        try:
+            os.remove(settings.MAINTENANCE_MODE_STATE_FILE_PATH)
+
+        except OSError:
+            pass
 
     def test_io(self):
 
         self.__reset_state()
 
         file_path = settings.MAINTENANCE_MODE_STATE_FILE_PATH
+
+        val = io.read_file(file_path)
+        self.assertEqual(val, '')
 
         val = io.write_file(file_path, 'test')
         self.assertTrue(val)
@@ -87,7 +95,7 @@ class MaintenanceModeTestCase(TestCase):
         self.assertFalse(val)
 
         val = io.read_file(file_path)
-        self.assertEqual(val, None)
+        self.assertEqual(val, '')
 
     def test_core(self):
 
@@ -97,6 +105,8 @@ class MaintenanceModeTestCase(TestCase):
         self.assertTrue(val)
         self.assertRaises(ValueError, core.get_maintenance_mode)
         self.assertRaises(TypeError, core.set_maintenance_mode, 'not bool')
+
+        self.__reset_state()
 
         core.set_maintenance_mode(True)
         val = core.get_maintenance_mode()

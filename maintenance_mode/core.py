@@ -5,7 +5,11 @@ from maintenance_mode import io, settings
 
 def get_maintenance_mode():
 
-    value = io.read_file(settings.MAINTENANCE_MODE_STATE_FILE_PATH)
+    value = io.read_file(settings.MAINTENANCE_MODE_STATE_FILE_PATH, '0')
+
+    if not value in ['0', '1']:
+        raise ValueError('state file content value is not 0|1')
+
     value = bool(int(value))
     return value
 
