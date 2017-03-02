@@ -52,7 +52,11 @@ class MaintenanceModeMiddleware(__MaintenanceModeMiddlewareBaseClass):
 
             if settings.MAINTENANCE_MODE_IGNORE_TEST:
 
-                is_testing = len(sys.argv) > 1 and sys.argv[1] == 'test'
+                is_testing = False
+
+                if (len(sys.argv) > 0 and 'runtests' in sys.argv[0]) or (len(sys.argv) > 1 and sys.argv[1] == 'test'):
+                    #python runtests.py | python manage.py test | python setup.py test | django-admin.py test
+                    is_testing = True
 
                 if is_testing:
                     return None
