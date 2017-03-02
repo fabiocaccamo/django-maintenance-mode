@@ -9,8 +9,8 @@ It works at application level, so your django instance should be up.
 It doesn't use database and doesn't prevent database access.
 
 ##Requirements
-- Python 2.6, Python 2.7
-- Django 1.5 through Django 1.10
+- Python 2.7 through Python 3.5
+- Django 1.7 through Django 1.10
 
 ##Installation
 
