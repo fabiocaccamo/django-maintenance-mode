@@ -1,3 +1,6 @@
+[![PyPI version](https://badge.fury.io/py/django-maintenance-mode.svg)](https://badge.fury.io/py/django-maintenance-mode)
+[![Build Status](https://travis-ci.org/fabiocaccamo/django-maintenance-mode.svg?branch=master)](https://travis-ci.org/fabiocaccamo/django-maintenance-mode)
+
 # django-maintenance-mode
 django-maintenance-mode shows a 503 error page when **maintenance-mode** is **on**.
 
