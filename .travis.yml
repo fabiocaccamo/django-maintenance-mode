@@ -14,6 +14,10 @@ env:
   - TOX_ENV=py35-110
 install:
   - pip install tox
+  - pip install coveralls
 script:
   - tox -e $TOX_ENV
+  - coverage run --source=maintenance_mode runtests.py
 sudo: false
+after_success:
+  coveralls
