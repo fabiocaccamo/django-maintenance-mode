@@ -4,7 +4,7 @@ from __future__ import absolute_import
 
 import django
 
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 
 from maintenance_mode import core
 
@@ -23,8 +23,7 @@ class Command(BaseCommand):
         if django.VERSION < (1, 8):
 
             if len(args) != 1:
-                print(self.help)
-                return
+                raise CommandError('Error: expected 1 argument: %s' % (self.args, ))
 
             state = args[0]
         else:
@@ -38,5 +37,5 @@ class Command(BaseCommand):
         elif state in ['off', 'no', 'false', '0']:
             core.set_maintenance_mode(False)
         else:
-            print(self.help)
+            raise CommandError('Error: invalid argument: \'%s\' expected %s' % (state, self.args, ))
 
