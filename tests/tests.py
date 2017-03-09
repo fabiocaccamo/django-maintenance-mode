@@ -3,7 +3,8 @@
 import django
 from django.contrib.auth.models import AnonymousUser, User
 from django.core.management import call_command
-from django.test import Client, RequestFactory, TestCase
+from django.core.management.base import CommandError
+from django.test import Client, RequestFactory, TestCase, override_settings
 
 if django.VERSION < (1, 10):
     from django.core.urlresolvers import reverse
@@ -20,6 +21,39 @@ def get_template_context(request):
     return { 'TEST_MAINTENANCE_MODE_TEMPLATE_CONTEXT':True }
 
 
+@override_settings(
+    MIDDLEWARE_CLASSES = [
+        'django.contrib.sessions.middleware.SessionMiddleware',
+        'django.middleware.common.CommonMiddleware',
+        'django.contrib.auth.middleware.AuthenticationMiddleware',
+
+        'maintenance_mode.middleware.MaintenanceModeMiddleware',
+    ],
+    ROOT_URLCONF = 'tests.urls',
+
+    #for django < 1.8
+    TEMPLATE_CONTEXT_PROCESSORS = (
+        'django.contrib.auth.context_processors.auth',
+        'django.core.context_processors.request',
+        'maintenance_mode.context_processors.maintenance_mode',
+    ),
+
+    #for django >= 1.8
+    TEMPLATES = [
+        {
+            'BACKEND': 'django.template.backends.django.DjangoTemplates',
+            'DIRS': [],
+            'APP_DIRS': True,
+            'OPTIONS': {
+                'context_processors': [
+                    'django.template.context_processors.request',
+                    'django.contrib.auth.context_processors.auth',
+                    'maintenance_mode.context_processors.maintenance_mode',
+                ],
+            },
+        },
+    ]
+)
 class MaintenanceModeTestCase(TestCase):
 
     def setUp(self):
@@ -36,6 +70,7 @@ class MaintenanceModeTestCase(TestCase):
 
         self.client = Client()
         self.request_factory = RequestFactory()
+        self.middleware = middleware.MaintenanceModeMiddleware()
 
         self.__reset_state()
 
@@ -66,7 +101,19 @@ class MaintenanceModeTestCase(TestCase):
         request.user = self.superuser
         return request
 
+    def __login_staff_user(self):
+        self.client.login(username='staff-user', password='test')
+
+    def __login_superuser(self):
+        self.client.login(username='superuser', password='test')
+
+    def __logout(self):
+        self.client.logout()
+
     def __reset_state(self):
+
+        settings.MAINTENANCE_MODE = False
+        core.set_maintenance_mode(False)
 
         try:
             os.remove(settings.MAINTENANCE_MODE_STATE_FILE_PATH)
@@ -86,8 +133,15 @@ class MaintenanceModeTestCase(TestCase):
         val = io.write_file(file_path, 'test')
         self.assertTrue(val)
 
+        #ensure overwrite instead of append
+        val = io.write_file(file_path, 'test')
+        val = io.write_file(file_path, 'test')
         val = io.read_file(file_path)
         self.assertEqual(val, 'test')
+
+    def test_io_invalid_file_path(self):
+
+        self.__reset_state()
 
         file_path = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ:/maintenance_mode_state.txt'
 
@@ -101,13 +155,6 @@ class MaintenanceModeTestCase(TestCase):
 
         self.__reset_state()
 
-        val = io.write_file(settings.MAINTENANCE_MODE_STATE_FILE_PATH, 'not bool')
-        self.assertTrue(val)
-        self.assertRaises(ValueError, core.get_maintenance_mode)
-        self.assertRaises(TypeError, core.set_maintenance_mode, 'not bool')
-
-        self.__reset_state()
-
         core.set_maintenance_mode(True)
         val = core.get_maintenance_mode()
         self.assertTrue(val)
@@ -115,6 +162,15 @@ class MaintenanceModeTestCase(TestCase):
         core.set_maintenance_mode(False)
         val = core.get_maintenance_mode()
         self.assertFalse(val)
+
+    def test_core_invalid_argument(self):
+
+        self.__reset_state()
+
+        val = io.write_file(settings.MAINTENANCE_MODE_STATE_FILE_PATH, 'not bool')
+        self.assertTrue(val)
+        self.assertRaises(ValueError, core.get_maintenance_mode)
+        self.assertRaises(TypeError, core.set_maintenance_mode, 'not bool')
 
     def test_management_commands(self):
 
@@ -124,17 +180,37 @@ class MaintenanceModeTestCase(TestCase):
         val = core.get_maintenance_mode()
         self.assertTrue(val)
 
-        call_command('maintenance_mode', 'invalid argument')
-        val = core.get_maintenance_mode()
-        self.assertTrue(val)
-
         call_command('maintenance_mode', 'off')
         val = core.get_maintenance_mode()
         self.assertFalse(val)
 
-        call_command('maintenance_mode', 'invalid argument')
-        val = core.get_maintenance_mode()
-        self.assertFalse(val)
+    def test_management_commands_no_arguments(self):
+
+        command_error = False
+        try:
+            call_command('maintenance_mode')
+        except CommandError:
+            command_error = True
+        self.assertTrue(command_error)
+
+    def test_management_commands_invalid_argument(self):
+
+        command_error = False
+        try:
+            call_command('maintenance_mode', 'hello world')
+        except CommandError:
+            command_error = True
+        self.assertTrue(command_error)
+
+    def test_management_commands_too_many_arguments(self):
+
+        if django.VERSION < (1, 8):
+            command_error = False
+            try:
+                call_command('maintenance_mode', 'on', 'off')
+            except CommandError:
+                command_error = True
+            self.assertTrue(command_error)
 
     def test_urls(self):
 
@@ -151,6 +227,24 @@ class MaintenanceModeTestCase(TestCase):
         val = core.get_maintenance_mode()
         self.assertRedirects(response, '/')
         self.assertFalse(val)
+
+    def test_urls_superuser(self):
+
+        self.__reset_state()
+
+        self.__login_superuser()
+
+        url = reverse('maintenance_mode_on')
+        response = self.client.get(url)
+        val = core.get_maintenance_mode()
+        self.assertTrue(val)
+
+        url = reverse('maintenance_mode_off')
+        response = self.client.get(url)
+        val = core.get_maintenance_mode()
+        self.assertFalse(val)
+
+        self.__logout()
 
     def test_context_processor(self):
 
@@ -194,95 +288,119 @@ class MaintenanceModeTestCase(TestCase):
         val = core.get_maintenance_mode()
         self.assertFalse(val)
 
-    def test_middleware(self):
+    def test_middleware_urls(self):
 
         self.__reset_state()
 
-        m = middleware.MaintenanceModeMiddleware()
-
-        #settings.MAINTENANCE_MODE
         settings.MAINTENANCE_MODE=True
-        request = self.__get_anonymous_user_request('/')
-        response = m.process_request(request)
-        #self.assertMaintenanceMode(response)
+        url = reverse('maintenance_mode_off')
+        request = self.__get_anonymous_user_request(url)
 
-        settings.MAINTENANCE_MODE=False
-        request = self.__get_anonymous_user_request('/')
-        response = m.process_request(request)
+        response = self.middleware.process_request(request)
         self.assertEqual(response, None)
 
-        #maintenance mode off anonymous user
-        core.set_maintenance_mode(False)
-        request = self.__get_anonymous_user_request('/')
-        response = m.process_request(request)
-        self.assertEqual(response, None)
+        with self.settings(ROOT_URLCONF='tests.urls_not_configured'):
+            response = self.middleware.process_request(request)
+            self.assertMaintenanceMode(response)
 
-        #maintenance mode on with anonymous user
-        core.set_maintenance_mode(True)
+    def test_middleware_anonymous_user(self):
+
+        self.__reset_state()
+
         request = self.__get_anonymous_user_request('/')
-        response = m.process_request(request)
+
+        settings.MAINTENANCE_MODE = True
+        response = self.middleware.process_request(request)
         self.assertMaintenanceMode(response)
 
-        #settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES
+        settings.MAINTENANCE_MODE = False
+        response = self.middleware.process_request(request)
+        self.assertEqual(response, None)
+
+    def test_middleware_ignore_ip_addresses(self):
+
+        self.__reset_state()
+
+        settings.MAINTENANCE_MODE = True
         request = self.__get_anonymous_user_request('/')
 
         settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES = request.META['REMOTE_ADDR']
-        response = m.process_request(request)
+        response = self.middleware.process_request(request)
         self.assertEqual(response, None)
 
         settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES = None
-        response = m.process_request(request)
+        response = self.middleware.process_request(request)
         self.assertMaintenanceMode(response)
 
-        #settings.MAINTENANCE_MODE_IGNORE_STAFF
+    def test_middleware_ignore_staff(self):
+
+        self.__reset_state()
+
+        settings.MAINTENANCE_MODE = True
         request = self.__get_staff_user_request('/')
 
         settings.MAINTENANCE_MODE_IGNORE_STAFF=True
-        response = m.process_request(request)
+        response = self.middleware.process_request(request)
         self.assertEqual(response, None)
 
         settings.MAINTENANCE_MODE_IGNORE_STAFF=False
-        response = m.process_request(request)
+        response = self.middleware.process_request(request)
         self.assertMaintenanceMode(response)
 
-        #settings.MAINTENANCE_MODE_IGNORE_SUPERUSER
+    def test_middleware_ignore_superuser(self):
+
+        self.__reset_state()
+
+        settings.MAINTENANCE_MODE = True
         request = self.__get_superuser_request('/')
 
         settings.MAINTENANCE_MODE_IGNORE_SUPERUSER=True
-        response = m.process_request(request)
+        response = self.middleware.process_request(request)
         self.assertEqual(response, None)
 
         settings.MAINTENANCE_MODE_IGNORE_SUPERUSER=False
-        response = m.process_request(request)
+        response = self.middleware.process_request(request)
         self.assertMaintenanceMode(response)
 
-        #settings.MAINTENANCE_MODE_IGNORE_TEST
+    def test_middleware_ignore_test(self):
+
+        self.__reset_state()
+
+        settings.MAINTENANCE_MODE = True
         request = self.__get_anonymous_user_request('/')
 
         settings.MAINTENANCE_MODE_IGNORE_TEST=True
-        response = m.process_request(request)
+        response = self.middleware.process_request(request)
         self.assertEqual(response, None)
 
         settings.MAINTENANCE_MODE_IGNORE_TEST=False
-        response = m.process_request(request)
+        response = self.middleware.process_request(request)
         self.assertMaintenanceMode(response)
 
-        #settings.MAINTENANCE_MODE_IGNORE_URLS
+    def test_middleware_ignore_urls(self):
+
+        self.__reset_state()
+
+        settings.MAINTENANCE_MODE = True
         request = self.__get_anonymous_user_request('/')
 
         settings.MAINTENANCE_MODE_IGNORE_URLS = (re.compile('/'), )
-        response = m.process_request(request)
+        response = self.middleware.process_request(request)
         self.assertEqual(response, None)
 
         settings.MAINTENANCE_MODE_IGNORE_URLS = None
-        response = m.process_request(request)
+        response = self.middleware.process_request(request)
         self.assertMaintenanceMode(response)
 
-        #settings.MAINTENANCE_MODE_REDIRECT_URL
+    def test_middleware_redirect_url(self):
+
+        self.__reset_state()
+
+        settings.MAINTENANCE_MODE = True
         request = self.__get_anonymous_user_request('/')
 
         settings.MAINTENANCE_MODE_REDIRECT_URL = reverse('maintenance_mode_redirect')
-        response = m.process_request(request)
+        response = self.middleware.process_request(request)
         response.client = self.client
         if django.VERSION < (1, 9):
             self.assertEqual(response.url, settings.MAINTENANCE_MODE_REDIRECT_URL)
@@ -290,11 +408,14 @@ class MaintenanceModeTestCase(TestCase):
             self.assertRedirects(response, settings.MAINTENANCE_MODE_REDIRECT_URL)
 
         settings.MAINTENANCE_MODE_REDIRECT_URL = None
-        response = m.process_request(request)
+        response = self.middleware.process_request(request)
         self.assertMaintenanceMode(response)
 
-        #settings.MAINTENANCE_MODE_TEMPLATE_CONTEXT
-        request = self.__get_anonymous_user_request('/')
+    def test_middleware_template_context(self):
+
+        self.__reset_state()
+
+        settings.MAINTENANCE_MODE = True
 
         settings.MAINTENANCE_MODE_TEMPLATE_CONTEXT = 'tests.tests.get_template_context'
         response = self.client.get('/')
