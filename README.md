@@ -9,11 +9,11 @@ It works at application level, so your django instance should be up.
 
 It doesn't use database and doesn't prevent database access.
 
-##Requirements
+## Requirements
 - Python 2.7, 3.4, 3.5, 3.6
 - Django 1.7, 1.8, 1.9, 1.10
 
-##Installation
+## Installation
 
 1. Run ``pip install django-maintenance-mode`` or [download django-maintenance-mode](http://pypi.python.org/pypi/django-maintenance-mode) and add the **maintenance_mode** package to your project
 2. Add ``'maintenance_mode'`` to ``settings.INSTALLED_APPS`` before custom applications
@@ -21,7 +21,7 @@ It doesn't use database and doesn't prevent database access.
 4. Add your custom ``templates/503.html`` file
 5. Restart your application server
 
-##Configuration (optional)
+## Configuration (optional)
 
 All these settings are optional, if not defined in ``settings.py`` the default values (listed below) will be used.
 
@@ -88,9 +88,9 @@ TEMPLATES = [
 ]
 ```
 
-##Usage
+## Usage
 
-####Python
+#### Python
 ```python
 from maintenance_mode.core import get_maintenance_mode, set_maintenance_mode
 
@@ -119,25 +119,25 @@ class Command(BaseCommand):
 
 ```
 
-####Templates
+#### Templates
 ```html
 {% if maintenance_mode %}
 <!-- html -->
 {% endif %}
 ```
 
-####Terminal
+#### Terminal
 
 Run ``python manage.py maintenance_mode <on|off>``
 
 *(****This is not Heroku-friendly because*** *any execution of heroku run `manage.py` will be run on a separate worker dyno, not the web one. Therefore* ***the state-file is set but on the wrong machine****)*
 
-####URLs
+#### URLs
 Superusers can change maintenance-mode using the following urls:
 
 ``/maintenance-mode/off/``
 
 ``/maintenance-mode/on/``
 
-##License
+## License
 Released under [MIT License](LICENSE).
