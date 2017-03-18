@@ -27,3 +27,5 @@ def import_function( path ):
 
     return None
 
+def get_remote_addr(request):
+    return request.META['REMOTE_ADDR']

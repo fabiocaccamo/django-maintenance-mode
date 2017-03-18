@@ -63,11 +63,14 @@ class MaintenanceModeMiddleware(__MaintenanceModeMiddlewareBaseClass):
 
             if settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES:
 
+                ip_getter = utils.import_function(settings.MAINTENANCE_MODE_IP_GETTER_METHOD)
+                client_ip = ip_getter(request = request)
+
                 for ip_address in settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES:
 
                     ip_address_re = re.compile(ip_address)
 
-                    if ip_address_re.match(request.META['REMOTE_ADDR']):
+                    if ip_address_re.match(client_ip):
                         return None
 
             if settings.MAINTENANCE_MODE_IGNORE_URLS:
