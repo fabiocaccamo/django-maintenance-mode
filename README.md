@@ -44,6 +44,10 @@ MAINTENANCE_MODE_IGNORE_SUPERUSER = False
 #ip-addresses will be used to compile regular expressions objects
 MAINTENANCE_MODE_IGNORE_IP_ADDRESSES = ()
 
+#path to a method that will return the client IP given the request object
+#the default method returns request.META['REMOTE_ADDR']
+MAINTENANCE_MODE_IP_GETTER_METHOD = 'maintenance_mode.utils.get_remote_addr'
+
 #list of urls that will not be affected by the maintenance-mode
 #urls will be used to compile regular expressions objects
 MAINTENANCE_MODE_IGNORE_URLS = ()
