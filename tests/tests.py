@@ -382,18 +382,18 @@ class MaintenanceModeTestCase(TestCase):
         response = self.middleware.process_request(request)
         self.assertMaintenanceMode(response)
 
-    def test_middleware_ignore_test(self):
+    def test_middleware_ignore_tests(self):
 
         self.__reset_state()
 
         settings.MAINTENANCE_MODE = True
         request = self.__get_anonymous_user_request('/')
 
-        settings.MAINTENANCE_MODE_IGNORE_TEST=True
+        settings.MAINTENANCE_MODE_IGNORE_TESTS = True
         response = self.middleware.process_request(request)
         self.assertEqual(response, None)
 
-        settings.MAINTENANCE_MODE_IGNORE_TEST=False
+        settings.MAINTENANCE_MODE_IGNORE_TESTS = False
         response = self.middleware.process_request(request)
         self.assertMaintenanceMode(response)
 

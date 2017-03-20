@@ -50,7 +50,7 @@ class MaintenanceModeMiddleware(__MaintenanceModeMiddlewareBaseClass):
                 if settings.MAINTENANCE_MODE_IGNORE_SUPERUSER and request.user.is_superuser:
                     return None
 
-            if settings.MAINTENANCE_MODE_IGNORE_TEST:
+            if settings.MAINTENANCE_MODE_IGNORE_TESTS:
 
                 is_testing = False
 
