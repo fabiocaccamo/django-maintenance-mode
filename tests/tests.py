@@ -20,6 +20,9 @@ import re
 def get_template_context(request):
     return { 'TEST_MAINTENANCE_MODE_TEMPLATE_CONTEXT':True }
 
+def custom_ip_getter(request):
+    return request.META['CUSTOM_IP_FIELD']
+
 
 @override_settings(
     MIDDLEWARE_CLASSES = [
@@ -324,7 +327,24 @@ class MaintenanceModeTestCase(TestCase):
         settings.MAINTENANCE_MODE = True
         request = self.__get_anonymous_user_request('/')
 
-        settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES = request.META['REMOTE_ADDR']
+        settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES = (request.META['REMOTE_ADDR'],)
+        response = self.middleware.process_request(request)
+        self.assertEqual(response, None)
+
+        settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES = None
+        response = self.middleware.process_request(request)
+        self.assertMaintenanceMode(response)
+
+    def test_middleware_ignore_ip_addresses_custom_ip_getter(self):
+
+        self.__reset_state()
+
+        settings.MAINTENANCE_MODE = True
+        request = self.__get_anonymous_user_request('/')
+        request.META['CUSTOM_IP_FIELD'] = '127.0.0.2'
+
+        settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES = (request.META['CUSTOM_IP_FIELD'],)
+        settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS = 'tests.tests.custom_ip_getter'
         response = self.middleware.process_request(request)
         self.assertEqual(response, None)
 
