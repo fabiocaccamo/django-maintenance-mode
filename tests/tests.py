@@ -344,7 +344,7 @@ class MaintenanceModeTestCase(TestCase):
         request.META['CUSTOM_IP_FIELD'] = '127.0.0.2'
 
         settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES = (request.META['CUSTOM_IP_FIELD'],)
-        settings.MAINTENANCE_MODE_IP_GETTER_METHOD = 'tests.tests.custom_ip_getter'
+        settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS = 'tests.tests.custom_ip_getter'
         response = self.middleware.process_request(request)
         self.assertEqual(response, None)
 

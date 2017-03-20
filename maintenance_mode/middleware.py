@@ -63,7 +63,7 @@ class MaintenanceModeMiddleware(__MaintenanceModeMiddlewareBaseClass):
 
             if settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES:
 
-                ip_getter = utils.import_function(settings.MAINTENANCE_MODE_IP_GETTER_METHOD)
+                ip_getter = utils.import_function(settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS)
                 client_ip = ip_getter(request = request)
 
                 for ip_address in settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES:
