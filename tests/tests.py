@@ -295,14 +295,14 @@ class MaintenanceModeTestCase(TestCase):
 
         self.__reset_state()
 
-        settings.MAINTENANCE_MODE=True
+        settings.MAINTENANCE_MODE = True
         url = reverse('maintenance_mode_off')
         request = self.__get_anonymous_user_request(url)
 
         response = self.middleware.process_request(request)
         self.assertEqual(response, None)
 
-        with self.settings(ROOT_URLCONF='tests.urls_not_configured'):
+        with self.settings( ROOT_URLCONF = 'tests.urls_not_configured' ):
             response = self.middleware.process_request(request)
             self.assertMaintenanceMode(response)
 
@@ -359,11 +359,11 @@ class MaintenanceModeTestCase(TestCase):
         settings.MAINTENANCE_MODE = True
         request = self.__get_staff_user_request('/')
 
-        settings.MAINTENANCE_MODE_IGNORE_STAFF=True
+        settings.MAINTENANCE_MODE_IGNORE_STAFF = True
         response = self.middleware.process_request(request)
         self.assertEqual(response, None)
 
-        settings.MAINTENANCE_MODE_IGNORE_STAFF=False
+        settings.MAINTENANCE_MODE_IGNORE_STAFF = False
         response = self.middleware.process_request(request)
         self.assertMaintenanceMode(response)
 
@@ -374,11 +374,11 @@ class MaintenanceModeTestCase(TestCase):
         settings.MAINTENANCE_MODE = True
         request = self.__get_superuser_request('/')
 
-        settings.MAINTENANCE_MODE_IGNORE_SUPERUSER=True
+        settings.MAINTENANCE_MODE_IGNORE_SUPERUSER = True
         response = self.middleware.process_request(request)
         self.assertEqual(response, None)
 
-        settings.MAINTENANCE_MODE_IGNORE_SUPERUSER=False
+        settings.MAINTENANCE_MODE_IGNORE_SUPERUSER = False
         response = self.middleware.process_request(request)
         self.assertMaintenanceMode(response)
 
