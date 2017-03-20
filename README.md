@@ -44,9 +44,9 @@ MAINTENANCE_MODE_IGNORE_SUPERUSER = False
 #ip-addresses will be used to compile regular expressions objects
 MAINTENANCE_MODE_IGNORE_IP_ADDRESSES = ()
 
-#path to a method that will return the client IP given the request object
-#the default method returns request.META['REMOTE_ADDR']
-MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS = 'maintenance_mode.utils.get_remote_addr'
+#the path of the function that will return the client IP address given the request object -> 'myapp.mymodule.myfunction'
+#the default function ('maintenance_mode.utils.get_client_ip_address') returns request.META['REMOTE_ADDR']
+MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS = None
 
 #list of urls that will not be affected by the maintenance-mode
 #urls will be used to compile regular expressions objects
@@ -54,7 +54,7 @@ MAINTENANCE_MODE_IGNORE_URLS = ()
 
 #if True the maintenance mode will not return 503 response while running tests
 #useful for running tests while maintenance mode is on, before opening the site to public use
-MAINTENANCE_MODE_IGNORE_TEST = False
+MAINTENANCE_MODE_IGNORE_TESTS = False
 
 #the absolute url where users will be redirected to during maintenance-mode
 MAINTENANCE_MODE_REDIRECT_URL = None
@@ -63,7 +63,7 @@ MAINTENANCE_MODE_REDIRECT_URL = None
 MAINTENANCE_MODE_TEMPLATE = '503.html'
 
 #the path of the function that will return the template context -> 'myapp.mymodule.myfunction'
-MAINTENANCE_MODE_TEMPLATE_CONTEXT = None
+MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = None
 ```
 Add **maintenance_mode.urls** to ``urls.py`` if you want superusers able to set maintenance_mode using urls.
 
