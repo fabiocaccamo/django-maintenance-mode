@@ -27,5 +27,8 @@ def import_function( path ):
 
     return None
 
-def get_remote_addr(request):
+
+def get_client_ip_address( request ):
+
     return request.META['REMOTE_ADDR']
+

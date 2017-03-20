@@ -64,14 +64,22 @@ class MaintenanceModeMiddleware(__MaintenanceModeMiddlewareBaseClass):
 
             if settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES:
 
-                ip_getter = utils.import_function(settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS)
-                client_ip = ip_getter(request = request)
+                if settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS:
+
+                    get_client_ip_address_func = utils.import_function(settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS)
+
+                    if get_client_ip_address_func:
+                        client_ip_address = get_client_ip_address_func(request)
+                    else:
+                        raise ImproperlyConfigured('settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS is not a valid function path.')
+                else:
+                    client_ip_address = utils.get_client_ip_address(request)
 
                 for ip_address in settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES:
 
                     ip_address_re = re.compile(ip_address)
 
-                    if ip_address_re.match(client_ip):
+                    if ip_address_re.match(client_ip_address):
                         return None
 
             if settings.MAINTENANCE_MODE_IGNORE_URLS:

@@ -12,14 +12,14 @@ if django.VERSION < (1, 10):
 else:
     from django.urls import reverse
 
-from maintenance_mode import core, io, middleware, settings, views
+from maintenance_mode import core, io, middleware, settings, utils, views
 
 import os
 import re
 
 
-def custom_ip_getter(request):
-    return request.META['CUSTOM_IP_FIELD']
+def get_client_ip_address(request):
+    return request.META['CLIENT_IP_ADDRESS_FIELD']
 
 def get_template_context(request):
     return { 'TEST_MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT':True }
@@ -327,7 +327,7 @@ class MaintenanceModeTestCase(TestCase):
         settings.MAINTENANCE_MODE = True
         request = self.__get_anonymous_user_request('/')
 
-        settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES = (request.META['REMOTE_ADDR'],)
+        settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES = (utils.get_client_ip_address(request), )
         response = self.middleware.process_request(request)
         self.assertEqual(response, None)
 
@@ -335,20 +335,42 @@ class MaintenanceModeTestCase(TestCase):
         response = self.middleware.process_request(request)
         self.assertMaintenanceMode(response)
 
-    def test_middleware_ignore_ip_addresses_custom_ip_getter(self):
+    def test_middleware_ignore_ip_addresses_get_client_ip_address(self):
 
         self.__reset_state()
 
         settings.MAINTENANCE_MODE = True
         request = self.__get_anonymous_user_request('/')
-        request.META['CUSTOM_IP_FIELD'] = '127.0.0.2'
+        request.META['CLIENT_IP_ADDRESS_FIELD'] = '127.0.0.2'
 
-        settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES = (request.META['CUSTOM_IP_FIELD'],)
-        settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS = 'tests.tests.custom_ip_getter'
+        settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES = (request.META['CLIENT_IP_ADDRESS_FIELD'], )
+        settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS = 'tests.tests.get_client_ip_address'
+        response = self.middleware.process_request(request)
+        self.assertEqual(response, None)
+
+        settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS = 'tests.tests.get_client_ip_address_invalid'
+        get_client_ip_address_error = False
+        try:
+            response = self.middleware.process_request(request)
+        except ImproperlyConfigured:
+            get_client_ip_address_error = True
+        self.assertEqual(get_client_ip_address_error, True)
+
+        settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS = 'tests.tests_invalid.get_client_ip_address'
+        get_client_ip_address_error = False
+        try:
+            response = self.middleware.process_request(request)
+        except ImproperlyConfigured:
+            get_client_ip_address_error = True
+        self.assertEqual(get_client_ip_address_error, True)
+
+        settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES = (utils.get_client_ip_address(request), )
+        settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS = None
         response = self.middleware.process_request(request)
         self.assertEqual(response, None)
 
         settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES = None
+        settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS = None
         response = self.middleware.process_request(request)
         self.assertMaintenanceMode(response)
 
