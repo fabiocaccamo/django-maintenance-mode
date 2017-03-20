@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import django
+from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import NoReverseMatch, resolve, reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
@@ -95,12 +96,14 @@ class MaintenanceModeMiddleware(__MaintenanceModeMiddlewareBaseClass):
 
                 request_context = {}
 
-                if settings.MAINTENANCE_MODE_TEMPLATE_CONTEXT:
+                if settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT:
 
-                    request_context_func = utils.import_function(settings.MAINTENANCE_MODE_TEMPLATE_CONTEXT)
+                    get_request_context_func = utils.import_function(settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT)
 
-                    if request_context_func:
-                        request_context = request_context_func(request = request)
+                    if get_request_context_func:
+                        request_context = get_request_context_func(request = request)
+                    else:
+                        raise ImproperlyConfigured('settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT is not a valid function path.')
 
                 if django.VERSION < (1, 8):
                     response = render_to_response(settings.MAINTENANCE_MODE_TEMPLATE, request_context, context_instance=RequestContext(request), content_type='text/html')

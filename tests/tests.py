@@ -2,6 +2,7 @@
 
 import django
 from django.contrib.auth.models import AnonymousUser, User
+from django.core.exceptions import ImproperlyConfigured
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.test import Client, RequestFactory, TestCase, override_settings
@@ -17,12 +18,11 @@ import os
 import re
 
 
-def get_template_context(request):
-    return { 'TEST_MAINTENANCE_MODE_TEMPLATE_CONTEXT':True }
-
 def custom_ip_getter(request):
     return request.META['CUSTOM_IP_FIELD']
 
+def get_template_context(request):
+    return { 'TEST_MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT':True }
 
 @override_settings(
     MIDDLEWARE_CLASSES = [
@@ -431,29 +431,39 @@ class MaintenanceModeTestCase(TestCase):
         response = self.middleware.process_request(request)
         self.assertMaintenanceMode(response)
 
-    def test_middleware_template_context(self):
+    def test_middleware_get_template_context(self):
 
         self.__reset_state()
 
         settings.MAINTENANCE_MODE = True
 
-        settings.MAINTENANCE_MODE_TEMPLATE_CONTEXT = 'tests.tests.get_template_context'
+        settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = 'tests.tests.get_template_context'
         response = self.client.get('/')
-        val = response.context.get('TEST_MAINTENANCE_MODE_TEMPLATE_CONTEXT', False)
+        val = response.context.get('TEST_MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT', False)
         self.assertTrue(val)
 
-        settings.MAINTENANCE_MODE_TEMPLATE_CONTEXT = 'tests.tests_invalid.get_template_context_invalid'
-        response = self.client.get('/')
-        val = response.context.get('TEST_MAINTENANCE_MODE_TEMPLATE_CONTEXT', False)
-        self.assertFalse(val)
+        get_template_context_error = False
+        try:
+            settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = 'tests.tests_invalid.get_template_context_invalid'
+            response = self.client.get('/')
+            val = response.context.get('TEST_MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT', False)
+            self.assertFalse(val)
+        except ImproperlyConfigured:
+            get_template_context_error = True
+        self.assertTrue(get_template_context_error)
 
-        settings.MAINTENANCE_MODE_TEMPLATE_CONTEXT = 'tests.tests.get_template_context_invalid'
-        response = self.client.get('/')
-        val = response.context.get('TEST_MAINTENANCE_MODE_TEMPLATE_CONTEXT', False)
-        self.assertFalse(val)
+        get_template_context_error = False
+        try:
+            settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = 'tests.tests.get_template_context_invalid'
+            response = self.client.get('/')
+            val = response.context.get('TEST_MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT', False)
+            self.assertFalse(val)
+        except ImproperlyConfigured:
+            get_template_context_error = True
+        self.assertTrue(get_template_context_error)
 
-        settings.MAINTENANCE_MODE_TEMPLATE_CONTEXT = None
+        settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = None
         response = self.client.get('/')
-        val = response.context.get('TEST_MAINTENANCE_MODE_TEMPLATE_CONTEXT', False)
+        val = response.context.get('TEST_MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT', False)
         self.assertFalse(val)
 
