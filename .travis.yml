@@ -1,5 +1,9 @@
 language: python
-python: 3.6
+python:
+  - "2.7"
+  - "3.4"
+  - "3.5"
+  - "3.6"
 env:
   - TOX_ENV=py27-17
   - TOX_ENV=py27-18
