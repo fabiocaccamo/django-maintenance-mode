@@ -13,7 +13,7 @@ It doesn't use database and doesn't prevent database access.
 
 ## Requirements
 - Python 2.7, 3.4, 3.5, 3.6
-- Django 1.7, 1.8, 1.9, 1.10
+- Django 1.7, 1.8, 1.9, 1.10, 1.11
 
 ## Installation
 
