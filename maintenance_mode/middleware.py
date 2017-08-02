@@ -3,15 +3,7 @@
 import django
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import NoReverseMatch, resolve, reverse
-from django.http import HttpResponseRedirect
-from django.shortcuts import render
 from django.utils.module_loading import import_string
-
-if django.VERSION < (1, 8):
-    from django.shortcuts import render_to_response
-    from django.template import RequestContext
-
-from django.utils.cache import add_never_cache_headers
 
 if django.VERSION < (1, 10):
     __MaintenanceModeMiddlewareBaseClass = object
@@ -21,6 +13,7 @@ else:
     __MaintenanceModeMiddlewareBaseClass = MiddlewareMixin
 
 from maintenance_mode import core, settings, utils
+from maintenance_mode.http import get_maintenance_response
 
 import re
 import sys
@@ -110,37 +103,4 @@ class MaintenanceModeMiddleware(__MaintenanceModeMiddlewareBaseClass):
             if redirect_url_re.match(request.path_info):
                 return None
 
-            return HttpResponseRedirect(settings.MAINTENANCE_MODE_REDIRECT_URL)
-
-        else:
-
-            request_context = {}
-
-            if settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT:
-                try:
-                    get_request_context_func = import_string(
-                        settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT)
-                except ImportError:
-                    raise ImproperlyConfigured(
-                        'settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT '
-                        'is not a valid function path.')
-                else:
-                    request_context = get_request_context_func(
-                        request=request)
-
-            if django.VERSION < (1, 8):
-                response = render_to_response(
-                    settings.MAINTENANCE_MODE_TEMPLATE,
-                    request_context,
-                    context_instance=RequestContext(request),
-                    content_type='text/html')
-            else:
-                response = render(
-                    request,
-                    settings.MAINTENANCE_MODE_TEMPLATE,
-                    context=request_context,
-                    content_type='text/html',
-                    status=503)
-
-            add_never_cache_headers(response)
-            return response
+        return get_maintenance_response(request)

@@ -5,7 +5,7 @@ from django.contrib.auth.models import AnonymousUser, User
 from django.core.exceptions import ImproperlyConfigured
 from django.core.management import call_command
 from django.core.management.base import CommandError
-from django.test import Client, RequestFactory, TestCase, override_settings
+from django.test import Client, RequestFactory, SimpleTestCase, TestCase, override_settings
 
 if django.VERSION < (1, 10):
     from django.core.urlresolvers import reverse
@@ -13,6 +13,7 @@ else:
     from django.urls import reverse
 
 from maintenance_mode import core, io, middleware, settings, utils, views
+from maintenance_mode.http import get_maintenance_response
 
 import os
 import re
@@ -489,3 +490,46 @@ class MaintenanceModeTestCase(TestCase):
         val = response.context.get('TEST_MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT', False)
         self.assertFalse(val)
 
+
+class TestGetMaintenanceResponse(SimpleTestCase):
+    """Test `get_maintenance_response` function."""
+
+    def tearDown(self):
+        # Clean up settings
+        settings.MAINTENANCE_MODE_REDIRECT_URL = None
+        settings.MAINTENANCE_MODE_TEMPLATE = '503.html'
+        settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = None
+
+    def test_redirect(self):
+        settings.MAINTENANCE_MODE_REDIRECT_URL = 'http://redirect.example.cz/'
+
+        response = get_maintenance_response(RequestFactory().get('/dummy/'))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['Location'], 'http://redirect.example.cz/')
+
+    def test_no_context(self):
+        settings.MAINTENANCE_MODE_TEMPLATE = '503.html'
+        settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = None
+
+        response = get_maintenance_response(RequestFactory().get('/dummy/'))
+
+        self.assertContains(response, 'django-maintenance-mode', status_code=503)
+        self.assertEqual(response['Content-Type'], 'text/html')
+        self.assertIn('max-age=0', response['Cache-Control'])
+
+    def test_custom_context(self):
+        settings.MAINTENANCE_MODE_TEMPLATE = '503.html'
+        settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = 'tests.tests.get_template_context'
+
+        response = get_maintenance_response(RequestFactory().get('/dummy/'))
+
+        self.assertContains(response, 'django-maintenance-mode', status_code=503)
+        self.assertEqual(response['Content-Type'], 'text/html')
+        self.assertIn('max-age=0', response['Cache-Control'])
+
+    def test_invalid_context_function(self):
+        settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = 'invalid.invalid-context-function'
+
+        self.assertRaisesMessage(ImproperlyConfigured, 'not a valid function',
+                                 get_maintenance_response, RequestFactory().get('/dummy/'))
