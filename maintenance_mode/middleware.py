@@ -5,6 +5,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import NoReverseMatch, resolve, reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.utils.module_loading import import_string
 
 if django.VERSION < (1, 8):
     from django.shortcuts import render_to_response
@@ -65,13 +66,13 @@ class MaintenanceModeMiddleware(__MaintenanceModeMiddlewareBaseClass):
             if settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES:
 
                 if settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS:
-
-                    get_client_ip_address_func = utils.import_function(settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS)
-
-                    if get_client_ip_address_func:
-                        client_ip_address = get_client_ip_address_func(request)
+                    try:
+                        get_client_ip_address_func = import_string(settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS)
+                    except ImportError:
+                        raise ImproperlyConfigured(
+                            'settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS is not a valid function path.')
                     else:
-                        raise ImproperlyConfigured('settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS is not a valid function path.')
+                        client_ip_address = get_client_ip_address_func(request)
                 else:
                     client_ip_address = utils.get_client_ip_address(request)
 
@@ -105,13 +106,13 @@ class MaintenanceModeMiddleware(__MaintenanceModeMiddlewareBaseClass):
                 request_context = {}
 
                 if settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT:
-
-                    get_request_context_func = utils.import_function(settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT)
-
-                    if get_request_context_func:
-                        request_context = get_request_context_func(request = request)
+                    try:
+                        get_request_context_func = import_string(settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT)
+                    except ImportError:
+                        raise ImproperlyConfigured(
+                            'settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT is not a valid function path.')
                     else:
-                        raise ImproperlyConfigured('settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT is not a valid function path.')
+                        request_context = get_request_context_func(request=request)
 
                 if django.VERSION < (1, 8):
                     response = render_to_response(settings.MAINTENANCE_MODE_TEMPLATE, request_context, context_instance=RequestContext(request), content_type='text/html')
