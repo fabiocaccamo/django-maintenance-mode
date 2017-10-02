@@ -7,7 +7,7 @@ def get_maintenance_mode():
 
     value = io.read_file(settings.MAINTENANCE_MODE_STATE_FILE_PATH, '0')
 
-    if not value in ['0', '1']:
+    if value not in ['0', '1']:
         raise ValueError('state file content value is not 0|1')
 
     value = bool(int(value))
@@ -21,4 +21,3 @@ def set_maintenance_mode(value):
 
     value = str(int(value))
     io.write_file(settings.MAINTENANCE_MODE_STATE_FILE_PATH, value)
-

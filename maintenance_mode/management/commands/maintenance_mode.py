@@ -12,7 +12,8 @@ from maintenance_mode import core
 class Command(BaseCommand):
 
     args = '<on|off>'
-    help = 'run python manage.py maintenance_mode %s to change maintenance-mode state' % args
+    help = 'run python manage.py maintenance_mode %s '\
+           'to change maintenance-mode state' % args
 
     def add_arguments(self, parser):
 
@@ -23,7 +24,8 @@ class Command(BaseCommand):
         if django.VERSION < (1, 8):
 
             if len(args) != 1:
-                raise CommandError('Error: expected 1 argument: %s' % (self.args, ))
+                raise CommandError(
+                    'Error: expected 1 argument: %s' % (self.args, ))
 
             state = args[0]
         else:
@@ -37,5 +39,5 @@ class Command(BaseCommand):
         elif state in ['off', 'no', 'false', '0']:
             core.set_maintenance_mode(False)
         else:
-            raise CommandError('Error: invalid argument: \'%s\' expected %s' % (state, self.args, ))
-
+            raise CommandError('Error: invalid argument: \'%s\' '
+                               'expected %s' % (state, self.args, ))
