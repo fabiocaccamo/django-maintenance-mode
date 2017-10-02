@@ -34,7 +34,7 @@ MAINTENANCE_MODE = False
 ```
 
 ```python
-# by default, a file named "maintenance_mode_state.txt" will be created in the same directory of the settings.py file
+# by default, a file named "maintenance_mode_state.txt" will be created in the maintenance_mode directory
 # you can customize the state file path in case the default one is not writable
 MAINTENANCE_MODE_STATE_FILE_PATH = 'maintenance_mode_state.txt'
 ```
@@ -160,7 +160,7 @@ class Command(BaseCommand):
 
 Run ``python manage.py maintenance_mode <on|off>``
 
-*(****This is not Heroku-friendly because*** *any execution of heroku run `manage.py` will be run on a separate worker dyno, not the web one. Therefore* ***the state-file is set but on the wrong machine****)*
+*(**This is not Heroku-friendly because** any execution of heroku run* `manage.py` *will be run on a separate worker dyno, not the web one. Therefore **the state-file is set but on the wrong machine**)*
 
 #### URLs
 Superusers can change maintenance-mode using the following urls:
