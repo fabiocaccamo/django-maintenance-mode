@@ -1,19 +1,31 @@
-
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from setuptools import setup, find_packages
+
+import os
 
 exec(open('maintenance_mode/version.py').read())
 
+github_url = 'https://github.com/fabiocaccamo'
+package_name = 'django-maintenance-mode'
+package_path = os.path.abspath(os.path.dirname(__file__))
+long_description_file_path = os.path.join(package_path, 'README.rst')
+long_description = ''
+with open(long_description_file_path) as f:
+    long_description = f.read()
+
 setup(
-    name='django-maintenance-mode',
+    name=package_name,
     packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
     version=__version__,
     description='django-maintenance-mode shows a 503 error page when maintenance-mode is on.',
+    long_description=long_description,
     author='Fabio Caccamo',
     author_email='fabio.caccamo@gmail.com',
-    url='https://github.com/fabiocaccamo/django-maintenance-mode',
-    download_url='https://github.com/fabiocaccamo/django-maintenance-mode/archive/%s.tar.gz' % __version__,
-    keywords = ['django', 'maintenance', 'mode', 'offline', 'under', '503', 'service', 'temporarily', 'unavailable'],
+    url='%s/%s' % (github_url, package_name, ),
+    download_url='%s/%s/archive/%s.tar.gz' % (github_url, package_name, __version__, ),
+    keywords=['django', 'maintenance', 'mode', 'offline', 'under', '503', 'service', 'temporarily', 'unavailable'],
     requires=['django(>=1.7)'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
@@ -39,4 +51,3 @@ setup(
     license='MIT',
     test_suite='runtests.runtests'
 )
-
