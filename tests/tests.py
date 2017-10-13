@@ -5,15 +5,15 @@ from django.contrib.auth.models import AnonymousUser, User
 from django.core.exceptions import ImproperlyConfigured
 from django.core.management import call_command
 from django.core.management.base import CommandError
-from django.test import Client, RequestFactory, SimpleTestCase, TestCase, override_settings
+from django.test import Client, override_settings, RequestFactory, \
+    SimpleTestCase, TestCase
 
 if django.VERSION < (1, 10):
     from django.core.urlresolvers import reverse
 else:
     from django.urls import reverse
 
-from maintenance_mode import core, io, middleware, settings, utils, views
-from maintenance_mode.http import get_maintenance_response
+from maintenance_mode import core, http, io, middleware, settings, utils, views
 
 import os
 import re
@@ -22,28 +22,30 @@ import re
 def get_client_ip_address(request):
     return request.META['CLIENT_IP_ADDRESS_FIELD']
 
+
 def get_template_context(request):
-    return { 'TEST_MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT':True }
+    return {'TEST_MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT': True}
+
 
 @override_settings(
-    MIDDLEWARE_CLASSES = [
+    MIDDLEWARE_CLASSES=[
         'django.contrib.sessions.middleware.SessionMiddleware',
         'django.middleware.common.CommonMiddleware',
         'django.contrib.auth.middleware.AuthenticationMiddleware',
 
         'maintenance_mode.middleware.MaintenanceModeMiddleware',
     ],
-    ROOT_URLCONF = 'tests.urls',
+    ROOT_URLCONF='tests.urls',
 
-    #for django < 1.8
-    TEMPLATE_CONTEXT_PROCESSORS = (
+    # for django < 1.8
+    TEMPLATE_CONTEXT_PROCESSORS=(
         'django.contrib.auth.context_processors.auth',
         'django.core.context_processors.request',
         'maintenance_mode.context_processors.maintenance_mode',
     ),
 
-    #for django >= 1.8
-    TEMPLATES = [
+    # for django >= 1.8
+    TEMPLATES=[
         {
             'BACKEND': 'django.template.backends.django.DjangoTemplates',
             'DIRS': [],
@@ -64,12 +66,14 @@ class MaintenanceModeTestCase(TestCase):
 
         self.anonymous_user = AnonymousUser
 
-        self.staff_user = User.objects.create_user('staff-user', 'staff@django-maintenance-mode.test', 'test')
-        self.staff_user.is_staff=True
+        self.staff_user = User.objects.create_user(
+            'staff-user', 'staff@django-maintenance-mode.test', 'test')
+        self.staff_user.is_staff = True
         self.staff_user.save()
 
-        self.superuser = User.objects.create_user('superuser', 'superuser@django-maintenance-mode.test', 'test')
-        self.superuser.is_superuser=True
+        self.superuser = User.objects.create_user(
+            'superuser', 'superuser@django-maintenance-mode.test', 'test')
+        self.superuser.is_superuser = True
         self.superuser.save()
 
         self.client = Client()
@@ -137,7 +141,7 @@ class MaintenanceModeTestCase(TestCase):
         val = io.write_file(file_path, 'test')
         self.assertTrue(val)
 
-        #ensure overwrite instead of append
+        # ensure overwrite instead of append
         val = io.write_file(file_path, 'test')
         val = io.write_file(file_path, 'test')
         val = io.read_file(file_path)
@@ -171,7 +175,8 @@ class MaintenanceModeTestCase(TestCase):
 
         self.__reset_state()
 
-        val = io.write_file(settings.MAINTENANCE_MODE_STATE_FILE_PATH, 'not bool')
+        val = io.write_file(
+            settings.MAINTENANCE_MODE_STATE_FILE_PATH, 'not bool')
         self.assertTrue(val)
         self.assertRaises(ValueError, core.get_maintenance_mode)
         self.assertRaises(TypeError, core.set_maintenance_mode, 'not bool')
@@ -303,7 +308,7 @@ class MaintenanceModeTestCase(TestCase):
         response = self.middleware.process_request(request)
         self.assertEqual(response, None)
 
-        with self.settings( ROOT_URLCONF = 'tests.urls_not_configured' ):
+        with self.settings(ROOT_URLCONF='tests.urls_not_configured'):
             response = self.middleware.process_request(request)
             self.assertMaintenanceMode(response)
 
@@ -328,7 +333,8 @@ class MaintenanceModeTestCase(TestCase):
         settings.MAINTENANCE_MODE = True
         request = self.__get_anonymous_user_request('/')
 
-        settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES = (utils.get_client_ip_address(request), )
+        settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES = (
+            utils.get_client_ip_address(request), )
         response = self.middleware.process_request(request)
         self.assertEqual(response, None)
 
@@ -344,12 +350,15 @@ class MaintenanceModeTestCase(TestCase):
         request = self.__get_anonymous_user_request('/')
         request.META['CLIENT_IP_ADDRESS_FIELD'] = '127.0.0.2'
 
-        settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES = (request.META['CLIENT_IP_ADDRESS_FIELD'], )
-        settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS = 'tests.tests.get_client_ip_address'
+        settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES = (
+            request.META['CLIENT_IP_ADDRESS_FIELD'], )
+        settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS = \
+            'tests.tests.get_client_ip_address'
         response = self.middleware.process_request(request)
         self.assertEqual(response, None)
 
-        settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS = 'tests.tests.get_client_ip_address_invalid'
+        settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS = \
+            'tests.tests.get_client_ip_address_invalid'
         get_client_ip_address_error = False
         try:
             response = self.middleware.process_request(request)
@@ -357,7 +366,8 @@ class MaintenanceModeTestCase(TestCase):
             get_client_ip_address_error = True
         self.assertEqual(get_client_ip_address_error, True)
 
-        settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS = 'tests.tests_invalid.get_client_ip_address'
+        settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS = \
+            'tests.tests_invalid.get_client_ip_address'
         get_client_ip_address_error = False
         try:
             response = self.middleware.process_request(request)
@@ -365,7 +375,8 @@ class MaintenanceModeTestCase(TestCase):
             get_client_ip_address_error = True
         self.assertEqual(get_client_ip_address_error, True)
 
-        settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES = (utils.get_client_ip_address(request), )
+        settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES = (
+            utils.get_client_ip_address(request), )
         settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS = None
         response = self.middleware.process_request(request)
         self.assertEqual(response, None)
@@ -442,13 +453,16 @@ class MaintenanceModeTestCase(TestCase):
         settings.MAINTENANCE_MODE = True
         request = self.__get_anonymous_user_request('/')
 
-        settings.MAINTENANCE_MODE_REDIRECT_URL = reverse('maintenance_mode_redirect')
+        settings.MAINTENANCE_MODE_REDIRECT_URL = reverse(
+            'maintenance_mode_redirect')
         response = self.middleware.process_request(request)
         response.client = self.client
         if django.VERSION < (1, 9):
-            self.assertEqual(response.url, settings.MAINTENANCE_MODE_REDIRECT_URL)
+            self.assertEqual(
+                response.url, settings.MAINTENANCE_MODE_REDIRECT_URL)
         else:
-            self.assertRedirects(response, settings.MAINTENANCE_MODE_REDIRECT_URL)
+            self.assertRedirects(
+                response, settings.MAINTENANCE_MODE_REDIRECT_URL)
 
         settings.MAINTENANCE_MODE_REDIRECT_URL = None
         response = self.middleware.process_request(request)
@@ -460,16 +474,20 @@ class MaintenanceModeTestCase(TestCase):
 
         settings.MAINTENANCE_MODE = True
 
-        settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = 'tests.tests.get_template_context'
+        settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = \
+            'tests.tests.get_template_context'
         response = self.client.get('/')
-        val = response.context.get('TEST_MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT', False)
+        val = response.context.get(
+            'TEST_MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT', False)
         self.assertTrue(val)
 
         get_template_context_error = False
         try:
-            settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = 'tests.tests_invalid.get_template_context_invalid'
+            settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = \
+                'tests.tests_invalid.get_template_context_invalid'
             response = self.client.get('/')
-            val = response.context.get('TEST_MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT', False)
+            val = response.context.get(
+                'TEST_MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT', False)
             self.assertFalse(val)
         except ImproperlyConfigured:
             get_template_context_error = True
@@ -477,9 +495,11 @@ class MaintenanceModeTestCase(TestCase):
 
         get_template_context_error = False
         try:
-            settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = 'tests.tests.get_template_context_invalid'
+            settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = \
+                'tests.tests.get_template_context_invalid'
             response = self.client.get('/')
-            val = response.context.get('TEST_MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT', False)
+            val = response.context.get(
+                'TEST_MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT', False)
             self.assertFalse(val)
         except ImproperlyConfigured:
             get_template_context_error = True
@@ -487,12 +507,13 @@ class MaintenanceModeTestCase(TestCase):
 
         settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = None
         response = self.client.get('/')
-        val = response.context.get('TEST_MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT', False)
+        val = response.context.get(
+            'TEST_MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT', False)
         self.assertFalse(val)
 
 
 class TestGetMaintenanceResponse(SimpleTestCase):
-    """Test `get_maintenance_response` function."""
+    """Test `http.get_maintenance_response` function."""
 
     def tearDown(self):
         # Clean up settings
@@ -503,7 +524,7 @@ class TestGetMaintenanceResponse(SimpleTestCase):
     def test_redirect(self):
         settings.MAINTENANCE_MODE_REDIRECT_URL = 'http://redirect.example.cz/'
 
-        response = get_maintenance_response(RequestFactory().get('/dummy/'))
+        response = http.get_maintenance_response(RequestFactory().get('/dummy/'))
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['Location'], 'http://redirect.example.cz/')
@@ -512,24 +533,31 @@ class TestGetMaintenanceResponse(SimpleTestCase):
         settings.MAINTENANCE_MODE_TEMPLATE = '503.html'
         settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = None
 
-        response = get_maintenance_response(RequestFactory().get('/dummy/'))
+        response = http.get_maintenance_response(
+            RequestFactory().get('/dummy/'))
 
-        self.assertContains(response, 'django-maintenance-mode', status_code=503)
+        self.assertContains(
+            response, 'django-maintenance-mode', status_code=503)
         self.assertEqual(response['Content-Type'], 'text/html')
         self.assertIn('max-age=0', response['Cache-Control'])
 
     def test_custom_context(self):
         settings.MAINTENANCE_MODE_TEMPLATE = '503.html'
-        settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = 'tests.tests.get_template_context'
+        settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = \
+            'tests.tests.get_template_context'
 
-        response = get_maintenance_response(RequestFactory().get('/dummy/'))
+        response = http.get_maintenance_response(
+            RequestFactory().get('/dummy/'))
 
-        self.assertContains(response, 'django-maintenance-mode', status_code=503)
+        self.assertContains(
+            response, 'django-maintenance-mode', status_code=503)
         self.assertEqual(response['Content-Type'], 'text/html')
         self.assertIn('max-age=0', response['Cache-Control'])
 
     def test_invalid_context_function(self):
-        settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = 'invalid.invalid-context-function'
+        settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = \
+            'invalid.invalid-context-function'
 
-        self.assertRaisesMessage(ImproperlyConfigured, 'not a valid function',
-                                 get_maintenance_response, RequestFactory().get('/dummy/'))
+        self.assertRaisesMessage(
+            ImproperlyConfigured, 'not a valid function',
+            http.get_maintenance_response, RequestFactory().get('/dummy/'))
