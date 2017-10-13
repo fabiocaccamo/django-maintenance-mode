@@ -37,7 +37,7 @@ default values (listed below) will be used.
 .. code:: python
 
     # if True the maintenance-mode will be activated
-    MAINTENANCE_MODE = False
+    MAINTENANCE_MODE = None
 
 .. code:: python
 

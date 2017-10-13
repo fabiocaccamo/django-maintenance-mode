@@ -30,7 +30,7 @@ All these settings are optional, if not defined in ``settings.py`` the default v
 
 ```python
 # if True the maintenance-mode will be activated
-MAINTENANCE_MODE = False
+MAINTENANCE_MODE = None
 ```
 
 ```python

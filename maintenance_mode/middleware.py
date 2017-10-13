@@ -23,10 +23,7 @@ class MaintenanceModeMiddleware(__MaintenanceModeMiddlewareBaseClass):
 
     def process_request(self, request):
 
-        is_maintenance_mode = settings.MAINTENANCE_MODE \
-            or core.get_maintenance_mode()
-
-        if not is_maintenance_mode:
+        if not core.get_maintenance_mode():
             return None
 
         try:

@@ -120,7 +120,7 @@ class MaintenanceModeTestCase(TestCase):
 
     def __reset_state(self):
 
-        settings.MAINTENANCE_MODE = False
+        settings.MAINTENANCE_MODE = None
         core.set_maintenance_mode(False)
 
         try:
@@ -170,6 +170,28 @@ class MaintenanceModeTestCase(TestCase):
         core.set_maintenance_mode(False)
         val = core.get_maintenance_mode()
         self.assertFalse(val)
+
+    def test_core_maintenance_enabled(self):
+        # Test `get_maintenance_mode` returns maintenance mode from settings - enabled
+        self.__reset_state()
+        core.set_maintenance_mode(False)  # Disable maintenance mode in lock file
+        settings.MAINTENANCE_MODE = True
+        val = core.get_maintenance_mode()
+        self.assertTrue(val)
+
+    def test_core_maintenance_disabled(self):
+        # Test `get_maintenance_mode` returns maintenance mode from settings - disabled
+        self.__reset_state()
+        core.set_maintenance_mode(True)  # Enable maintenance mode in lock file
+        settings.MAINTENANCE_MODE = False
+        val = core.get_maintenance_mode()
+        self.assertFalse(val)
+
+    def test_core_set_disabled(self):
+        # Test `set_maintenance_mode` is disable if maintenance mode is set in settings.
+        self.__reset_state()
+        settings.MAINTENANCE_MODE = True
+        self.assertRaises(ImproperlyConfigured, core.set_maintenance_mode, True)
 
     def test_core_invalid_argument(self):
 
