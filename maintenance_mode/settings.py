@@ -6,7 +6,7 @@ import os
 
 
 MAINTENANCE_MODE = getattr(
-    settings, 'MAINTENANCE_MODE', False)
+    settings, 'MAINTENANCE_MODE', None)
 MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS = getattr(
     settings, 'MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS', None)
 MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = getattr(
