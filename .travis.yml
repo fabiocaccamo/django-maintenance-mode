@@ -16,10 +16,7 @@ env:
   #- TOX_ENV=py36-19
   #- TOX_ENV=py36-110
 install:
-  - pip install flake8
   - pip install tox
-before_script:
-  - flake8 .
 script:
   - tox -e $TOX_ENV
 sudo: false
