@@ -534,6 +534,147 @@ class MaintenanceModeTestCase(TestCase):
         self.assertFalse(val)
 
 
+class TestIsUnderMaintenance(TestCase):
+    """Test `http.is_under_maintenance` function."""
+
+    def tearDown(self):
+        # Clean up settings
+        settings.MAINTENANCE_MODE_IGNORE_STAFF = False
+        settings.MAINTENANCE_MODE_IGNORE_SUPERUSER = False
+        settings.MAINTENANCE_MODE_IGNORE_TESTS = False
+        settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES = ()
+        settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS = None
+        settings.MAINTENANCE_MODE_IGNORE_URLS = ()
+        settings.MAINTENANCE_MODE_REDIRECT_URL = None
+
+    def test_maintenance_view(self):
+        # Test `maintenance_mode_off` view is excluded from maintenance.
+        with self.settings(ROOT_URLCONF='tests.urls'):
+            request = RequestFactory().get(reverse('maintenance_mode_off'))
+            self.assertFalse(http.is_under_maintenance(request))
+
+    def test_maintenance_view_undefined(self):
+        # Test `maintenance_mode_off` view is not excluded from maintenance if the URL is not defined.
+        with self.settings(ROOT_URLCONF='tests.urls'):
+            request = RequestFactory().get(reverse('maintenance_mode_off'))
+        with self.settings(ROOT_URLCONF='tests.urls_not_configured'):
+            self.assertTrue(http.is_under_maintenance(request))
+
+    def test_ignore_staff_no_user(self):
+        # Test ignore staff mode with no user
+        settings.MAINTENANCE_MODE_IGNORE_STAFF = True
+        request = RequestFactory().get('/dummy/')
+        self.assertTrue(http.is_under_maintenance(request))
+
+    def test_ignore_staff_internal(self):
+        # Test ignore staff mode with user who is staff
+        settings.MAINTENANCE_MODE_IGNORE_STAFF = True
+        request = RequestFactory().get('/dummy/')
+        request.user = User.objects.create_user('kryten')
+        request.user.is_staff = True
+        self.assertFalse(http.is_under_maintenance(request))
+
+    def test_ignore_staff_outsider(self):
+        # Test ignore staff mode with user who is not staff
+        settings.MAINTENANCE_MODE_IGNORE_STAFF = True
+        request = RequestFactory().get('/dummy/')
+        request.user = User.objects.create_user('kryten')
+        request.user.is_staff = False
+        self.assertTrue(http.is_under_maintenance(request))
+
+    def test_ignore_superuser_no_user(self):
+        # Test ignore superuser mode with no user
+        settings.MAINTENANCE_MODE_IGNORE_SUPERUSER = True
+        request = RequestFactory().get('/dummy/')
+        self.assertTrue(http.is_under_maintenance(request))
+
+    def test_ignore_superuser_internal(self):
+        # Test ignore superuser mode with user who is superuser
+        settings.MAINTENANCE_MODE_IGNORE_SUPERUSER = True
+        request = RequestFactory().get('/dummy/')
+        request.user = User.objects.create_user('kryten')
+        request.user.is_superuser = True
+        self.assertFalse(http.is_under_maintenance(request))
+
+    def test_ignore_superuser_outsider(self):
+        # Test ignore superuser mode with user who is not superuser
+        settings.MAINTENANCE_MODE_IGNORE_SUPERUSER = True
+        request = RequestFactory().get('/dummy/')
+        request.user = User.objects.create_user('kryten')
+        request.user.is_superuser = False
+        self.assertTrue(http.is_under_maintenance(request))
+
+    def test_ignore_tests_enabled(self):
+        # Test ignore tests is enabled
+        settings.MAINTENANCE_MODE_IGNORE_TESTS = True
+        request = RequestFactory().get('/dummy/')
+        # This is test, so there is nothing else to set
+        self.assertFalse(http.is_under_maintenance(request))
+
+    def test_ignore_tests_disabled(self):
+        # Test ignore tests is disabled
+        settings.MAINTENANCE_MODE_IGNORE_TESTS = False
+        request = RequestFactory().get('/dummy/')
+        # This is test, so there is nothing else to set
+        self.assertTrue(http.is_under_maintenance(request))
+
+    def test_ignore_ips_no_match(self):
+        # Test ignored IP address doesn't match
+        settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES = ['no.such.ip.address']
+        request = RequestFactory().get('/dummy/', REMOTE_ADDR='127.0.0.1')
+        self.assertTrue(http.is_under_maintenance(request))
+
+    def test_ignore_ips_match(self):
+        # Test ignored IP address matches
+        settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES = ['127.0.0.1']
+        request = RequestFactory().get('/dummy/', REMOTE_ADDR='127.0.0.1')
+        self.assertFalse(http.is_under_maintenance(request))
+
+    def test_ignore_ips_custom_getter(self):
+        # Test ignored IP address matches with custom IP getter
+        settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES = ['127.0.0.1']
+        settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS = 'tests.tests.get_client_ip_address'
+        request = RequestFactory().get('/dummy/', CLIENT_IP_ADDRESS_FIELD='127.0.0.1')
+        self.assertFalse(http.is_under_maintenance(request))
+
+    def test_ignore_ips_invalid_custom_getter(self):
+        # Test ignored IP address matches with invalid custom IP getter
+        settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES = ['.*']
+        settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS = 'invalid.get-client-ip-address'
+        request = RequestFactory().get('/dummy/')
+
+        self.assertRaisesMessage(ImproperlyConfigured, 'not a valid function', http.is_under_maintenance, request)
+
+    def test_ignore_urls_no_match(self):
+        # Test ignored URLs doesn't match
+        settings.MAINTENANCE_MODE_IGNORE_URLS = ['/ignore/']
+        request = RequestFactory().get('/another/')
+        self.assertTrue(http.is_under_maintenance(request))
+
+    def test_ignore_urls_match(self):
+        # Test ignored URLs match
+        settings.MAINTENANCE_MODE_IGNORE_URLS = ['/ignore/']
+        request = RequestFactory().get('/ignore/')
+        self.assertFalse(http.is_under_maintenance(request))
+
+    def test_redirect_url(self):
+        # Test redirect URL is excluded
+        settings.MAINTENANCE_MODE_REDIRECT_URL = '/under-maintenance/'
+        request = RequestFactory().get('/under-maintenance/')
+        self.assertFalse(http.is_under_maintenance(request))
+
+    def test_redirect_url_no_match(self):
+        # Test redirect URL is setup, but not match
+        settings.MAINTENANCE_MODE_REDIRECT_URL = '/under-maintenance/'
+        request = RequestFactory().get('/under-maintenance')
+        self.assertTrue(http.is_under_maintenance(request))
+
+    def test_generic_request(self):
+        # Test generic request is under maintenance
+        request = RequestFactory().get('/dummy/')
+        self.assertTrue(http.is_under_maintenance(request))
+
+
 class TestGetMaintenanceResponse(SimpleTestCase):
     """Test `http.get_maintenance_response` function."""
 
