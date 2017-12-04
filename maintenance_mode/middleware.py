@@ -2,7 +2,6 @@
 
 import django
 from django.core.exceptions import ImproperlyConfigured
-from django.core.urlresolvers import NoReverseMatch, resolve, reverse
 from django.utils.module_loading import import_string
 
 if django.VERSION < (1, 10):
@@ -11,6 +10,11 @@ else:
     # https://docs.djangoproject.com/en/1.10/topics/http/middleware/#upgrading-pre-django-1-10-style-middleware
     from django.utils.deprecation import MiddlewareMixin
     __MaintenanceModeMiddlewareBaseClass = MiddlewareMixin
+
+if django.VERSION < (2, 0):
+    from django.core.urlresolvers import NoReverseMatch, resolve, reverse
+else:
+    from django.urls import NoReverseMatch, resolve, reverse    
 
 from maintenance_mode import core, settings, utils
 from maintenance_mode.http import get_maintenance_response
