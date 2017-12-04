@@ -2,7 +2,10 @@
 
 import django
 from django.core.exceptions import ImproperlyConfigured
-from django.core.urlresolvers import NoReverseMatch, resolve, reverse
+try:
+    from django.urls import NoReverseMatch, resolve, reverse
+except ImportError:
+    from django.core.urlresolvers import NoReverseMatch, resolve, reverse
 from django.utils.module_loading import import_string
 
 if django.VERSION < (1, 10):
