@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import django
+from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import NoReverseMatch, resolve, reverse
 from django.utils.module_loading import import_string
@@ -12,7 +13,7 @@ else:
     from django.utils.deprecation import MiddlewareMixin
     __MaintenanceModeMiddlewareBaseClass = MiddlewareMixin
 
-from maintenance_mode import core, settings, utils
+from maintenance_mode import core, utils
 from maintenance_mode.http import get_maintenance_response
 
 import re

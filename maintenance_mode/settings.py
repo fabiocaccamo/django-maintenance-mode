@@ -4,28 +4,27 @@ from django.conf import settings
 
 import os
 
-
-MAINTENANCE_MODE = getattr(
-    settings, 'MAINTENANCE_MODE', None)
-MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS = getattr(
-    settings, 'MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS', None)
-MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = getattr(
-    settings, 'MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT', None)
-MAINTENANCE_MODE_IGNORE_IP_ADDRESSES = getattr(
-    settings, 'MAINTENANCE_MODE_IGNORE_IP_ADDRESSES', None)
-MAINTENANCE_MODE_IGNORE_STAFF = getattr(
-    settings, 'MAINTENANCE_MODE_IGNORE_STAFF', False)
-MAINTENANCE_MODE_IGNORE_SUPERUSER = getattr(
-    settings, 'MAINTENANCE_MODE_IGNORE_SUPERUSER', False)
-MAINTENANCE_MODE_IGNORE_TESTS = getattr(
-    settings, 'MAINTENANCE_MODE_IGNORE_TESTS', False)
-MAINTENANCE_MODE_IGNORE_URLS = getattr(
-    settings, 'MAINTENANCE_MODE_IGNORE_URLS', None)
-MAINTENANCE_MODE_REDIRECT_URL = getattr(
-    settings, 'MAINTENANCE_MODE_REDIRECT_URL', None)
-MAINTENANCE_MODE_STATE_FILE_PATH = getattr(
-    settings, 'MAINTENANCE_MODE_STATE_FILE_PATH',
-    os.path.join(os.path.abspath(
-        os.path.dirname(__file__)), 'maintenance_mode_state.txt'))
-MAINTENANCE_MODE_TEMPLATE = getattr(
-    settings, 'MAINTENANCE_MODE_TEMPLATE', '503.html')
+if not hasattr(settings, 'MAINTENANCE_MODE'):
+    settings.MAINTENANCE_MODE = None
+if not hasattr(settings, 'MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS'):
+    settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS = None
+if not hasattr(settings, 'MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT'):
+    settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = None
+if not hasattr(settings, 'MAINTENANCE_MODE_IGNORE_IP_ADDRESSES'):
+    settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES = None
+if not hasattr(settings, 'MAINTENANCE_MODE_IGNORE_STAFF'):
+    settings.MAINTENANCE_MODE_IGNORE_STAFF = False
+if not hasattr(settings, 'MAINTENANCE_MODE_IGNORE_SUPERUSER'):
+    settings.MAINTENANCE_MODE_IGNORE_SUPERUSER = False
+if not hasattr(settings, 'MAINTENANCE_MODE_IGNORE_TESTS'):
+    settings.MAINTENANCE_MODE_IGNORE_TESTS = False
+if not hasattr(settings, 'MAINTENANCE_MODE_IGNORE_URLS'):
+    settings.MAINTENANCE_MODE_IGNORE_URLS = None
+if not hasattr(settings, 'MAINTENANCE_MODE_REDIRECT_URL'):
+    settings.MAINTENANCE_MODE_REDIRECT_URL = None
+if not hasattr(settings, 'MAINTENANCE_MODE_STATE_FILE_PATH'):
+    settings.MAINTENANCE_MODE_STATE_FILE_PATH = os.path.join(
+        os.path.abspath(os.path.dirname(__file__)),
+        'maintenance_mode_state.txt')
+if not hasattr(settings, 'MAINTENANCE_MODE_TEMPLATE'):
+    settings.MAINTENANCE_MODE_TEMPLATE = '503.html'
