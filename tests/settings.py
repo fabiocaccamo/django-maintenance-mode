@@ -17,13 +17,25 @@ INSTALLED_APPS = [
     'maintenance_mode',
 ]
 
-MIDDLEWARE_CLASSES = [
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
+if django.VERSION < (2, 0):
 
-    'maintenance_mode.middleware.MaintenanceModeMiddleware',
-]
+    MIDDLEWARE_CLASSES = [
+        'django.contrib.sessions.middleware.SessionMiddleware',
+        'django.middleware.common.CommonMiddleware',
+        'django.contrib.auth.middleware.AuthenticationMiddleware',
+
+        'maintenance_mode.middleware.MaintenanceModeMiddleware',
+    ]
+
+else:
+
+    MIDDLEWARE = [
+        'django.contrib.sessions.middleware.SessionMiddleware',
+        'django.middleware.common.CommonMiddleware',
+        'django.contrib.auth.middleware.AuthenticationMiddleware',
+
+        'maintenance_mode.middleware.MaintenanceModeMiddleware',
+    ]
 
 ROOT_URLCONF = 'tests.urls'
 
@@ -44,8 +56,8 @@ else:
             'APP_DIRS': True,
             'OPTIONS': {
                 'context_processors': [
-                    'django.template.context_processors.request',
                     'django.contrib.auth.context_processors.auth',
+                    'django.template.context_processors.request',
                     'maintenance_mode.context_processors.maintenance_mode',
                 ],
             },

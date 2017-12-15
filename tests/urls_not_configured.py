@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
 
-from django.conf.urls import url
+import django
+
+if django.VERSION < (2, 0):
+    from django.conf.urls import url as re_path
+else:
+    from django.urls import re_path
+
 from django.http import HttpResponse
 
 
 urlpatterns = [
-    url(r'^$', lambda x: HttpResponse()),
+    re_path(r'^$', lambda x: HttpResponse()),
 ]
-
