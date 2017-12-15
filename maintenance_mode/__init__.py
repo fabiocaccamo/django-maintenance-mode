@@ -1,3 +1,3 @@
 # -*- coding: utf-8 -*-
 
-from . import settings
+from maintenance_mode import settings
