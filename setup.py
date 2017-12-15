@@ -12,8 +12,11 @@ package_name = 'django-maintenance-mode'
 package_path = os.path.abspath(os.path.dirname(__file__))
 long_description_file_path = os.path.join(package_path, 'README.rst')
 long_description = ''
-with open(long_description_file_path) as f:
-    long_description = f.read()
+try:
+    with open(long_description_file_path) as f:
+        long_description = f.read()
+except IOError:
+    pass
 
 setup(
     name=package_name,
@@ -36,6 +39,7 @@ setup(
         'Framework :: Django :: 1.9',
         'Framework :: Django :: 1.10',
         'Framework :: Django :: 1.11',
+        'Framework :: Django :: 2.0',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
