@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
-from maintenance_mode import io, settings
+from maintenance_mode import io
 
 
 def get_maintenance_mode():

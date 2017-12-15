@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import django
+from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, User
 from django.core.exceptions import ImproperlyConfigured
 from django.core.management import call_command
@@ -13,7 +14,7 @@ if django.VERSION < (1, 10):
 else:
     from django.urls import reverse
 
-from maintenance_mode import core, http, io, middleware, settings, utils, views
+from maintenance_mode import core, http, io, middleware, utils, views
 
 import os
 import re

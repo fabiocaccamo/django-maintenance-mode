@@ -2,13 +2,12 @@
 
 """HTTP response utilities."""
 import django
+from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.shortcuts import render, redirect
 from django.template import RequestContext
 from django.utils.cache import add_never_cache_headers
 from django.utils.module_loading import import_string
-
-from maintenance_mode import settings
 
 
 def get_maintenance_response(request):
