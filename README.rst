@@ -13,7 +13,7 @@ Requirements
 ------------
 
 -  Python 2.7, 3.4, 3.5, 3.6
--  Django 1.7, 1.8, 1.9, 1.10, 1.11
+-  Django 1.7, 1.8, 1.9, 1.10, 1.11, 2.0
 
 Installation
 ------------
@@ -24,7 +24,7 @@ Installation
 2. Add ``'maintenance_mode'`` to ``settings.INSTALLED_APPS`` before
    custom applications
 3. Add ``'maintenance_mode.middleware.MaintenanceModeMiddleware'`` to
-   ``settings.MIDDLEWARE_CLASSES`` as last middleware
+   ``settings.MIDDLEWARE_CLASSES``/``settings.MIDDLEWARE`` as last middleware
 4. Add your custom ``templates/503.html`` file
 5. Restart your application server
 
@@ -107,9 +107,9 @@ able to set maintenance\_mode using urls.
 .. code:: python
 
     urlpatterns = [
-        ...
+        # ...
         url(r'^maintenance-mode/', include('maintenance_mode.urls')),
-        ...
+        # ...
     ]
 
 Add **maintenance\_mode.context\_processors.maintenance\_mode** to your
@@ -120,15 +120,15 @@ maintenance\_mode status in your templates.
 
     TEMPLATES = [
         {
-            #...
+            # ...
             'OPTIONS': {
                 'context_processors': [
-                    #...
+                    # ...
                     'maintenance_mode.context_processors.maintenance_mode',
-                    #...
+                    # ...
                 ],
             },
-            #...
+            # ...
         },
     ]
 
@@ -161,7 +161,7 @@ or
 
             call_command('maintenance_mode', 'on')
 
-            #call your command(s)
+            # call your command(s)
 
             call_command('maintenance_mode', 'off')
 
