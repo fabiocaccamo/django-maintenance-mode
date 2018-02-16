@@ -93,7 +93,7 @@ class MaintenanceModeMiddleware(__MaintenanceModeMiddlewareBaseClass):
 
             for url in settings.MAINTENANCE_MODE_IGNORE_URLS:
 
-                url_re = re.compile(url)
+                url_re = re.compile(str(url))
 
                 if url_re.match(request.path_info):
                     return None
