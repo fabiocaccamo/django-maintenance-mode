@@ -469,6 +469,17 @@ class MaintenanceModeTestCase(TestCase):
         response = self.middleware.process_request(request)
         self.assertMaintenanceMode(response)
 
+        class LazyUrl:
+            def __init__(self, url):
+                self.url = url
+
+            def __str__(self):
+                return self.url
+
+        settings.MAINTENANCE_MODE_IGNORE_URLS = (LazyUrl('/'), )
+        response = self.middleware.process_request(request)
+        self.assertEqual(response, None)
+
     def test_middleware_redirect_url(self):
 
         self.__reset_state()
