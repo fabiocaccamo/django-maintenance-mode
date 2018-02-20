@@ -11,7 +11,7 @@ from django.http import HttpResponse
 
 
 urlpatterns = [
-    re_path(r'^$', lambda x: HttpResponse()),
+    re_path(r'^$', lambda x: HttpResponse(), name='root'),
     re_path(r'^maintenance-mode-redirect/$', lambda x: HttpResponse(), name='maintenance_mode_redirect'),
     re_path(r'^maintenance-mode/', include('maintenance_mode.urls')),
 ]

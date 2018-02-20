@@ -10,9 +10,9 @@ from django.test import Client, override_settings, RequestFactory, \
     SimpleTestCase, TestCase
 
 if django.VERSION < (1, 10):
-    from django.core.urlresolvers import reverse
+    from django.core.urlresolvers import reverse, reverse_lazy
 else:
-    from django.urls import reverse
+    from django.urls import reverse, reverse_lazy
 
 from maintenance_mode import core, http, io, middleware, utils, views
 
@@ -473,6 +473,10 @@ class MaintenanceModeTestCase(TestCase):
                 return self.url
 
         settings.MAINTENANCE_MODE_IGNORE_URLS = (LazyUrl('/'), )
+        response = self.middleware.process_request(request)
+        self.assertEqual(response, None)
+
+        settings.MAINTENANCE_MODE_IGNORE_URLS = (reverse_lazy('root'), )
         response = self.middleware.process_request(request)
         self.assertEqual(response, None)
 
