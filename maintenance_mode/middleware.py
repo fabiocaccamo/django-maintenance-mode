@@ -93,6 +93,8 @@ class MaintenanceModeMiddleware(__MaintenanceModeMiddlewareBaseClass):
 
             for url in settings.MAINTENANCE_MODE_IGNORE_URLS:
 
+                if not isinstance(url, re._pattern_type):
+                    url = str(url)
                 url_re = re.compile(url)
 
                 if url_re.match(request.path_info):
