@@ -10,14 +10,22 @@ from django.test import Client, override_settings, RequestFactory, \
     SimpleTestCase, TestCase
 
 if django.VERSION < (1, 10):
-    from django.core.urlresolvers import reverse, reverse_lazy
+    from django.core.urlresolvers import reverse
 else:
-    from django.urls import reverse, reverse_lazy
+    from django.urls import reverse
 
 from maintenance_mode import core, http, io, middleware, utils, views
 
+try:
+    # Python 2
+    from StringIO import StringIO
+except ImportError:
+    # Python 3
+    from io import StringIO
+
 import os
 import re
+import sys
 
 
 def get_client_ip_address(request):
@@ -244,6 +252,35 @@ class MaintenanceModeTestCase(TestCase):
                 command_error = True
             self.assertTrue(command_error)
 
+    def test_management_commands_verbosity(self):
+
+        self.__reset_state()
+
+        sys_stdin = sys.stdin
+
+        confirm_answer_file = StringIO('y')
+        sys.stdin = confirm_answer_file
+        call_command('maintenance_mode', 'on', verbosity=3)
+        val = core.get_maintenance_mode()
+        self.assertTrue(val)
+        confirm_answer_file.close()
+
+        confirm_answer_file = StringIO('y')
+        sys.stdin = confirm_answer_file
+        call_command('maintenance_mode', 'off', verbosity=3)
+        val = core.get_maintenance_mode()
+        self.assertFalse(val)
+        confirm_answer_file.close()
+
+        confirm_answer_file = StringIO('n')
+        sys.stdin = confirm_answer_file
+        call_command('maintenance_mode', 'on', verbosity=3)
+        val = core.get_maintenance_mode()
+        self.assertFalse(val)
+        confirm_answer_file.close()
+
+        sys.stdin = sys_stdin
+
     def test_urls(self):
 
         self.__reset_state()
@@ -462,21 +499,6 @@ class MaintenanceModeTestCase(TestCase):
         request = self.__get_anonymous_user_request('/')
 
         settings.MAINTENANCE_MODE_IGNORE_URLS = (re.compile('/'), )
-        response = self.middleware.process_request(request)
-        self.assertEqual(response, None)
-
-        class LazyUrl:
-            def __init__(self, url):
-                self.url = url
-
-            def __str__(self):
-                return self.url
-
-        settings.MAINTENANCE_MODE_IGNORE_URLS = (LazyUrl('/'), )
-        response = self.middleware.process_request(request)
-        self.assertEqual(response, None)
-
-        settings.MAINTENANCE_MODE_IGNORE_URLS = (reverse_lazy('root'), )
         response = self.middleware.process_request(request)
         self.assertEqual(response, None)
 
