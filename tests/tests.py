@@ -14,7 +14,7 @@ if django.VERSION < (1, 10):
 else:
     from django.urls import reverse
 
-from maintenance_mode import core, http, io, middleware, utils, views
+from maintenance_mode import core, http, io, middleware, utils, version, views
 
 try:
     # Python 2
@@ -263,6 +263,20 @@ class MaintenanceModeTestCase(TestCase):
         call_command('maintenance_mode', 'on', verbosity=3)
         val = core.get_maintenance_mode()
         self.assertTrue(val)
+        confirm_answer_file.close()
+
+        confirm_answer_file = StringIO('y')
+        sys.stdin = confirm_answer_file
+        call_command('maintenance_mode', 'on', verbosity=3)
+        val = core.get_maintenance_mode()
+        self.assertTrue(val)
+        confirm_answer_file.close()
+
+        confirm_answer_file = StringIO('y')
+        sys.stdin = confirm_answer_file
+        call_command('maintenance_mode', 'off', verbosity=3)
+        val = core.get_maintenance_mode()
+        self.assertFalse(val)
         confirm_answer_file.close()
 
         confirm_answer_file = StringIO('y')
@@ -570,6 +584,16 @@ class MaintenanceModeTestCase(TestCase):
         val = response.context.get(
             'TEST_MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT', False)
         self.assertFalse(val)
+
+    def test_version(self):
+
+        v = version.__version__
+        self.assertTrue(v != None)
+        self.assertTrue(v != '')
+
+        v_re = re.compile(r'^([0-9]+)(\.([0-9]+)){1,2}$')
+        v_match = v_re.match(v)
+        self.assertTrue(v_match != None)
 
 
 class TestGetMaintenanceResponse(SimpleTestCase):
