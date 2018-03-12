@@ -512,6 +512,10 @@ class MaintenanceModeTestCase(TestCase):
         settings.MAINTENANCE_MODE = True
         request = self.__get_anonymous_user_request('/')
 
+        settings.MAINTENANCE_MODE_IGNORE_URLS = ('/', )
+        response = self.middleware.process_request(request)
+        self.assertEqual(response, None)
+
         settings.MAINTENANCE_MODE_IGNORE_URLS = (re.compile('/'), )
         response = self.middleware.process_request(request)
         self.assertEqual(response, None)
