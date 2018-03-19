@@ -23,7 +23,9 @@ def get_maintenance_mode():
 def set_maintenance_mode(value):
     # If maintenance mode is defined in settings, it can't be changed.
     if settings.MAINTENANCE_MODE is not None:
-        raise ImproperlyConfigured('Maintenance mode cannot be set dynamically if defined in settings.')
+        raise ImproperlyConfigured(
+            'Maintenance mode cannot be set dynamically ' \
+            'if defined in settings.')
 
     if not isinstance(value, bool):
         raise TypeError('value argument type is not boolean')
