@@ -162,11 +162,8 @@ class MaintenanceModeTestCase(TestCase):
 
         file_path = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ:/maintenance_mode_state.txt'
 
-        val = io.write_file(file_path, 'test')
-        self.assertFalse(val)
-
-        val = io.read_file(file_path)
-        self.assertEqual(val, '')
+        self.assertRaises(IOError, io.write_file, file_path, 'test')
+        self.assertRaises(IOError, io.read_file, file_path)
 
     def test_core(self):
 
@@ -179,6 +176,18 @@ class MaintenanceModeTestCase(TestCase):
         core.set_maintenance_mode(False)
         val = core.get_maintenance_mode()
         self.assertFalse(val)
+
+    def test_core_invalid_file_path(self):
+
+        self.__reset_state()
+
+        file_path = settings.MAINTENANCE_MODE_STATE_FILE_PATH
+        settings.MAINTENANCE_MODE_STATE_FILE_PATH = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ:/maintenance_mode_state.txt'
+
+        self.assertRaises(IOError, core.get_maintenance_mode)
+        self.assertRaises(IOError, core.set_maintenance_mode, True)
+
+        settings.MAINTENANCE_MODE_STATE_FILE_PATH = file_path
 
     def test_core_maintenance_enabled(self):
         # Test `get_maintenance_mode` returns maintenance mode from settings - enabled
