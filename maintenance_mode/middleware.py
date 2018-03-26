@@ -46,6 +46,23 @@ class MaintenanceModeMiddleware(__MaintenanceModeMiddlewareBaseClass):
 
         if hasattr(request, 'user'):
 
+            if django.VERSION < (1, 10):
+                if settings.MAINTENANCE_MODE_IGNORE_ANONYMOUS_USER \
+                        and request.user.is_anonymous():
+                    return None
+
+                if settings.MAINTENANCE_MODE_IGNORE_AUTHENTICATED_USER \
+                        and request.user.is_authenticated():
+                    return None
+            else:
+                if settings.MAINTENANCE_MODE_IGNORE_ANONYMOUS_USER \
+                        and request.user.is_anonymous:
+                    return None
+
+                if settings.MAINTENANCE_MODE_IGNORE_AUTHENTICATED_USER \
+                        and request.user.is_authenticated:
+                    return None
+
             if settings.MAINTENANCE_MODE_IGNORE_STAFF \
                     and request.user.is_staff:
                 return None

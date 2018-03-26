@@ -73,21 +73,34 @@ class MaintenanceModeTestCase(TestCase):
 
     def setUp(self):
 
-        self.anonymous_user = AnonymousUser
+        self.anonymous_user = AnonymousUser()
+
+        self.authenticated_user = User.objects.create_user(
+            'authenticated-user',
+            'authenticated@django-maintenance-mode.test',
+            'test')
+        self.authenticated_user.save()
 
         self.staff_user = User.objects.create_user(
-            'staff-user', 'staff@django-maintenance-mode.test', 'test')
+            'staff-user',
+            'staff@django-maintenance-mode.test',
+            'test')
         self.staff_user.is_staff = True
         self.staff_user.save()
 
         self.superuser = User.objects.create_user(
-            'superuser', 'superuser@django-maintenance-mode.test', 'test')
+            'superuser',
+            'superuser@django-maintenance-mode.test',
+            'test')
         self.superuser.is_superuser = True
         self.superuser.save()
 
         self.client = Client()
         self.request_factory = RequestFactory()
         self.middleware = middleware.MaintenanceModeMiddleware()
+
+        self.invalid_file_path = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ:/' \
+                                 'maintenance_mode_state.txt'
 
         self.__reset_state()
 
@@ -106,6 +119,11 @@ class MaintenanceModeTestCase(TestCase):
     def __get_anonymous_user_request(self, url):
         request = self.request_factory.get(url)
         request.user = self.anonymous_user
+        return request
+
+    def __get_authenticated_user_request(self, url):
+        request = self.request_factory.get(url)
+        request.user = self.authenticated_user
         return request
 
     def __get_staff_user_request(self, url):
@@ -160,7 +178,7 @@ class MaintenanceModeTestCase(TestCase):
 
         self.__reset_state()
 
-        file_path = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ:/maintenance_mode_state.txt'
+        file_path = self.invalid_file_path
 
         self.assertRaises(IOError, io.write_file, file_path, 'test')
         self.assertRaises(IOError, io.read_file, file_path)
@@ -182,7 +200,7 @@ class MaintenanceModeTestCase(TestCase):
         self.__reset_state()
 
         file_path = settings.MAINTENANCE_MODE_STATE_FILE_PATH
-        settings.MAINTENANCE_MODE_STATE_FILE_PATH = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ:/maintenance_mode_state.txt'
+        settings.MAINTENANCE_MODE_STATE_FILE_PATH = self.invalid_file_path
 
         self.assertRaises(IOError, core.get_maintenance_mode)
         self.assertRaises(IOError, core.set_maintenance_mode, True)
@@ -190,26 +208,24 @@ class MaintenanceModeTestCase(TestCase):
         settings.MAINTENANCE_MODE_STATE_FILE_PATH = file_path
 
     def test_core_maintenance_enabled(self):
-        # Test `get_maintenance_mode` returns maintenance mode from settings - enabled
         self.__reset_state()
-        core.set_maintenance_mode(False)  # Disable maintenance mode in lock file
+        core.set_maintenance_mode(False)
         settings.MAINTENANCE_MODE = True
         val = core.get_maintenance_mode()
         self.assertTrue(val)
 
     def test_core_maintenance_disabled(self):
-        # Test `get_maintenance_mode` returns maintenance mode from settings - disabled
         self.__reset_state()
-        core.set_maintenance_mode(True)  # Enable maintenance mode in lock file
+        core.set_maintenance_mode(True)
         settings.MAINTENANCE_MODE = False
         val = core.get_maintenance_mode()
         self.assertFalse(val)
 
     def test_core_set_disabled(self):
-        # Test `set_maintenance_mode` is disable if maintenance mode is set in settings.
         self.__reset_state()
         settings.MAINTENANCE_MODE = True
-        self.assertRaises(ImproperlyConfigured, core.set_maintenance_mode, True)
+        self.assertRaises(ImproperlyConfigured,
+                          core.set_maintenance_mode, True)
 
     def test_core_invalid_argument(self):
 
@@ -469,6 +485,36 @@ class MaintenanceModeTestCase(TestCase):
         response = self.middleware.process_request(request)
         self.assertMaintenanceMode(response)
 
+    def test_middleware_ignore_anonymous_user(self):
+
+        self.__reset_state()
+
+        settings.MAINTENANCE_MODE = True
+        request = self.__get_anonymous_user_request('/')
+
+        settings.MAINTENANCE_MODE_IGNORE_ANONYMOUS_USER = True
+        response = self.middleware.process_request(request)
+        self.assertEqual(response, None)
+
+        settings.MAINTENANCE_MODE_IGNORE_ANONYMOUS_USER = False
+        response = self.middleware.process_request(request)
+        self.assertMaintenanceMode(response)
+
+    def test_middleware_ignore_authenticated_user(self):
+
+        self.__reset_state()
+
+        settings.MAINTENANCE_MODE = True
+        request = self.__get_authenticated_user_request('/')
+
+        settings.MAINTENANCE_MODE_IGNORE_AUTHENTICATED_USER = True
+        response = self.middleware.process_request(request)
+        self.assertEqual(response, None)
+
+        settings.MAINTENANCE_MODE_IGNORE_AUTHENTICATED_USER = False
+        response = self.middleware.process_request(request)
+        self.assertMaintenanceMode(response)
+
     def test_middleware_ignore_staff(self):
 
         self.__reset_state()
@@ -621,7 +667,8 @@ class TestGetMaintenanceResponse(SimpleTestCase):
     def test_redirect(self):
         settings.MAINTENANCE_MODE_REDIRECT_URL = 'http://redirect.example.cz/'
 
-        response = http.get_maintenance_response(RequestFactory().get('/dummy/'))
+        response = http.get_maintenance_response(
+            RequestFactory().get('/dummy/'))
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['Location'], 'http://redirect.example.cz/')
