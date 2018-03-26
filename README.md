@@ -41,6 +41,16 @@ MAINTENANCE_MODE_STATE_FILE_PATH = 'maintenance_mode_state.txt'
 ```
 
 ```python
+# if True anonymous users will not see the maintenance-mode page
+MAINTENANCE_MODE_IGNORE_ANONYMOUS_USER = False
+```
+
+```python
+# if True authenticated users will not see the maintenance-mode page
+MAINTENANCE_MODE_IGNORE_AUTHENTICATED_USER = False
+```
+
+```python
 # if True the staff will not see the maintenance-mode page
 MAINTENANCE_MODE_IGNORE_STAFF = False
 ```

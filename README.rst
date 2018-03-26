@@ -47,6 +47,16 @@ default values (listed below) will be used.
 
 .. code:: python
 
+    # if True anonymous users will not see the maintenance-mode page
+    MAINTENANCE_MODE_IGNORE_ANONYMOUS_USER = False
+
+.. code:: python
+
+    # if True authenticated users will not see the maintenance-mode page
+    MAINTENANCE_MODE_IGNORE_AUTHENTICATED_USER = False
+
+.. code:: python
+
     # if True the staff will not see the maintenance-mode page
     MAINTENANCE_MODE_IGNORE_STAFF = False
 
