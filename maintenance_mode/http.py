@@ -10,7 +10,9 @@ from django.utils.module_loading import import_string
 
 
 def get_maintenance_response(request):
-    """Return a maintenance response."""
+    """
+    Return a '503 Service Unavailable' maintenance response.
+    """
     if settings.MAINTENANCE_MODE_REDIRECT_URL:
         return redirect(settings.MAINTENANCE_MODE_REDIRECT_URL)
 

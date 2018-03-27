@@ -7,6 +7,10 @@ from maintenance_mode import io
 
 
 def get_maintenance_mode():
+    """
+    Get maintenance_mode state from state file.
+    """
+
     # If maintenance mode is defined in settings, it has priority.
     if settings.MAINTENANCE_MODE is not None:
         return settings.MAINTENANCE_MODE
@@ -21,6 +25,10 @@ def get_maintenance_mode():
 
 
 def set_maintenance_mode(value):
+    """
+    Set maintenance_mode state to state file.
+    """
+
     # If maintenance mode is defined in settings, it can't be changed.
     if settings.MAINTENANCE_MODE is not None:
         raise ImproperlyConfigured(
