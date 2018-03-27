@@ -165,12 +165,10 @@ class MaintenanceModeTestCase(TestCase):
         val = io.read_file(file_path)
         self.assertEqual(val, '')
 
-        val = io.write_file(file_path, 'test')
-        self.assertTrue(val)
-
         # ensure overwrite instead of append
-        val = io.write_file(file_path, 'test')
-        val = io.write_file(file_path, 'test')
+        io.write_file(file_path, 'test')
+        io.write_file(file_path, 'test')
+        io.write_file(file_path, 'test')
         val = io.read_file(file_path)
         self.assertEqual(val, 'test')
 
@@ -231,9 +229,7 @@ class MaintenanceModeTestCase(TestCase):
 
         self.__reset_state()
 
-        val = io.write_file(
-            settings.MAINTENANCE_MODE_STATE_FILE_PATH, 'not bool')
-        self.assertTrue(val)
+        io.write_file(settings.MAINTENANCE_MODE_STATE_FILE_PATH, 'not bool')
         self.assertRaises(ValueError, core.get_maintenance_mode)
         self.assertRaises(TypeError, core.set_maintenance_mode, 'not bool')
 
