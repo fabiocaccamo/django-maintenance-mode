@@ -5,9 +5,11 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
 if django.VERSION < (2, 0):
-    from django.core.urlresolvers import NoReverseMatch, resolve, reverse
+    from django.core.urlresolvers import (
+        NoReverseMatch, resolve, Resolver404, reverse, )
 else:
-    from django.urls import NoReverseMatch, resolve, reverse
+    from django.urls import (
+        NoReverseMatch, resolve, Resolver404, reverse, )
 
 from django.shortcuts import render, redirect
 from django.template import RequestContext
@@ -153,5 +155,17 @@ def need_maintenance_response(request):
 
         if redirect_url_re.match(request.path_info):
             return False
+
+    try:
+        view_match = resolve(request.path)
+        view_func = view_match[0]
+        view_dict = view_func.__dict__
+        view_ignore_maintenance_mode = view_dict.get(
+            'ignore_maintenance_mode', False)
+        if view_ignore_maintenance_mode:
+            # view has 'ignore_maintenance_mode' decorator
+            return False
+    except Resolver404:
+        pass
 
     return True

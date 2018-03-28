@@ -108,13 +108,13 @@ class MaintenanceModeTestCase(TestCase):
 
         self.__reset_state()
 
-    def assertMaintenanceMode(self, response):
-
+    def assertMaintenanceResponse(self, response):
         self.assertTemplateUsed(settings.MAINTENANCE_MODE_TEMPLATE)
-
         if django.VERSION >= (1, 8):
-
             self.assertEqual(response.status_code, 503)
+
+    def assertOkResponse(self, response):
+        self.assertEqual(response.status_code, 200)
 
     def __get_anonymous_user_request(self, url):
         request = self.request_factory.get(url)
@@ -392,6 +392,30 @@ class MaintenanceModeTestCase(TestCase):
         val = core.get_maintenance_mode()
         self.assertFalse(val)
 
+    def test_decorators(self):
+
+        self.__reset_state()
+
+        url = reverse('maintenance_mode_ignore_view_func')
+
+        settings.MAINTENANCE_MODE = True
+        response = self.client.get(url)
+        self.assertOkResponse(response)
+
+        settings.MAINTENANCE_MODE = False
+        response = self.client.get(url)
+        self.assertOkResponse(response)
+
+        url = reverse('maintenance_mode_ignore_view_class')
+
+        settings.MAINTENANCE_MODE = True
+        response = self.client.get(url)
+        self.assertOkResponse(response)
+
+        settings.MAINTENANCE_MODE = False
+        response = self.client.get(url)
+        self.assertOkResponse(response)
+
     def test_middleware_urls(self):
 
         self.__reset_state()
@@ -405,7 +429,7 @@ class MaintenanceModeTestCase(TestCase):
 
         with self.settings(ROOT_URLCONF='tests.urls_not_configured'):
             response = self.middleware.process_request(request)
-            self.assertMaintenanceMode(response)
+            self.assertMaintenanceResponse(response)
 
     def test_middleware_anonymous_user(self):
 
@@ -415,7 +439,7 @@ class MaintenanceModeTestCase(TestCase):
 
         settings.MAINTENANCE_MODE = True
         response = self.middleware.process_request(request)
-        self.assertMaintenanceMode(response)
+        self.assertMaintenanceResponse(response)
 
         settings.MAINTENANCE_MODE = False
         response = self.middleware.process_request(request)
@@ -435,7 +459,7 @@ class MaintenanceModeTestCase(TestCase):
 
         settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES = None
         response = self.middleware.process_request(request)
-        self.assertMaintenanceMode(response)
+        self.assertMaintenanceResponse(response)
 
     def test_middleware_ignore_ip_addresses_get_client_ip_address(self):
 
@@ -479,7 +503,7 @@ class MaintenanceModeTestCase(TestCase):
         settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES = None
         settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS = None
         response = self.middleware.process_request(request)
-        self.assertMaintenanceMode(response)
+        self.assertMaintenanceResponse(response)
 
     def test_middleware_ignore_anonymous_user(self):
 
@@ -494,7 +518,7 @@ class MaintenanceModeTestCase(TestCase):
 
         settings.MAINTENANCE_MODE_IGNORE_ANONYMOUS_USER = False
         response = self.middleware.process_request(request)
-        self.assertMaintenanceMode(response)
+        self.assertMaintenanceResponse(response)
 
     def test_middleware_ignore_authenticated_user(self):
 
@@ -509,7 +533,7 @@ class MaintenanceModeTestCase(TestCase):
 
         settings.MAINTENANCE_MODE_IGNORE_AUTHENTICATED_USER = False
         response = self.middleware.process_request(request)
-        self.assertMaintenanceMode(response)
+        self.assertMaintenanceResponse(response)
 
     def test_middleware_ignore_staff(self):
 
@@ -524,7 +548,7 @@ class MaintenanceModeTestCase(TestCase):
 
         settings.MAINTENANCE_MODE_IGNORE_STAFF = False
         response = self.middleware.process_request(request)
-        self.assertMaintenanceMode(response)
+        self.assertMaintenanceResponse(response)
 
     def test_middleware_ignore_superuser(self):
 
@@ -539,7 +563,7 @@ class MaintenanceModeTestCase(TestCase):
 
         settings.MAINTENANCE_MODE_IGNORE_SUPERUSER = False
         response = self.middleware.process_request(request)
-        self.assertMaintenanceMode(response)
+        self.assertMaintenanceResponse(response)
 
     def test_middleware_ignore_tests(self):
 
@@ -554,7 +578,7 @@ class MaintenanceModeTestCase(TestCase):
 
         settings.MAINTENANCE_MODE_IGNORE_TESTS = False
         response = self.middleware.process_request(request)
-        self.assertMaintenanceMode(response)
+        self.assertMaintenanceResponse(response)
 
     def test_middleware_ignore_urls(self):
 
@@ -573,7 +597,7 @@ class MaintenanceModeTestCase(TestCase):
 
         settings.MAINTENANCE_MODE_IGNORE_URLS = None
         response = self.middleware.process_request(request)
-        self.assertMaintenanceMode(response)
+        self.assertMaintenanceResponse(response)
 
     def test_middleware_redirect_url(self):
 
@@ -595,7 +619,7 @@ class MaintenanceModeTestCase(TestCase):
 
         settings.MAINTENANCE_MODE_REDIRECT_URL = None
         response = self.middleware.process_request(request)
-        self.assertMaintenanceMode(response)
+        self.assertMaintenanceResponse(response)
 
     def test_middleware_get_template_context(self):
 
