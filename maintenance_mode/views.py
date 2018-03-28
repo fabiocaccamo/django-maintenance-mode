@@ -2,7 +2,7 @@
 
 from django.http import HttpResponseRedirect
 
-from maintenance_mode import core
+from maintenance_mode.core import set_maintenance_mode
 
 
 def maintenance_mode_off(request):
@@ -11,7 +11,7 @@ def maintenance_mode_off(request):
     Only superusers are allowed to use this view.
     """
     if request.user.is_superuser:
-        core.set_maintenance_mode(False)
+        set_maintenance_mode(False)
 
     return HttpResponseRedirect('/')
 
@@ -22,6 +22,6 @@ def maintenance_mode_on(request):
     Only superusers are allowed to use this view.
     """
     if request.user.is_superuser:
-        core.set_maintenance_mode(True)
+        set_maintenance_mode(True)
 
     return HttpResponseRedirect('/')

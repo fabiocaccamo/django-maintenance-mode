@@ -14,7 +14,8 @@ from django.template import RequestContext
 from django.utils.cache import add_never_cache_headers
 from django.utils.module_loading import import_string
 
-from maintenance_mode import core, io, utils
+from maintenance_mode.core import get_maintenance_mode
+from maintenance_mode.utils import get_client_ip_address
 
 import re
 import sys
@@ -57,7 +58,7 @@ def need_maintenance_response(request):
     """
     Tells if the given request needs a maintenance response or not.
     """
-    if not core.get_maintenance_mode():
+    if not get_maintenance_mode():
         return False
 
     try:
@@ -125,7 +126,7 @@ def need_maintenance_response(request):
             else:
                 client_ip_address = get_client_ip_address_func(request)
         else:
-            client_ip_address = utils.get_client_ip_address(request)
+            client_ip_address = get_client_ip_address(request)
 
         for ip_address in settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES:
 
