@@ -9,7 +9,9 @@ else:
 
 from django.http import HttpResponse
 
-from .views import maintenance_mode_ignore, MaintenanceModeIgnoreView
+from .views import (
+    force_maintenance_mode_off_view, ForceMaintenanceModeOffView,
+    force_maintenance_mode_on_view, ForceMaintenanceModeOnView, )
 
 
 urlpatterns = [
@@ -21,13 +23,21 @@ urlpatterns = [
             lambda x: HttpResponse(),
             name='maintenance_mode_redirect'),
 
-    re_path(r'^maintenance-mode-ignore-view-func/$',
-            maintenance_mode_ignore,
-            name='maintenance_mode_ignore_view_func'),
+    re_path(r'^maintenance-mode-off-view-func/$',
+            force_maintenance_mode_off_view,
+            name='maintenance_mode_off_view_func'),
 
-    re_path(r'^maintenance-mode-ignore-view-class/$',
-            MaintenanceModeIgnoreView.as_view(),
-            name='maintenance_mode_ignore_view_class'),
+    re_path(r'^maintenance-mode-off-view-class/$',
+            ForceMaintenanceModeOffView.as_view(),
+            name='maintenance_mode_off_view_class'),
+
+    re_path(r'^maintenance-mode-on-view-func/$',
+            force_maintenance_mode_on_view,
+            name='maintenance_mode_on_view_func'),
+
+    re_path(r'^maintenance-mode-on-view-class/$',
+            ForceMaintenanceModeOnView.as_view(),
+            name='maintenance_mode_on_view_class'),
 
     re_path(r'^maintenance-mode/',
             include('maintenance_mode.urls')),

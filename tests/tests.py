@@ -392,11 +392,11 @@ class MaintenanceModeTestCase(TestCase):
         val = core.get_maintenance_mode()
         self.assertFalse(val)
 
-    def test_decorators(self):
+    def test_decorators_with_middleware(self):
 
         self.__reset_state()
 
-        url = reverse('maintenance_mode_ignore_view_func')
+        url = reverse('maintenance_mode_off_view_func')
 
         settings.MAINTENANCE_MODE = True
         response = self.client.get(url)
@@ -406,7 +406,7 @@ class MaintenanceModeTestCase(TestCase):
         response = self.client.get(url)
         self.assertOkResponse(response)
 
-        url = reverse('maintenance_mode_ignore_view_class')
+        url = reverse('maintenance_mode_off_view_class')
 
         settings.MAINTENANCE_MODE = True
         response = self.client.get(url)
@@ -415,6 +415,79 @@ class MaintenanceModeTestCase(TestCase):
         settings.MAINTENANCE_MODE = False
         response = self.client.get(url)
         self.assertOkResponse(response)
+
+        url = reverse('maintenance_mode_on_view_func')
+
+        settings.MAINTENANCE_MODE = True
+        response = self.client.get(url)
+        self.assertMaintenanceResponse(response)
+
+        settings.MAINTENANCE_MODE = False
+        response = self.client.get(url)
+        self.assertMaintenanceResponse(response)
+
+        url = reverse('maintenance_mode_on_view_class')
+
+        settings.MAINTENANCE_MODE = True
+        response = self.client.get(url)
+        self.assertMaintenanceResponse(response)
+
+        settings.MAINTENANCE_MODE = False
+        response = self.client.get(url)
+        self.assertMaintenanceResponse(response)
+
+    @override_settings(
+        MIDDLEWARE_CLASSES=[
+            'django.contrib.sessions.middleware.SessionMiddleware',
+            'django.middleware.common.CommonMiddleware',
+            'django.contrib.auth.middleware.AuthenticationMiddleware',
+
+            # 'maintenance_mode.middleware.MaintenanceModeMiddleware',
+        ]
+    )
+    def test_decorators_without_middleware(self):
+
+        self.__reset_state()
+
+        url = reverse('maintenance_mode_off_view_func')
+
+        settings.MAINTENANCE_MODE = True
+        response = self.client.get(url)
+        self.assertOkResponse(response)
+
+        settings.MAINTENANCE_MODE = False
+        response = self.client.get(url)
+        self.assertOkResponse(response)
+
+        url = reverse('maintenance_mode_off_view_class')
+
+        settings.MAINTENANCE_MODE = True
+        response = self.client.get(url)
+        self.assertOkResponse(response)
+
+        settings.MAINTENANCE_MODE = False
+        response = self.client.get(url)
+        self.assertOkResponse(response)
+
+        url = reverse('maintenance_mode_on_view_func')
+
+        settings.MAINTENANCE_MODE = True
+        response = self.client.get(url)
+        self.assertMaintenanceResponse(response)
+
+        settings.MAINTENANCE_MODE = False
+        response = self.client.get(url)
+        self.assertMaintenanceResponse(response)
+
+        url = reverse('maintenance_mode_on_view_class')
+
+        settings.MAINTENANCE_MODE = True
+        response = self.client.get(url)
+        self.assertMaintenanceResponse(response)
+
+        settings.MAINTENANCE_MODE = False
+        response = self.client.get(url)
+        self.assertMaintenanceResponse(response)
 
     def test_middleware_urls(self):
 

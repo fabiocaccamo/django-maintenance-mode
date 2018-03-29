@@ -60,6 +60,27 @@ def need_maintenance_response(request):
     """
     Tells if the given request needs a maintenance response or not.
     """
+
+    try:
+        view_match = resolve(request.path)
+        view_func = view_match[0]
+        view_dict = view_func.__dict__
+
+        view_force_maintenance_mode_off = view_dict.get(
+            'force_maintenance_mode_off', False)
+        if view_force_maintenance_mode_off:
+            # view has 'force_maintenance_mode_off' decorator
+            return False
+
+        view_force_maintenance_mode_on = view_dict.get(
+            'force_maintenance_mode_on', False)
+        if view_force_maintenance_mode_on:
+            # view has 'force_maintenance_mode_on' decorator
+            return True
+
+    except Resolver404:
+        pass
+
     if not get_maintenance_mode():
         return False
 
@@ -155,17 +176,5 @@ def need_maintenance_response(request):
 
         if redirect_url_re.match(request.path_info):
             return False
-
-    try:
-        view_match = resolve(request.path)
-        view_func = view_match[0]
-        view_dict = view_func.__dict__
-        view_ignore_maintenance_mode = view_dict.get(
-            'ignore_maintenance_mode', False)
-        if view_ignore_maintenance_mode:
-            # view has 'ignore_maintenance_mode' decorator
-            return False
-    except Resolver404:
-        pass
 
     return True
