@@ -203,4 +203,4 @@ Superusers can change maintenance-mode using the following urls:
 ``/maintenance-mode/on/``
 
 ## License
-Released under [MIT License](LICENSE.md).
+Released under [MIT License](LICENSE.txt).
