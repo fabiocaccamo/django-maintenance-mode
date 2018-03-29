@@ -31,6 +31,9 @@ Installation
 Configuration (optional)
 ------------------------
 
+Settings
+~~~~~~~~
+
 All these settings are optional, if not defined in ``settings.py`` the
 default values (listed below) will be used.
 
@@ -111,6 +114,9 @@ Retrieve user's real IP address using
     # the path of the function that will return the template context -> 'myapp.mymodule.myfunction'
     MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = None
 
+URLs
+~~~~
+
 Add **maintenance\_mode.urls** to ``urls.py`` if you want superusers
 able to set maintenance\_mode using urls.
 
@@ -121,6 +127,9 @@ able to set maintenance\_mode using urls.
         url(r'^maintenance-mode/', include('maintenance_mode.urls')),
         # ...
     ]
+
+Context Processors
+~~~~~~~~~~~~~~~~~~
 
 Add **maintenance\_mode.context\_processors.maintenance\_mode** to your
 context\_processors list in ``settings.py`` if you want to access the
@@ -141,6 +150,25 @@ maintenance\_mode status in your templates.
             # ...
         },
     ]
+
+Views
+~~~~~
+
+You can force maintenance mode on/off at view level using view decorators:
+
+.. code:: python
+
+    from maintenance_mode.decorators import force_maintenance_mode_off, force_maintenance_mode_on
+
+    @force_maintenance_mode_off
+    def my_view_a(request):
+        # never return 503 response
+        pass
+
+    @force_maintenance_mode_on
+    def my_view_b(request):
+        # always return 503 response
+        pass
 
 Usage
 -----

@@ -27,6 +27,7 @@ It doesn't use database and doesn't prevent database access.
 
 ## Configuration (optional)
 
+#### Settings
 All these settings are optional, if not defined in ``settings.py`` the default values (listed below) will be used.
 
 ```python
@@ -102,6 +103,8 @@ MAINTENANCE_MODE_TEMPLATE = '503.html'
 # the path of the function that will return the template context -> 'myapp.mymodule.myfunction'
 MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = None
 ```
+
+#### URLs
 Add **maintenance_mode.urls** to ``urls.py`` if you want superusers able to set maintenance_mode using urls.
 
 ```python
@@ -111,6 +114,8 @@ urlpatterns = [
     # ...
 ]
 ```
+
+#### Context Processors
 Add **maintenance_mode.context_processors.maintenance_mode** to your context_processors list in ``settings.py`` if you want to access the maintenance_mode status in your templates.
 
 ```python
@@ -127,6 +132,23 @@ TEMPLATES = [
         # ...
     },
 ]
+```
+
+#### Views
+You can force maintenance mode on/off at view level using view decorators:
+
+```python
+from maintenance_mode.decorators import force_maintenance_mode_off, force_maintenance_mode_on
+
+@force_maintenance_mode_off
+def my_view_a(request):
+    # never return 503 response
+    pass
+
+@force_maintenance_mode_on
+def my_view_b(request):
+    # always return 503 response
+    pass
 ```
 
 ## Usage
