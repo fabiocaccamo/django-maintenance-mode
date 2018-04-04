@@ -29,6 +29,16 @@ class Command(BaseCommand):
         answer = answer.lower()
         return answer.find('y') == 0
 
+    def set_mode(self, mode):
+        """Set the maintenance mode.
+
+        Wrapper to catch IO errors.
+        """
+        try:
+            core.set_maintenance_mode(mode)
+        except IOError:
+            raise CommandError("Can't set maintenance mode (unable to write lock file).")
+
     def handle(self, *args, **options):
 
         verbosity = int(options['verbosity'])
@@ -44,7 +54,10 @@ class Command(BaseCommand):
             state = options['state']
 
         state = state.lower()
-        value = core.get_maintenance_mode()
+        try:
+            value = core.get_maintenance_mode()
+        except IOError:
+            raise CommandError("Can't get maintenance mode (unable to open lock file).")
 
         if state in ['on', 'yes', 'true', '1']:
 
@@ -55,9 +68,9 @@ class Command(BaseCommand):
 
             if verbose:
                 if self.confirm('maintenance mode on? (y/N) '):
-                    core.set_maintenance_mode(True)
+                    self.set_mode(True)
             else:
-                core.set_maintenance_mode(True)
+                self.set_mode(True)
 
         elif state in ['off', 'no', 'false', '0']:
 
@@ -68,9 +81,9 @@ class Command(BaseCommand):
 
             if verbose:
                 if self.confirm('maintenance mode off? (y/N) '):
-                    core.set_maintenance_mode(False)
+                    self.set_mode(False)
             else:
-                core.set_maintenance_mode(False)
+                self.set_mode(False)
 
         else:
             raise CommandError('Error: invalid argument: \'%s\' '
