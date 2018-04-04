@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import stat
+import tempfile
 
 import django
 from django.conf import settings
@@ -315,6 +317,24 @@ class MaintenanceModeTestCase(TestCase):
         confirm_answer_file.close()
 
         sys.stdin = sys_stdin
+
+    def test_management_commands_get_io_error(self):
+        # Test command when lock file can't be read.
+        fd, tmp_file = tempfile.mkstemp()
+        # Set file permission to none.
+        os.chmod(tmp_file, 0)
+        with self.settings(MAINTENANCE_MODE_STATE_FILE_PATH=tmp_file):
+            self.assertRaisesMessage(CommandError, "Can't get maintenance mode (unable to open lock file).",
+                                     call_command, 'maintenance_mode', 'on')
+
+    def test_management_commands_set_io_error(self):
+        # Test command when lock file can't be written.
+        fd, tmp_file = tempfile.mkstemp()
+        # Set file permission to read only.
+        os.chmod(tmp_file, stat.S_IRUSR)
+        with self.settings(MAINTENANCE_MODE_STATE_FILE_PATH=tmp_file):
+            self.assertRaisesMessage(CommandError, "Can't set maintenance mode (unable to write lock file).",
+                                     call_command, 'maintenance_mode', 'on')
 
     def test_urls(self):
 
