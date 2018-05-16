@@ -15,6 +15,8 @@ else:
     from django.urls import reverse
 
 from maintenance_mode import core, http, io, middleware, utils, version, views
+from maintenance_mode.management.commands.maintenance_mode import (
+    Command as MaintenanceModeCommand, )
 
 try:
     # Python 2
@@ -105,7 +107,6 @@ class MaintenanceModeTestCase(TestCase):
         self.__reset_state()
 
     def tearDown(self):
-
         self.__reset_state()
 
     def assertMaintenanceResponse(self, response):
@@ -146,13 +147,10 @@ class MaintenanceModeTestCase(TestCase):
         self.client.logout()
 
     def __reset_state(self):
-
         settings.MAINTENANCE_MODE = None
         core.set_maintenance_mode(False)
-
         try:
             os.remove(settings.MAINTENANCE_MODE_STATE_FILE_PATH)
-
         except OSError:
             pass
 
@@ -206,21 +204,27 @@ class MaintenanceModeTestCase(TestCase):
         settings.MAINTENANCE_MODE_STATE_FILE_PATH = file_path
 
     def test_core_maintenance_enabled(self):
+
         self.__reset_state()
+
         core.set_maintenance_mode(False)
         settings.MAINTENANCE_MODE = True
         val = core.get_maintenance_mode()
         self.assertTrue(val)
 
     def test_core_maintenance_disabled(self):
+
         self.__reset_state()
+
         core.set_maintenance_mode(True)
         settings.MAINTENANCE_MODE = False
         val = core.get_maintenance_mode()
         self.assertFalse(val)
 
     def test_core_set_disabled(self):
+
         self.__reset_state()
+
         settings.MAINTENANCE_MODE = True
         self.assertRaises(ImproperlyConfigured,
                           core.set_maintenance_mode, True)
@@ -245,35 +249,52 @@ class MaintenanceModeTestCase(TestCase):
         val = core.get_maintenance_mode()
         self.assertFalse(val)
 
+    def test_management_commands_invalid_file_path(self):
+
+        self.__reset_state()
+
+        file_path = settings.MAINTENANCE_MODE_STATE_FILE_PATH
+        settings.MAINTENANCE_MODE_STATE_FILE_PATH = self.invalid_file_path
+
+        with self.assertRaises(CommandError):
+            call_command('maintenance_mode', 'on')
+
+        with self.assertRaises(CommandError):
+            call_command('maintenance_mode', 'off')
+
+        with self.assertRaises(CommandError):
+            cmd = MaintenanceModeCommand()
+            cmd.get_maintenance_mode()
+
+        with self.assertRaises(CommandError):
+            cmd = MaintenanceModeCommand()
+            cmd.set_maintenance_mode(True)
+
+        settings.MAINTENANCE_MODE_STATE_FILE_PATH = file_path
+
     def test_management_commands_no_arguments(self):
 
-        command_error = False
-        try:
+        self.__reset_state()
+
+        with self.assertRaises(CommandError):
             call_command('maintenance_mode')
-        except CommandError:
-            command_error = True
-        self.assertTrue(command_error)
 
     def test_management_commands_invalid_argument(self):
 
-        command_error = False
-        try:
+        self.__reset_state()
+
+        with self.assertRaises(CommandError):
             call_command('maintenance_mode', 'hello world')
-        except CommandError:
-            command_error = True
-        self.assertTrue(command_error)
 
     def test_management_commands_too_many_arguments(self):
 
-        if django.VERSION < (1, 8):
-            command_error = False
-            try:
-                call_command('maintenance_mode', 'on', 'off')
-            except CommandError:
-                command_error = True
-            self.assertTrue(command_error)
+        self.__reset_state()
 
-    def test_management_commands_verbosity(self):
+        if django.VERSION < (1, 8):
+            with self.assertRaises(CommandError):
+                call_command('maintenance_mode', 'on', 'off')
+
+    def test_management_commands_interactive(self):
 
         self.__reset_state()
 
@@ -281,40 +302,60 @@ class MaintenanceModeTestCase(TestCase):
 
         confirm_answer_file = StringIO('y')
         sys.stdin = confirm_answer_file
-        call_command('maintenance_mode', 'on', verbosity=3)
+        call_command('maintenance_mode', 'on', interactive=True)
         val = core.get_maintenance_mode()
         self.assertTrue(val)
         confirm_answer_file.close()
 
         confirm_answer_file = StringIO('y')
         sys.stdin = confirm_answer_file
-        call_command('maintenance_mode', 'on', verbosity=3)
+        call_command('maintenance_mode', 'on', interactive=True)
         val = core.get_maintenance_mode()
         self.assertTrue(val)
         confirm_answer_file.close()
 
         confirm_answer_file = StringIO('y')
         sys.stdin = confirm_answer_file
-        call_command('maintenance_mode', 'off', verbosity=3)
+        call_command('maintenance_mode', 'off', interactive=True)
         val = core.get_maintenance_mode()
         self.assertFalse(val)
         confirm_answer_file.close()
 
         confirm_answer_file = StringIO('y')
         sys.stdin = confirm_answer_file
-        call_command('maintenance_mode', 'off', verbosity=3)
+        call_command('maintenance_mode', 'off', interactive=True)
         val = core.get_maintenance_mode()
         self.assertFalse(val)
         confirm_answer_file.close()
 
         confirm_answer_file = StringIO('n')
         sys.stdin = confirm_answer_file
-        call_command('maintenance_mode', 'on', verbosity=3)
+        call_command('maintenance_mode', 'on', interactive=True)
         val = core.get_maintenance_mode()
         self.assertFalse(val)
         confirm_answer_file.close()
 
         sys.stdin = sys_stdin
+
+    def test_management_commands_verbose(self):
+
+        self.__reset_state()
+
+        call_command('maintenance_mode', 'on', verbosity=3)
+        val = core.get_maintenance_mode()
+        self.assertTrue(val)
+
+        call_command('maintenance_mode', 'on', verbosity=3)
+        val = core.get_maintenance_mode()
+        self.assertTrue(val)
+
+        call_command('maintenance_mode', 'off', verbosity=3)
+        val = core.get_maintenance_mode()
+        self.assertFalse(val)
+
+        call_command('maintenance_mode', 'off', verbosity=3)
+        val = core.get_maintenance_mode()
+        self.assertFalse(val)
 
     def test_urls(self):
 

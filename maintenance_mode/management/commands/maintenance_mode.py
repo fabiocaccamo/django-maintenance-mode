@@ -4,6 +4,7 @@ from __future__ import absolute_import
 
 import django
 
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
 from maintenance_mode import core
@@ -17,6 +18,24 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('state')
+        parser.add_argument('--interactive', dest='interactive', action='store_true')
+
+    def get_maintenance_mode(self):
+        try:
+            value = core.get_maintenance_mode()
+            return value
+        except IOError:
+            raise CommandError(
+                'Unable to read state file at: %s' % (
+                    settings.MAINTENANCE_MODE_STATE_FILE_NAME, ))
+
+    def set_maintenance_mode(self, value):
+        try:
+            core.set_maintenance_mode(value)
+        except IOError:
+            raise CommandError(
+                'Unable to write state file at: %s' % (
+                    settings.MAINTENANCE_MODE_STATE_FILE_NAME, ))
 
     def confirm(self, message):
         # Fix for Python 2.x.
@@ -33,18 +52,19 @@ class Command(BaseCommand):
 
         verbosity = int(options['verbosity'])
         verbose = True if verbosity == 3 else False
+        interactive = options.get('interactive', False)
 
         if django.VERSION < (1, 8):
             if len(args) != 1:
                 raise CommandError(
-                    'Error: expected 1 argument: %s' % (self.args, ))
+                    'Expected 1 argument: %s' % (self.args, ))
 
             state = args[0]
         else:
             state = options['state']
 
         state = state.lower()
-        value = core.get_maintenance_mode()
+        value = self.get_maintenance_mode()
 
         if state in ['on', 'yes', 'true', '1']:
 
@@ -53,11 +73,11 @@ class Command(BaseCommand):
                     self.stdout.write('maintenance mode is already on')
                 return
 
-            if verbose:
+            if interactive:
                 if self.confirm('maintenance mode on? (y/N) '):
-                    core.set_maintenance_mode(True)
+                    self.set_maintenance_mode(True)
             else:
-                core.set_maintenance_mode(True)
+                self.set_maintenance_mode(True)
 
         elif state in ['off', 'no', 'false', '0']:
 
@@ -66,19 +86,19 @@ class Command(BaseCommand):
                     self.stdout.write('maintenance mode is already off')
                 return
 
-            if verbose:
+            if interactive:
                 if self.confirm('maintenance mode off? (y/N) '):
-                    core.set_maintenance_mode(False)
+                    self.set_maintenance_mode(False)
             else:
-                core.set_maintenance_mode(False)
+                self.set_maintenance_mode(False)
 
         else:
-            raise CommandError('Error: invalid argument: \'%s\' '
+            raise CommandError('Invalid argument: \'%s\' '
                                'expected %s' % (state, self.args, ))
 
         if verbose:
             output = 'maintenance mode: %s' % (
-                'on' if core.get_maintenance_mode() else 'off', )
+                'on' if self.get_maintenance_mode() else 'off', )
             self.stdout.write(output)
 
         return
