@@ -1,9 +1,25 @@
 # -*- coding: utf-8 -*-
+from functools import wraps
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-
 from maintenance_mode.io import read_file, write_file
+
+try:
+    from django.utils.decorators import ContextDecorator
+except ImportError:
+    # ContextDecorator was introduced in Django 1.8
+    from django.utils.decorators import available_attrs
+
+    class ContextDecorator(object):
+        """A base class that enables a context manager to also be used as a decorator."""
+
+        def __call__(self, func):
+            @wraps(func, assigned=available_attrs(func))
+            def inner(*args, **kwargs):
+                with self:
+                    return func(*args, **kwargs)
+            return inner
 
 
 def get_maintenance_mode():
@@ -40,3 +56,21 @@ def set_maintenance_mode(value):
 
     value = str(int(value))
     write_file(settings.MAINTENANCE_MODE_STATE_FILE_PATH, value)
+
+
+class override_maintenance_mode(ContextDecorator):
+    """Decorator/context manager to locally override a maintenance mode.
+
+    @ivar value: Overriden value of maintenance mode
+    @ivar old_value: Original value of maintenance mode
+    """
+    def __init__(self, value):
+        self.value = value
+        self.old_value = None
+
+    def __enter__(self):
+        self.old_value = get_maintenance_mode()
+        set_maintenance_mode(self.value)
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        set_maintenance_mode(self.old_value)
