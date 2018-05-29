@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from tempfile import mkstemp
 
 import django
 from django.conf import settings
@@ -787,6 +788,43 @@ class MaintenanceModeTestCase(TestCase):
         v_re = re.compile(r'^([0-9]+)(\.([0-9]+)){1,2}$')
         v_match = v_re.match(v)
         self.assertTrue(v_match != None)
+
+
+class TestOverrideMaintenanceMode(SimpleTestCase):
+    """Test `override_maintenance_mode` decorator/context processor."""
+
+    def setUp(self):
+        dummy, self.tmp_dir = mkstemp()
+
+    def tearDown(self):
+        os.remove(self.tmp_dir)
+
+    override_cases = (
+        # Maintenance mode states: (environ, override, result)
+        (True, True, True),
+        (True, False, False),
+        (False, True, True),
+        (False, False, False),
+    )
+
+    def test_context_processor(self):
+        with self.settings(MAINTENANCE_MODE_STATE_FILE_PATH=self.tmp_dir):
+            for environ, override, result in self.override_cases:
+                core.set_maintenance_mode(environ)
+
+                with core.override_maintenance_mode(override):
+                    self.assertEqual(core.get_maintenance_mode(), result)
+
+    def test_decorator(self):
+        with self.settings(MAINTENANCE_MODE_STATE_FILE_PATH=self.tmp_dir):
+            for environ, override, result in self.override_cases:
+                core.set_maintenance_mode(environ)
+
+                @core.override_maintenance_mode(override)
+                def test_function():
+                    self.assertEqual(core.get_maintenance_mode(), result)
+
+                test_function()
 
 
 class TestGetMaintenanceResponse(SimpleTestCase):
