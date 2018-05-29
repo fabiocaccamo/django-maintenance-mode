@@ -123,6 +123,10 @@ def need_maintenance_response(request):
                 and request.user.is_superuser:
             return False
 
+    if settings.MAINTENANCE_MODE_IGNORE_ADMIN_SITES:
+        if request.path and request.path.startswith(reverse('admin:index')):
+            return False
+
     if settings.MAINTENANCE_MODE_IGNORE_TESTS:
 
         is_testing = False

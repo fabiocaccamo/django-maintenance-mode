@@ -30,6 +30,9 @@ if not hasattr(settings, 'MAINTENANCE_MODE_IGNORE_STAFF'):
 if not hasattr(settings, 'MAINTENANCE_MODE_IGNORE_SUPERUSER'):
     settings.MAINTENANCE_MODE_IGNORE_SUPERUSER = False
 
+if not hasattr(settings, 'MAINTENANCE_MODE_IGNORE_ADMIN_SITES'):
+    settings.MAINTENANCE_MODE_IGNORE_ADMIN_SITES = False
+
 if not hasattr(settings, 'MAINTENANCE_MODE_IGNORE_TESTS'):
     settings.MAINTENANCE_MODE_IGNORE_TESTS = False
 
