@@ -40,10 +40,18 @@ def get_template_context(request):
 
 
 @override_settings(
+    INSTALLED_APPS=[
+        'django.contrib.auth',
+        'django.contrib.contenttypes',
+        'django.contrib.sessions',
+        'django.contrib.messages',
+        'django.contrib.admin',
+    ],
     MIDDLEWARE_CLASSES=[
         'django.contrib.sessions.middleware.SessionMiddleware',
         'django.middleware.common.CommonMiddleware',
         'django.contrib.auth.middleware.AuthenticationMiddleware',
+        'django.contrib.messages.middleware.MessageMiddleware',
 
         'maintenance_mode.middleware.MaintenanceModeMiddleware',
     ],
@@ -52,7 +60,9 @@ def get_template_context(request):
     # for django < 1.8
     TEMPLATE_CONTEXT_PROCESSORS=(
         'django.contrib.auth.context_processors.auth',
+        'django.contrib.messages.context_processors.messages',
         'django.core.context_processors.request',
+
         'maintenance_mode.context_processors.maintenance_mode',
     ),
 
@@ -677,6 +687,54 @@ class MaintenanceModeTestCase(TestCase):
         self.assertEqual(response, None)
 
         settings.MAINTENANCE_MODE_IGNORE_SUPERUSER = False
+        response = self.middleware.process_request(request)
+        self.assertMaintenanceResponse(response)
+
+    def test_middleware_ignore_admin_site_on_admin_site_with_admin_flag_true(self):
+
+        self.__reset_state()
+
+        settings.MAINTENANCE_MODE = True
+
+        # Admin site request
+        request = self.__get_superuser_request('/admin')
+        settings.MAINTENANCE_MODE_IGNORE_ADMIN_SITES = True
+        response = self.middleware.process_request(request)
+        self.assertEqual(response, None)
+
+    def test_middleware_ignore_admin_site_on_admin_site_with_admin_flag_false(self):
+
+        self.__reset_state()
+
+        settings.MAINTENANCE_MODE = True
+
+        # Admin site request
+        request = self.__get_superuser_request('/admin')
+        settings.MAINTENANCE_MODE_IGNORE_ADMIN_SITES = False
+        response = self.middleware.process_request(request)
+        self.assertMaintenanceResponse(response)
+
+    def test_middleware_ignore_admin_site_on_any_site_with_admin_flag_true(self):
+
+        self.__reset_state()
+
+        settings.MAINTENANCE_MODE = True
+
+        # Admin site request
+        request = self.__get_superuser_request('/')
+        settings.MAINTENANCE_MODE_IGNORE_ADMIN_SITES = True
+        response = self.middleware.process_request(request)
+        self.assertMaintenanceResponse(response)
+
+    def test_middleware_ignore_admin_site_on_any_site_with_admin_flag_false(self):
+
+        self.__reset_state()
+
+        settings.MAINTENANCE_MODE = True
+
+        # Admin site request
+        request = self.__get_superuser_request('/')
+        settings.MAINTENANCE_MODE_IGNORE_ADMIN_SITES = False
         response = self.middleware.process_request(request)
         self.assertMaintenanceResponse(response)
 

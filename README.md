@@ -88,6 +88,11 @@ MAINTENANCE_MODE_IGNORE_URLS = ()
 # useful for running tests while maintenance mode is on, before opening the site to public use
 MAINTENANCE_MODE_IGNORE_TESTS = False
 ```
+```python
+# if True the maintenance mode will not return 503 response when working with django-admin
+# useful if you want to keep your administration area available to your editors
+MAINTENANCE_MODE_IGNORE_ADMIN_SITES = False
+```
 
 ```python
 # the absolute url where users will be redirected to during maintenance-mode
