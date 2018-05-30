@@ -39,10 +39,18 @@ def get_template_context(request):
 
 
 @override_settings(
+    INSTALLED_APPS=[
+        'django.contrib.auth',
+        'django.contrib.contenttypes',
+        'django.contrib.sessions',
+        'django.contrib.messages',
+        'django.contrib.admin',
+    ],
     MIDDLEWARE_CLASSES=[
         'django.contrib.sessions.middleware.SessionMiddleware',
         'django.middleware.common.CommonMiddleware',
         'django.contrib.auth.middleware.AuthenticationMiddleware',
+        'django.contrib.messages.middleware.MessageMiddleware',
 
         'maintenance_mode.middleware.MaintenanceModeMiddleware',
     ],
@@ -51,7 +59,9 @@ def get_template_context(request):
     # for django < 1.8
     TEMPLATE_CONTEXT_PROCESSORS=(
         'django.contrib.auth.context_processors.auth',
+        'django.contrib.messages.context_processors.messages',
         'django.core.context_processors.request',
+
         'maintenance_mode.context_processors.maintenance_mode',
     ),
 
