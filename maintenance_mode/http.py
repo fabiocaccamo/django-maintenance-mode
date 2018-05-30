@@ -124,8 +124,10 @@ def need_maintenance_response(request):
             return False
 
     if settings.MAINTENANCE_MODE_IGNORE_ADMIN_SITE:
+        # Maybe django-admin is not enabled so we need to try/except the reverse()
         try:
-            if request.path and request.path.startswith(reverse('admin:index')):
+            admin_url = reverse('admin:index')
+            if request.path and request.path.startswith(admin_url):
                 return False
         except NoReverseMatch:
             pass
