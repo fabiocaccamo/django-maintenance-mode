@@ -587,8 +587,19 @@ class MaintenanceModeTestCase(TestCase):
 
         settings.MAINTENANCE_MODE = True
 
-        # admin url
+        # admin url with slash
         request = self.__get_superuser_request('/admin/')
+
+        settings.MAINTENANCE_MODE_IGNORE_ADMIN_SITE = True
+        response = self.middleware.process_request(request)
+        self.assertEqual(response, None)
+
+        settings.MAINTENANCE_MODE_IGNORE_ADMIN_SITE = False
+        response = self.middleware.process_request(request)
+        self.assertMaintenanceResponse(response)
+
+        # admin url without slash
+        request = self.__get_superuser_request('/admin')
 
         settings.MAINTENANCE_MODE_IGNORE_ADMIN_SITE = True
         response = self.middleware.process_request(request)
