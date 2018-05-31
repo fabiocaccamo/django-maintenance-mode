@@ -560,6 +560,82 @@ class MaintenanceModeTestCase(TestCase):
         response = self.middleware.process_request(request)
         self.assertEqual(response, None)
 
+    @override_settings(
+        INSTALLED_APPS = [
+            'django.contrib.admin',
+            'django.contrib.auth',
+            'django.contrib.contenttypes',
+            'django.contrib.messages',
+            'django.contrib.sessions',
+
+            'maintenance_mode',
+        ],
+        ROOT_URLCONF = 'tests.urls_admin',
+        MIDDLEWARE_CLASSES = [
+            'django.contrib.sessions.middleware.SessionMiddleware',
+            'django.contrib.auth.middleware.AuthenticationMiddleware',
+            'django.contrib.messages.middleware.MessageMiddleware',
+            'django.middleware.common.CommonMiddleware',
+
+            'maintenance_mode.middleware.MaintenanceModeMiddleware',
+        ],
+    )
+    def test_middleware_ignore_admin_site(self):
+
+        self.__reset_state()
+
+        settings.MAINTENANCE_MODE = True
+
+        # admin url
+        request = self.__get_superuser_request('/admin/')
+
+        settings.MAINTENANCE_MODE_IGNORE_ADMIN_SITE = True
+        response = self.middleware.process_request(request)
+        self.assertEqual(response, None)
+
+        settings.MAINTENANCE_MODE_IGNORE_ADMIN_SITE = False
+        response = self.middleware.process_request(request)
+        self.assertMaintenanceResponse(response)
+
+        # non-admin url
+        request = self.__get_superuser_request('/')
+
+        settings.MAINTENANCE_MODE_IGNORE_ADMIN_SITE = True
+        response = self.middleware.process_request(request)
+        self.assertMaintenanceResponse(response)
+
+        settings.MAINTENANCE_MODE_IGNORE_ADMIN_SITE = False
+        response = self.middleware.process_request(request)
+        self.assertMaintenanceResponse(response)
+
+    def test_middleware_ignore_admin_site_not_configured(self):
+
+        self.__reset_state()
+
+        settings.MAINTENANCE_MODE = True
+
+        # admin url
+        request = self.__get_superuser_request('/admin/')
+
+        settings.MAINTENANCE_MODE_IGNORE_ADMIN_SITE = True
+        response = self.middleware.process_request(request)
+        self.assertMaintenanceResponse(response)
+
+        settings.MAINTENANCE_MODE_IGNORE_ADMIN_SITE = False
+        response = self.middleware.process_request(request)
+        self.assertMaintenanceResponse(response)
+
+        # non-admin url
+        request = self.__get_superuser_request('/')
+
+        settings.MAINTENANCE_MODE_IGNORE_ADMIN_SITE = True
+        response = self.middleware.process_request(request)
+        self.assertMaintenanceResponse(response)
+
+        settings.MAINTENANCE_MODE_IGNORE_ADMIN_SITE = False
+        response = self.middleware.process_request(request)
+        self.assertMaintenanceResponse(response)
+
     def test_middleware_ignore_ip_addresses(self):
 
         self.__reset_state()

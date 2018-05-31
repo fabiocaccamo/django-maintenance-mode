@@ -50,6 +50,11 @@ default values (listed below) will be used.
 
 .. code:: python
 
+    # if True admin site will not be affected by the maintenance-mode page
+    MAINTENANCE_MODE_IGNORE_ADMIN_SITE = False
+
+.. code:: python
+
     # if True anonymous users will not see the maintenance-mode page
     MAINTENANCE_MODE_IGNORE_ANONYMOUS_USER = False
 

@@ -123,6 +123,21 @@ def need_maintenance_response(request):
                 and request.user.is_superuser:
             return False
 
+    if settings.MAINTENANCE_MODE_IGNORE_ADMIN_SITE:
+
+        try:
+            request_path = request.path if request.path else ''
+            if not request_path.endswith('/'):
+                request_path += '/'
+
+            admin_url = reverse('admin:index')
+            if request_path.startswith(admin_url):
+                return False
+
+        except NoReverseMatch:
+            # admin.urls not added
+            pass
+
     if settings.MAINTENANCE_MODE_IGNORE_TESTS:
 
         is_testing = False
