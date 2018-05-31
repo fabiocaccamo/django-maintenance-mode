@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from tempfile import mkstemp
 
 import django
 from django.conf import settings
@@ -7,15 +6,16 @@ from django.contrib.auth.models import AnonymousUser, User
 from django.core.exceptions import ImproperlyConfigured
 from django.core.management import call_command
 from django.core.management.base import CommandError
-from django.test import Client, override_settings, RequestFactory, \
-    SimpleTestCase, TestCase
+from django.test import (
+    Client, override_settings, RequestFactory, SimpleTestCase, TestCase, )
 
 if django.VERSION < (1, 10):
     from django.core.urlresolvers import reverse
 else:
     from django.urls import reverse
 
-from maintenance_mode import core, http, io, middleware, utils, version, views
+from maintenance_mode import (
+    core, http, io, middleware, utils, version, views, )
 from maintenance_mode.management.commands.maintenance_mode import (
     Command as MaintenanceModeCommand, )
 
@@ -29,6 +29,7 @@ except ImportError:
 import os
 import re
 import sys
+from tempfile import mkstemp
 
 
 def get_client_ip_address(request):

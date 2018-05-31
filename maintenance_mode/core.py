@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
-from functools import wraps
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-from maintenance_mode.io import read_file, write_file
 
 try:
     from django.utils.decorators import ContextDecorator
@@ -20,6 +18,10 @@ except ImportError:
                 with self:
                     return func(*args, **kwargs)
             return inner
+
+from functools import wraps
+
+from maintenance_mode.io import read_file, write_file
 
 
 def get_maintenance_mode():
