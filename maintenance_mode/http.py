@@ -50,7 +50,7 @@ def get_maintenance_response(request):
         kwargs = {'context': context}
 
     response = render(request, settings.MAINTENANCE_MODE_TEMPLATE,
-                      content_type='text/html', status=503, **kwargs)
+                      status=503, **kwargs)
 
     add_never_cache_headers(response)
     return response
