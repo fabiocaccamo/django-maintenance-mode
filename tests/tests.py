@@ -942,7 +942,6 @@ class TestGetMaintenanceResponse(SimpleTestCase):
 
         self.assertContains(
             response, 'django-maintenance-mode', status_code=503)
-        self.assertEqual(response['Content-Type'], 'text/html')
         self.assertIn('max-age=0', response['Cache-Control'])
 
     def test_custom_context(self):
@@ -955,7 +954,6 @@ class TestGetMaintenanceResponse(SimpleTestCase):
 
         self.assertContains(
             response, 'django-maintenance-mode', status_code=503)
-        self.assertEqual(response['Content-Type'], 'text/html')
         self.assertIn('max-age=0', response['Cache-Control'])
 
     def test_invalid_context_function(self):
