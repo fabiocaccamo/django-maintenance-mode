@@ -20,6 +20,14 @@ from maintenance_mode.core import get_maintenance_mode
 from maintenance_mode.utils import get_client_ip_address
 
 import re
+
+try:
+    # since python 3.7
+    pattern_class = re.Pattern
+except AttributeError:
+    # before python 3.7
+    pattern_class = re._pattern_type
+
 import sys
 
 
@@ -177,7 +185,7 @@ def need_maintenance_response(request):
 
         for url in settings.MAINTENANCE_MODE_IGNORE_URLS:
 
-            if not isinstance(url, re._pattern_type):
+            if not isinstance(url, pattern_class):
                 url = str(url)
             url_re = re.compile(url)
 

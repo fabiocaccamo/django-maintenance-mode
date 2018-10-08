@@ -31,6 +31,9 @@ import re
 import sys
 from tempfile import mkstemp
 
+from .views import (
+    force_maintenance_mode_off_view, force_maintenance_mode_on_view, )
+
 
 def get_client_ip_address(request):
     return request.META['CLIENT_IP_ADDRESS_FIELD']
@@ -531,6 +534,14 @@ class MaintenanceModeTestCase(TestCase):
         settings.MAINTENANCE_MODE = False
         response = self.client.get(url)
         self.assertMaintenanceResponse(response)
+
+    def test_decorators_attrs(self):
+        self.assertEqual(
+            force_maintenance_mode_off_view.__name__,
+            'force_maintenance_mode_off_view')
+        self.assertEqual(
+            force_maintenance_mode_on_view.__name__,
+            'force_maintenance_mode_on_view')
 
     def test_middleware_urls(self):
 
