@@ -42,12 +42,12 @@ matrix:
       env: TOX_ENV=py37-dj20
     - python: "3.7"
       env: TOX_ENV=py37-dj21
-    - python: "3.7"
-      env: TOX_ENV=py37-djmaster
+    # - python: "3.7"
+    #   env: TOX_ENV=py37-djmaster
   allow_failures:
     - env: TOX_ENV=py35-djmaster
     - env: TOX_ENV=py36-djmaster
-    - env: TOX_ENV=py37-djmaster
+    # - env: TOX_ENV=py37-djmaster
 install:
   - pip install tox
 script:
