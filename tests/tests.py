@@ -216,6 +216,18 @@ class MaintenanceModeTestCase(TestCase):
         settings.MAINTENANCE_MODE = True
         val = core.get_maintenance_mode()
         self.assertTrue(val)
+        
+    def test_core_mainteance_up_time(self):
+    	    
+        self.__reset_state()
+        
+        val = core.get_maintenance_mode_up_time()
+        self.assertEquals(val, "t.b.a.")
+        
+        change_to = "tommorow"   
+        settings.MAINTENANCE_MODE_UP_TIME = change_to
+        val = core.get_maintenance_mode_up_time()
+        self.assertEquals(val, change_to)
 
     def test_core_maintenance_disabled(self):
 
