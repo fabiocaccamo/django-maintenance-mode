@@ -111,7 +111,7 @@ MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = None
 
 ```python
 # The time in string format when the site is up again,  e.g. 'tommorow', 'next week', 'dd/mm/yyyy HH:MM'
-MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = None
+MAINTENANCE_MODE_UP_TIME = None
 ```
 
 #### URLs
