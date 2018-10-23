@@ -57,4 +57,4 @@ if not hasattr(settings, 'MAINTENANCE_MODE_TEMPLATE'):
     settings.MAINTENANCE_MODE_TEMPLATE = '503.html'
     
 if not hasattr(settings, 'MAINTENANCE_MODE_UP_TIME'):
-    settings.MAINTENANCE_MODE_BACK_UP_TIME = 't.b.a.'
+    settings.MAINTENANCE_MODE_UP_TIME = 't.b.a.'
