@@ -109,6 +109,11 @@ MAINTENANCE_MODE_TEMPLATE = '503.html'
 MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = None
 ```
 
+```python
+# The time in string format when the site is up again,  e.g. 'tommorow', 'next week', 'dd/mm/yyyy HH:MM'
+MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = None
+```
+
 #### URLs
 Add **maintenance_mode.urls** to ``urls.py`` if you want superusers able to set maintenance_mode using urls.
 
@@ -192,6 +197,10 @@ class Command(BaseCommand):
 {% if maintenance_mode %}
 <!-- html -->
 {% endif %}
+```
+
+```html
+Site will be up again {{ maintenance_mode_up_time }}
 ```
 
 #### Terminal
