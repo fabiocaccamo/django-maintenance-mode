@@ -41,6 +41,16 @@ def get_maintenance_mode():
     value = bool(int(value))
     return value
 
+def get_maintenance_mode_up_time():
+    """
+    Get maintenance_mode_up_time from settings.
+    """
+
+    # If maintenance mode is defined in settings, it has priority.
+    if settings.MAINTENANCE_MODE_UP_TIME:
+        return settings.MAINTENANCE_MODE_UP_TIME
+
+    return "t.b.a."
 
 def set_maintenance_mode(value):
     """
