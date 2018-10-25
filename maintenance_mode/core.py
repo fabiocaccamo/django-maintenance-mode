@@ -45,11 +45,8 @@ def get_maintenance_mode_up_time():
     """
     Get maintenance_mode_up_time from settings.
     """
-
-    if settings.MAINTENANCE_MODE_UP_TIME:
-        return settings.MAINTENANCE_MODE_UP_TIME
-
-    return "t.b.a."
+    
+    return settings.MAINTENANCE_MODE_UP_TIME
 
 def set_maintenance_mode(value):
     """
