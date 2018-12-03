@@ -15,7 +15,7 @@ else:
     from django.urls import reverse
 
 from maintenance_mode import (
-    core, http, io, middleware, utils, version, views, )
+    backends, core, http, io, middleware, utils, version, views, )
 from maintenance_mode.management.commands.maintenance_mode import (
     Command as MaintenanceModeCommand, )
 
@@ -33,6 +33,10 @@ from tempfile import mkstemp
 
 from .views import (
     force_maintenance_mode_off_view, force_maintenance_mode_on_view, )
+
+
+class NotImplementedBackend(backends.AbstractStateBackend):
+    pass
 
 
 def get_client_ip_address(request):
@@ -183,6 +187,55 @@ class MaintenanceModeTestCase(TestCase):
 
         self.assertRaises(IOError, io.write_file, file_path, 'test')
         self.assertRaises(IOError, io.read_file, file_path)
+
+    def test_backend_local_file(self):
+
+        self.__reset_state()
+
+        backend = core.get_maintenance_mode_backend()
+        self.assertEqual(backend.get_value(), False)
+
+        backend.set_value(True)
+        self.assertEqual(backend.get_value(), True)
+
+        backend.set_value(False)
+        self.assertEqual(backend.get_value(), False)
+
+    def test_backend_local_file_invalid_values(self):
+
+        self.__reset_state()
+
+        file_path = settings.MAINTENANCE_MODE_STATE_FILE_PATH
+        io.write_file(file_path, 'test')
+        backend = core.get_maintenance_mode_backend()
+        self.assertRaises(ValueError, backend.get_value)
+        self.assertRaises(ValueError, backend.set_value, 2)
+        self.assertRaises(ValueError, backend.set_value, 'test')
+
+    def test_backend_custom_invalid(self):
+
+        self.__reset_state()
+
+        backend = settings.MAINTENANCE_MODE_STATE_BACKEND
+
+        # invalid module import
+        settings.MAINTENANCE_MODE_STATE_BACKEND = 'maintenance_mode.backends.NoBackend'
+        self.assertRaises(ImproperlyConfigured, core.get_maintenance_mode_backend)
+
+        # invalid module type (abstract base class)
+        settings.MAINTENANCE_MODE_STATE_BACKEND = 'maintenance_mode.middleware.AbstractStateBackend'
+        self.assertRaises(ImproperlyConfigured, core.get_maintenance_mode_backend)
+
+        # invalid implementation (methods not implemented)
+        settings.MAINTENANCE_MODE_STATE_BACKEND = 'tests.tests.NotImplementedBackend'
+        self.assertRaises(NotImplementedError, core.get_maintenance_mode_backend().get_value)
+        self.assertRaises(NotImplementedError, core.get_maintenance_mode_backend().set_value, 0)
+
+        # invalid module type
+        settings.MAINTENANCE_MODE_STATE_BACKEND = 'maintenance_mode.middleware.MaintenanceModeMiddleware'
+        self.assertRaises(ImproperlyConfigured, core.get_maintenance_mode_backend)
+
+        settings.MAINTENANCE_MODE_STATE_BACKEND = backend
 
     def test_core(self):
 

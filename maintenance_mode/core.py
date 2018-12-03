@@ -10,8 +10,9 @@ except ImportError:
     from django.utils.decorators import available_attrs
 
     class ContextDecorator(object):
-        """A base class that enables a context manager to also be used as a decorator."""
-
+        """
+        A base class that enables a context manager to also be used as a decorator.
+        """
         def __call__(self, func):
             @wraps(func, assigned=available_attrs(func))
             def inner(*args, **kwargs):
@@ -19,9 +20,28 @@ except ImportError:
                     return func(*args, **kwargs)
             return inner
 
+from django.utils.module_loading import import_string
+
 from functools import wraps
 
-from maintenance_mode.io import read_file, write_file
+from maintenance_mode.backends import AbstractStateBackend
+
+
+def get_maintenance_mode_backend():
+    try:
+        backend_class = import_string(settings.MAINTENANCE_MODE_STATE_BACKEND)
+        if issubclass(backend_class, AbstractStateBackend) and \
+                backend_class != AbstractStateBackend:
+            backend = backend_class()
+            return backend
+        else:
+            raise ImproperlyConfigured(
+                'backend doesn\'t extend '
+                '\'maintenance_mode.backends.AbstractStateBackend\' class.')
+    except ImportError:
+        raise ImproperlyConfigured(
+            'backend not found, check '
+            '\'settings.MAINTENANCE_MODE_STATE_BACKEND\' path.')
 
 
 def get_maintenance_mode():
@@ -33,13 +53,8 @@ def get_maintenance_mode():
     if settings.MAINTENANCE_MODE is not None:
         return settings.MAINTENANCE_MODE
 
-    value = read_file(settings.MAINTENANCE_MODE_STATE_FILE_PATH, '0')
-
-    if value not in ['0', '1']:
-        raise ValueError('state file content value is not 0|1')
-
-    value = bool(int(value))
-    return value
+    backend = get_maintenance_mode_backend()
+    return backend.get_value()
 
 
 def set_maintenance_mode(value):
@@ -50,18 +65,19 @@ def set_maintenance_mode(value):
     # If maintenance mode is defined in settings, it can't be changed.
     if settings.MAINTENANCE_MODE is not None:
         raise ImproperlyConfigured(
-            'Maintenance mode cannot be set dynamically ' \
+            'Maintenance mode cannot be set dynamically '
             'if defined in settings.')
 
     if not isinstance(value, bool):
         raise TypeError('value argument type is not boolean')
 
-    value = str(int(value))
-    write_file(settings.MAINTENANCE_MODE_STATE_FILE_PATH, value)
+    backend = get_maintenance_mode_backend()
+    backend.set_value(value)
 
 
 class override_maintenance_mode(ContextDecorator):
-    """Decorator/context manager to locally override a maintenance mode.
+    """
+    Decorator/context manager to locally override a maintenance mode.
 
     @ivar value: Overriden value of maintenance mode
     @ivar old_value: Original value of maintenance mode

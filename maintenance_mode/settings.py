@@ -42,6 +42,9 @@ if not hasattr(settings, 'MAINTENANCE_MODE_IGNORE_URLS'):
 if not hasattr(settings, 'MAINTENANCE_MODE_REDIRECT_URL'):
     settings.MAINTENANCE_MODE_REDIRECT_URL = None
 
+if not hasattr(settings, 'MAINTENANCE_MODE_STATE_BACKEND'):
+    settings.MAINTENANCE_MODE_STATE_BACKEND = 'maintenance_mode.backends.LocalFileBackend'
+
 if not hasattr(settings, 'MAINTENANCE_MODE_STATE_FILE_NAME'):
     settings.MAINTENANCE_MODE_STATE_FILE_NAME = 'maintenance_mode_state.txt'
 
