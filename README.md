@@ -36,6 +36,14 @@ MAINTENANCE_MODE = None
 ```
 
 ```python
+# by default, to get/set the state value a local file backend is used
+# if you want to use the db or cache, you can create a custom backend
+# custom backends must extend 'maintenance_mode.backends.AbstractStateBackend' class
+# and implement get_value(self) and set_value(self, val) methods
+MAINTENANCE_MODE_STATE_BACKEND = 'maintenance_mode.backends.LocalFileBackend'
+```
+
+```python
 # by default, a file named "maintenance_mode_state.txt" will be created in the maintenance_mode directory
 # you can customize the state file path in case the default one is not writable
 MAINTENANCE_MODE_STATE_FILE_PATH = 'maintenance_mode_state.txt'
