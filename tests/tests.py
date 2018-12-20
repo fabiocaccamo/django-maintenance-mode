@@ -121,7 +121,7 @@ class MaintenanceModeTestCase(TestCase):
     def assertMaintenanceResponse(self, response):
         self.assertTemplateUsed(settings.MAINTENANCE_MODE_TEMPLATE)
         if django.VERSION >= (1, 8):
-            self.assertEqual(response.status_code, 503)
+            self.assertEqual(response.status_code, settings.MAINTENANCE_MODE_STATUS_CODE)
 
     def assertOkResponse(self, response):
         self.assertEqual(response.status_code, 200)
@@ -1005,7 +1005,8 @@ class TestGetMaintenanceResponse(SimpleTestCase):
             RequestFactory().get('/dummy/'))
 
         self.assertContains(
-            response, 'django-maintenance-mode', status_code=503)
+            response, 'django-maintenance-mode',
+            status_code=settings.MAINTENANCE_MODE_STATUS_CODE)
         self.assertIn('max-age=0', response['Cache-Control'])
 
     def test_custom_context(self):
@@ -1017,7 +1018,8 @@ class TestGetMaintenanceResponse(SimpleTestCase):
             RequestFactory().get('/dummy/'))
 
         self.assertContains(
-            response, 'django-maintenance-mode', status_code=503)
+            response, 'django-maintenance-mode',
+            status_code=settings.MAINTENANCE_MODE_STATUS_CODE)
         self.assertIn('max-age=0', response['Cache-Control'])
 
     def test_invalid_context_function(self):

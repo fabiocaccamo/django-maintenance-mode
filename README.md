@@ -117,6 +117,11 @@ MAINTENANCE_MODE_TEMPLATE = '503.html'
 MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = None
 ```
 
+```python
+# the HTTP status code to send
+MAINTENANCE_MODE_STATUS_CODE = 503
+```
+
 #### URLs
 Add **maintenance_mode.urls** to ``urls.py`` if you want superusers able to set maintenance_mode using urls.
 

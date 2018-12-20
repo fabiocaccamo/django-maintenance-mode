@@ -58,3 +58,6 @@ if not hasattr(settings, 'MAINTENANCE_MODE_STATE_FILE_PATH'):
 
 if not hasattr(settings, 'MAINTENANCE_MODE_TEMPLATE'):
     settings.MAINTENANCE_MODE_TEMPLATE = '503.html'
+
+if not hasattr(settings, 'MAINTENANCE_MODE_STATUS_CODE'):
+    settings.MAINTENANCE_MODE_STATUS_CODE = 503
