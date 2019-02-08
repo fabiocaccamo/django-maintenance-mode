@@ -3,6 +3,7 @@
 [![Code Health](https://landscape.io/github/fabiocaccamo/django-maintenance-mode/master/landscape.svg?style=flat)](https://landscape.io/github/fabiocaccamo/django-maintenance-mode/master)
 [![Requirements Status](https://requires.io/github/fabiocaccamo/django-maintenance-mode/requirements.svg?branch=master)](https://requires.io/github/fabiocaccamo/django-maintenance-mode/requirements/?branch=master)
 [![PyPI version](https://badge.fury.io/py/django-maintenance-mode.svg)](https://badge.fury.io/py/django-maintenance-mode)
+[![PyPI downloads](https://img.shields.io/pypi/dm/django-maintenance-mode.svg)](https://img.shields.io/pypi/dm/django-maintenance-mode.svg)
 [![Py versions](https://img.shields.io/pypi/pyversions/django-maintenance-mode.svg)](https://img.shields.io/pypi/pyversions/django-maintenance-mode.svg)
 [![License](https://img.shields.io/pypi/l/django-maintenance-mode.svg)](https://img.shields.io/pypi/l/django-maintenance-mode.svg)
 

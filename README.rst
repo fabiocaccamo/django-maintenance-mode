@@ -1,4 +1,4 @@
-|Build Status| |coverage| |Code Health| |Requirements Status| |PyPI version| |Py versions| |License|
+|Build Status| |coverage| |Code Health| |Requirements Status| |PyPI version| |PyPI downloads| |Py versions| |License|
 
 django-maintenance-mode
 =======================
@@ -254,5 +254,6 @@ Released under `MIT License <LICENSE>`__.
 .. |Code Health| image:: https://landscape.io/github/fabiocaccamo/django-maintenance-mode/master/landscape.svg?style=flat
 .. |Requirements Status| image:: https://requires.io/github/fabiocaccamo/django-maintenance-mode/requirements.svg?branch=master
 .. |PyPI version| image:: https://badge.fury.io/py/django-maintenance-mode.svg
+.. |PyPI downloads| image:: https://img.shields.io/pypi/dm/django-maintenance-mode.svg
 .. |Py versions| image:: https://img.shields.io/pypi/pyversions/django-maintenance-mode.svg
 .. |License| image:: https://img.shields.io/pypi/l/django-maintenance-mode.svg
