@@ -61,3 +61,6 @@ if not hasattr(settings, 'MAINTENANCE_MODE_TEMPLATE'):
 
 if not hasattr(settings, 'MAINTENANCE_MODE_STATUS_CODE'):
     settings.MAINTENANCE_MODE_STATUS_CODE = 503
+
+if not hasattr(settings, 'MAINTENANCE_MODE_RETRY_AFTER'):
+    settings.MAINTENANCE_MODE_RETRY_AFTER = 3600

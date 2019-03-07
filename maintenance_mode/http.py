@@ -60,7 +60,7 @@ def get_maintenance_response(request):
     response = render(request, settings.MAINTENANCE_MODE_TEMPLATE,
                       status=settings.MAINTENANCE_MODE_STATUS_CODE,
                       **kwargs)
-
+    response['Retry-After'] = settings.MAINTENANCE_MODE_RETRY_AFTER
     add_never_cache_headers(response)
     return response
 
