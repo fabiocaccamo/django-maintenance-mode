@@ -91,6 +91,7 @@ default values (listed below) will be used.
 
     # the path of the function that will return the client IP address given the request object -> 'myapp.mymodule.myfunction'
     # the default function ('maintenance_mode.utils.get_client_ip_address') returns request.META['REMOTE_ADDR']
+    # in some cases the default function returns None, to avoid this scenario just use 'django-ipware'
     MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS = None
 
 Retrieve user's real IP address using
@@ -126,6 +127,16 @@ Retrieve user's real IP address using
 
     # the path of the function that will return the template context -> 'myapp.mymodule.myfunction'
     MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = None
+
+.. code:: python
+
+    # the HTTP status code to send
+    MAINTENANCE_MODE_STATUS_CODE = 503
+
+.. code:: python
+
+    # the value in seconds of the Retry-After header during maintenance-mode
+    MAINTENANCE_MODE_RETRY_AFTER = 3600 # 1 hour
 
 URLs
 ~~~~
