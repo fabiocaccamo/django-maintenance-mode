@@ -25,8 +25,10 @@ Installation
    custom applications
 3. Add ``'maintenance_mode.middleware.MaintenanceModeMiddleware'`` to
    ``settings.MIDDLEWARE_CLASSES``/``settings.MIDDLEWARE`` as last middleware
-4. Add your custom ``templates/503.html`` file
-5. Restart your application server
+4. Add ``'maintenance_mode.context_processors.maintenance_mode'`` to
+   ``settings.CONTEXT_PROCESSORS``
+5. Add your custom ``templates/503.html`` file
+6. Restart your application server
 
 Configuration (optional)
 ------------------------
