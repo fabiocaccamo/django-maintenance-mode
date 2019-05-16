@@ -33,11 +33,11 @@ class LocalFileBackend(AbstractStateBackend):
         write_file(settings.MAINTENANCE_MODE_STATE_FILE_PATH, value)
 
 
-class S3FileBackend(AbstractStateBackend):
+class DefaultStorageBackend(AbstractStateBackend):
 
     def get_value(self):
         try:
-            value = default_storage.open(settings.MAINTENANCE_MODE_STATE_FILE_NAME).read()
+            value = str(int(default_storage.open(settings.MAINTENANCE_MODE_STATE_FILE_NAME).read()))
         except IOError:
             return False
         if value not in ['0', '1']:

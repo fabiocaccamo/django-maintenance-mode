@@ -30,6 +30,7 @@ setup(
     download_url='%s/%s/archive/%s.tar.gz' % (github_url, package_name, __version__, ),
     keywords=['django', 'maintenance', 'mode', 'offline', 'under', '503', 'service', 'temporarily', 'unavailable'],
     requires=['django(>=1.7)'],
+    tests_require=['mock'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',

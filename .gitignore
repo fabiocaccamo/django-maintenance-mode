@@ -56,3 +56,6 @@ docs/_build/
 # PyBuilder
 target/
 maintenance_mode_state.txt
+
+# IDE
+.idea

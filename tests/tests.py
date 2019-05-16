@@ -4,6 +4,8 @@ import django
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, User
 from django.core.exceptions import ImproperlyConfigured
+from django.core.files.base import ContentFile
+from django.core.files.storage import Storage
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.test import (
@@ -13,6 +15,8 @@ if django.VERSION < (1, 10):
     from django.core.urlresolvers import reverse
 else:
     from django.urls import reverse
+import mock
+
 
 from maintenance_mode import (
     backends, core, http, io, middleware, utils, version, views, )
@@ -157,6 +161,7 @@ class MaintenanceModeTestCase(TestCase):
 
     def __reset_state(self):
         settings.MAINTENANCE_MODE = None
+        settings.MAINTENANCE_MODE_STATE_BACKEND = 'maintenance_mode.backends.LocalFileBackend'
         core.set_maintenance_mode(False)
         try:
             os.remove(settings.MAINTENANCE_MODE_STATE_FILE_PATH)
@@ -211,6 +216,29 @@ class MaintenanceModeTestCase(TestCase):
         self.assertRaises(ValueError, backend.get_value)
         self.assertRaises(ValueError, backend.set_value, 2)
         self.assertRaises(ValueError, backend.set_value, 'test')
+
+    def test_backend_default_storage(self):
+
+        self.__reset_state()
+
+        # switch to DefaultStorageBackend
+        settings.MAINTENANCE_MODE_STATE_BACKEND = 'maintenance_mode.backends.DefaultStorageBackend'
+
+        backend = core.get_maintenance_mode_backend()
+        self.assertEqual(backend.get_value(), False)
+
+        file_mock = mock.MagicMock(spec=ContentFile, name='FileMock')
+        file_mock.name = settings.MAINTENANCE_MODE_STATE_FILE_NAME
+        storage_mock = mock.MagicMock(spec=Storage, name='StorageMock')
+
+        with mock.patch('django.core.files.storage.default_storage._wrapped', storage_mock):
+            # The asset is saved to the database but our mock storage
+            # system is used so we don't touch the filesystem
+            storage_mock.save(settings.MAINTENANCE_MODE_STATE_FILE_NAME, file_mock(False))
+            backend.set_value(True)
+            self.assertEqual(backend.get_value(), True)
+
+        storage_mock.delete(settings.MAINTENANCE_MODE_STATE_FILE_NAME)
 
     def test_backend_custom_invalid(self):
 
