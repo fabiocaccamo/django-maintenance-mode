@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/fabiocaccamo/django-maintenance-mode.svg?branch=master)](https://travis-ci.org/fabiocaccamo/django-maintenance-mode)
 [![coverage](https://codecov.io/gh/fabiocaccamo/django-maintenance-mode/branch/master/graph/badge.svg)](https://codecov.io/gh/fabiocaccamo/django-maintenance-mode)
-[![Code Health](https://landscape.io/github/fabiocaccamo/django-maintenance-mode/master/landscape.svg?style=flat)](https://landscape.io/github/fabiocaccamo/django-maintenance-mode/master)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/918668ac85e74206a4d8d95923548d79)](https://www.codacy.com/app/fabiocaccamo/django-maintenance-mode)
 [![Requirements Status](https://requires.io/github/fabiocaccamo/django-maintenance-mode/requirements.svg?branch=master)](https://requires.io/github/fabiocaccamo/django-maintenance-mode/requirements/?branch=master)
 [![PyPI version](https://badge.fury.io/py/django-maintenance-mode.svg)](https://badge.fury.io/py/django-maintenance-mode)
 [![PyPI downloads](https://img.shields.io/pypi/dm/django-maintenance-mode.svg)](https://img.shields.io/pypi/dm/django-maintenance-mode.svg)
