@@ -18,6 +18,7 @@ env:
   - TOX_ENV=py35-dj111
   - TOX_ENV=py35-dj20
   - TOX_ENV=py35-dj21
+  - TOX_ENV=py35-dj22
   - TOX_ENV=py35-djmaster
   # - TOX_ENV=py36-dj111
   # - TOX_ENV=py36-dj20
@@ -35,6 +36,8 @@ matrix:
     - python: "3.6"
       env: TOX_ENV=py36-dj21
     - python: "3.6"
+      env: TOX_ENV=py36-dj22
+    - python: "3.6"
       env: TOX_ENV=py36-djmaster
     - python: "3.7"
       env: TOX_ENV=py37-dj20
@@ -43,6 +46,11 @@ matrix:
       sudo: required
     - python: "3.7"
       env: TOX_ENV=py37-dj21
+      dist: xenial
+      language: python
+      sudo: required
+    - python: "3.7"
+      env: TOX_ENV=py37-dj22
       dist: xenial
       language: python
       sudo: required
