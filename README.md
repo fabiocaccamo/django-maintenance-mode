@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/fabiocaccamo/django-maintenance-mode.svg?branch=master)](https://travis-ci.org/fabiocaccamo/django-maintenance-mode)
-[![coverage](https://codecov.io/gh/fabiocaccamo/django-maintenance-mode/branch/master/graph/badge.svg)](https://codecov.io/gh/fabiocaccamo/django-maintenance-mode)
+[![Financial Contributors on Open Collective](https://opencollective.com/django-maintenance-mode/all/badge.svg?label=financial+contributors)](https://opencollective.com/django-maintenance-mode) [![coverage](https://codecov.io/gh/fabiocaccamo/django-maintenance-mode/branch/master/graph/badge.svg)](https://codecov.io/gh/fabiocaccamo/django-maintenance-mode)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/918668ac85e74206a4d8d95923548d79)](https://www.codacy.com/app/fabiocaccamo/django-maintenance-mode)
 [![Requirements Status](https://requires.io/github/fabiocaccamo/django-maintenance-mode/requirements.svg?branch=master)](https://requires.io/github/fabiocaccamo/django-maintenance-mode/requirements/?branch=master)
 [![PyPI version](https://badge.fury.io/py/django-maintenance-mode.svg)](https://badge.fury.io/py/django-maintenance-mode)
@@ -227,6 +227,36 @@ Superusers can change maintenance-mode using the following urls:
 ``/maintenance-mode/off/``
 
 ``/maintenance-mode/on/``
+
+## Contributors
+
+### Code Contributors
+
+This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
+<a href="https://github.com/fabiocaccamo/django-maintenance-mode/graphs/contributors"><img src="https://opencollective.com/django-maintenance-mode/contributors.svg?width=890&button=false" /></a>
+
+### Financial Contributors
+
+Become a financial contributor and help us sustain our community. [[Contribute](https://opencollective.com/django-maintenance-mode/contribute)]
+
+#### Individuals
+
+<a href="https://opencollective.com/django-maintenance-mode"><img src="https://opencollective.com/django-maintenance-mode/individuals.svg?width=890"></a>
+
+#### Organizations
+
+Support this project with your organization. Your logo will show up here with a link to your website. [[Contribute](https://opencollective.com/django-maintenance-mode/contribute)]
+
+<a href="https://opencollective.com/django-maintenance-mode/organization/0/website"><img src="https://opencollective.com/django-maintenance-mode/organization/0/avatar.svg"></a>
+<a href="https://opencollective.com/django-maintenance-mode/organization/1/website"><img src="https://opencollective.com/django-maintenance-mode/organization/1/avatar.svg"></a>
+<a href="https://opencollective.com/django-maintenance-mode/organization/2/website"><img src="https://opencollective.com/django-maintenance-mode/organization/2/avatar.svg"></a>
+<a href="https://opencollective.com/django-maintenance-mode/organization/3/website"><img src="https://opencollective.com/django-maintenance-mode/organization/3/avatar.svg"></a>
+<a href="https://opencollective.com/django-maintenance-mode/organization/4/website"><img src="https://opencollective.com/django-maintenance-mode/organization/4/avatar.svg"></a>
+<a href="https://opencollective.com/django-maintenance-mode/organization/5/website"><img src="https://opencollective.com/django-maintenance-mode/organization/5/avatar.svg"></a>
+<a href="https://opencollective.com/django-maintenance-mode/organization/6/website"><img src="https://opencollective.com/django-maintenance-mode/organization/6/avatar.svg"></a>
+<a href="https://opencollective.com/django-maintenance-mode/organization/7/website"><img src="https://opencollective.com/django-maintenance-mode/organization/7/avatar.svg"></a>
+<a href="https://opencollective.com/django-maintenance-mode/organization/8/website"><img src="https://opencollective.com/django-maintenance-mode/organization/8/avatar.svg"></a>
+<a href="https://opencollective.com/django-maintenance-mode/organization/9/website"><img src="https://opencollective.com/django-maintenance-mode/organization/9/avatar.svg"></a>
 
 ## License
 Released under [MIT License](LICENSE.txt).
