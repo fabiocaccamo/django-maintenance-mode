@@ -46,7 +46,7 @@ MAINTENANCE_MODE_STATE_BACKEND = 'maintenance_mode.backends.LocalFileBackend'
 ```
 
 ```python
-# by default, a file named "maintenance_mode_state.txt" will be created in the maintenance_mode directory
+# by default, a file named "maintenance_mode_state.txt" will be created in the settings.py directory
 # you can customize the state file path in case the default one is not writable
 MAINTENANCE_MODE_STATE_FILE_PATH = 'maintenance_mode_state.txt'
 ```
