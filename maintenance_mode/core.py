@@ -4,7 +4,7 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
 try:
-    from django.utils.decorators import ContextDecorator
+    from contextlib import ContextDecorator
 except ImportError:
     # ContextDecorator was introduced in Django 1.8
     from django.utils.decorators import available_attrs

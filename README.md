@@ -15,8 +15,8 @@ It works at application level, so your django instance should be up.
 It doesn't use database and doesn't prevent database access.
 
 ## Requirements
-- Python 2.7, 3.4, 3.5, 3.6, 3.7
-- Django 1.7, 1.8, 1.9, 1.10, 1.11, 2.0, 2.1, 2.2
+- Python 2.7, 3.4, 3.5, 3.6, 3.7, 3.8
+- Django 1.7, 1.8, 1.9, 1.10, 1.11, 2.0, 2.1, 2.2, 3.0
 
 ## Installation
 
