@@ -219,7 +219,7 @@ class Command(BaseCommand):
 
 Run ``python manage.py maintenance_mode <on|off>``
 
-*(**This is not Heroku-friendly because** any execution of heroku run* `manage.py` *will be run on a separate worker dyno, not the web one. Therefore **the state-file is set but on the wrong machine**)*
+*(**This is not Heroku-friendly because** any execution of heroku run* `manage.py` *will be run on a separate worker dyno, not the web one. Therefore **the state-file is set but on the wrong machine. You should use a custom*** `MAINTENANCE_MODE_STATE_BACKEND`*.)*
 
 #### URLs
 Superusers can change maintenance-mode using the following urls:
