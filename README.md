@@ -1,11 +1,15 @@
-[![Build Status](https://travis-ci.org/fabiocaccamo/django-maintenance-mode.svg?branch=master)](https://travis-ci.org/fabiocaccamo/django-maintenance-mode)
-[![coverage](https://codecov.io/gh/fabiocaccamo/django-maintenance-mode/branch/master/graph/badge.svg)](https://codecov.io/gh/fabiocaccamo/django-maintenance-mode)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/918668ac85e74206a4d8d95923548d79)](https://www.codacy.com/app/fabiocaccamo/django-maintenance-mode)
+[![Python Versions](https://img.shields.io/pypi/pyversions/django-maintenance-mode.svg?color=3776AB&logo=python&logoColor=white)](https://www.python.org/)
+[![Django Versions](https://img.shields.io/pypi/djversions/django-maintenance-mode?color=0C4B33&logo=django&logoColor=white&label=django)](https://www.djangoproject.com/)
+
+[![PyPI Version](https://img.shields.io/pypi/v/django-maintenance-mode.svg?color=blue&logo=pypi&logoColor=white)](https://pypi.org/project/django-maintenance-mode/)
+[![PyPI Downloads](https://img.shields.io/pypi/dm/django-maintenance-mode.svg?color=blue&logo=pypi&logoColor=white)](https://pypi.org/project/django-maintenance-mode/)
+[![Stars](https://img.shields.io/github/stars/fabiocaccamo/django-maintenance-mode?logo=github)](https://github.com/fabiocaccamo/django-maintenance-mode/)
+[![License](https://img.shields.io/pypi/l/django-maintenance-mode.svg?color=blue)](https://github.com/fabiocaccamo/django-maintenance-mode/blob/master/LICENSE.txt)
+
+[![Travis Build Status](https://img.shields.io/travis/fabiocaccamo/django-maintenance-mode?logo=travis&label=build)](https://travis-ci.org/fabiocaccamo/django-maintenance-mode)
+[![Codecov Coverage](https://img.shields.io/codecov/c/gh/fabiocaccamo/django-maintenance-mode?logo=codecov)](https://codecov.io/gh/fabiocaccamo/django-maintenance-mode)
+[![Codacy Code Quality Grade](https://img.shields.io/codacy/grade/0dbd5cc2089f4dce80a0e49e6822be3c?logo=codacy)](https://www.codacy.com/app/fabiocaccamo/django-maintenance-mode)
 [![Requirements Status](https://requires.io/github/fabiocaccamo/django-maintenance-mode/requirements.svg?branch=master)](https://requires.io/github/fabiocaccamo/django-maintenance-mode/requirements/?branch=master)
-[![PyPI version](https://badge.fury.io/py/django-maintenance-mode.svg)](https://badge.fury.io/py/django-maintenance-mode)
-[![PyPI downloads](https://img.shields.io/pypi/dm/django-maintenance-mode.svg)](https://img.shields.io/pypi/dm/django-maintenance-mode.svg)
-[![Py versions](https://img.shields.io/pypi/pyversions/django-maintenance-mode.svg)](https://img.shields.io/pypi/pyversions/django-maintenance-mode.svg)
-[![License](https://img.shields.io/pypi/l/django-maintenance-mode.svg)](https://img.shields.io/pypi/l/django-maintenance-mode.svg)
 
 # django-maintenance-mode
 django-maintenance-mode shows a 503 error page when **maintenance-mode** is **on**.
@@ -13,10 +17,6 @@ django-maintenance-mode shows a 503 error page when **maintenance-mode** is **on
 It works at application level, so your django instance should be up.
 
 It doesn't use database and doesn't prevent database access.
-
-## Requirements
-- Python 2.7, 3.4, 3.5, 3.6, 3.7, 3.8
-- Django 1.7, 1.8, 1.9, 1.10, 1.11, 2.0, 2.1, 2.2, 3.0
 
 ## Installation
 
