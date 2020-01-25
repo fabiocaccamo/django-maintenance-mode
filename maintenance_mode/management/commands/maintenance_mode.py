@@ -37,6 +37,13 @@ class Command(BaseCommand):
                 'Unable to write state file at: %s' % (
                     settings.MAINTENANCE_MODE_STATE_FILE_NAME, ))
 
+    def set_maintenance_mode_with_confirm(self, value, confirm_message, interactive):
+        if interactive:
+            if self.confirm(confirm_message):
+                self.set_maintenance_mode(value)
+        else:
+            self.set_maintenance_mode(value)
+
     def confirm(self, message):
         # Fix for Python 2.x.
         try:
@@ -73,11 +80,8 @@ class Command(BaseCommand):
                     self.stdout.write('maintenance mode is already on')
                 return
 
-            if interactive:
-                if self.confirm('maintenance mode on? (y/N) '):
-                    self.set_maintenance_mode(True)
-            else:
-                self.set_maintenance_mode(True)
+            self.set_maintenance_mode_with_confirm(
+                True, 'maintenance mode on? (y/N) ', interactive)
 
         elif state in ['off', 'no', 'false', '0']:
 
@@ -86,11 +90,8 @@ class Command(BaseCommand):
                     self.stdout.write('maintenance mode is already off')
                 return
 
-            if interactive:
-                if self.confirm('maintenance mode off? (y/N) '):
-                    self.set_maintenance_mode(False)
-            else:
-                self.set_maintenance_mode(False)
+            self.set_maintenance_mode_with_confirm(
+                False, 'maintenance mode off? (y/N) ', interactive)
 
         else:
             raise CommandError('Invalid argument: \'%s\' '

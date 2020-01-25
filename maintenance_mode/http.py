@@ -52,10 +52,9 @@ def get_maintenance_response(request):
 
         context = get_request_context_func(request=request)
 
+    kwargs = {'context': context}
     if django.VERSION < (1, 8):
         kwargs = {'context_instance': RequestContext(request, context)}
-    else:
-        kwargs = {'context': context}
 
     response = render(request, settings.MAINTENANCE_MODE_TEMPLATE,
                       status=settings.MAINTENANCE_MODE_STATUS_CODE,
