@@ -2,7 +2,7 @@
 [![Django Versions](https://img.shields.io/pypi/djversions/django-maintenance-mode?color=0C4B33&logo=django&logoColor=white&label=django)](https://www.djangoproject.com/)
 
 [![PyPI Version](https://img.shields.io/pypi/v/django-maintenance-mode.svg?color=blue&logo=pypi&logoColor=white)](https://pypi.org/project/django-maintenance-mode/)
-[![PyPI Downloads](https://img.shields.io/pypi/dm/django-maintenance-mode.svg?color=blue&logo=pypi&logoColor=white)](https://pypi.org/project/django-maintenance-mode/)
+[![PyPI Downloads](https://img.shields.io/pypi/dt/django-maintenance-mode.svg?color=blue&logo=pypi&logoColor=white)](https://pypi.org/project/django-maintenance-mode/)
 [![Stars](https://img.shields.io/github/stars/fabiocaccamo/django-maintenance-mode?logo=github)](https://github.com/fabiocaccamo/django-maintenance-mode/)
 [![License](https://img.shields.io/pypi/l/django-maintenance-mode.svg?color=blue)](https://github.com/fabiocaccamo/django-maintenance-mode/blob/master/LICENSE.txt)
 
