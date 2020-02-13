@@ -8,7 +8,7 @@
 
 [![](https://img.shields.io/travis/fabiocaccamo/django-maintenance-mode?logo=travis&label=build)](https://travis-ci.org/fabiocaccamo/django-maintenance-mode)
 [![](https://img.shields.io/codecov/c/gh/fabiocaccamo/django-maintenance-mode?logo=codecov)](https://codecov.io/gh/fabiocaccamo/django-maintenance-mode)
-[![](https://img.shields.io/codacy/grade/0dbd5cc2089f4dce80a0e49e6822be3c?logo=codacy)](https://www.codacy.com/app/fabiocaccamo/django-maintenance-mode)
+[![](https://img.shields.io/codacy/grade/918668ac85e74206a4d8d95923548d79?logo=codacy)](https://www.codacy.com/app/fabiocaccamo/django-maintenance-mode)
 [![](https://img.shields.io/codeclimate/maintainability/fabiocaccamo/django-maintenance-mode?logo=code-climate)](https://codeclimate.com/github/fabiocaccamo/django-maintenance-mode/)
 [![](https://requires.io/github/fabiocaccamo/django-maintenance-mode/requirements.svg?branch=master)](https://requires.io/github/fabiocaccamo/django-maintenance-mode/requirements/?branch=master)
 
