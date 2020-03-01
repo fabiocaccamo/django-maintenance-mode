@@ -1,5 +1,4 @@
 dist: xenial
-sudo: required
 language: python
 python: 3.5
 cache: pip
@@ -22,7 +21,7 @@ env:
   - TOX_ENV=py35-dj20
   - TOX_ENV=py35-dj21
   - TOX_ENV=py35-dj22
-matrix:
+jobs:
   include:
     - python: "3.6"
       env: TOX_ENV=py36-dj111
