@@ -1,0 +1,4 @@
+codecov
+coverage
+django>=1.7.0
+tox
