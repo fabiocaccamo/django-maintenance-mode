@@ -232,8 +232,8 @@ Superusers can change maintenance-mode using the following urls:
 
 ## Testing
 ```bash
-# create python 3.7 virtual environment
-virtualenv testing_django_maintanance_mode -p "python3.7" --no-site-packages
+# create python virtual environment
+virtualenv testing_django_maintanance_mode
 
 # activate virtualenv
 cd testing_django_maintanance_mode && . bin/activate
@@ -242,7 +242,11 @@ cd testing_django_maintanance_mode && . bin/activate
 git clone https://github.com/fabiocaccamo/django-maintenance-mode.git src && cd src
 
 # run tests
+tox
+# or
 python setup.py test
+# or
+python -m django test --settings "tests.settings"
 ```
 
 ## License
