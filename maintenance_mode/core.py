@@ -92,3 +92,19 @@ class override_maintenance_mode(ContextDecorator):
 
     def __exit__(self, exc_type, exc_value, traceback):
         set_maintenance_mode(self.old_value)
+
+
+class maintenance_mode_on(override_maintenance_mode):
+    """
+    Decorator/context manager to locally set maintenance mode to True.
+    """
+    def __init__(self):
+        super(maintenance_mode_on, self).__init__(True)
+
+
+class maintenance_mode_off(override_maintenance_mode):
+    """
+    Decorator/context manager to locally set maintenance mode to False.
+    """
+    def __init__(self):
+        super(maintenance_mode_off, self).__init__(False)

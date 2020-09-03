@@ -162,6 +162,21 @@ TEMPLATES = [
 ]
 ```
 
+#### Context Managers
+You can force a block of code execution to run under maintenance mode or not using context managers:
+
+```python
+from maintenance_mode.core import maintenance_mode_off, maintenance_mode_on
+
+with maintenance_mode_on():
+    # do stuff
+    pass
+
+with maintenance_mode_off():
+    # do stuff
+    pass
+```
+
 #### Views
 You can force maintenance mode on/off at view level using view decorators:
 

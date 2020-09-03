@@ -943,8 +943,9 @@ class MaintenanceModeTestCase(TestCase):
 
 
 class TestOverrideMaintenanceMode(SimpleTestCase):
-    """Test `override_maintenance_mode` decorator/context processor."""
-
+    """
+    Test `override_maintenance_mode` decorator/context manager.
+    """
     def setUp(self):
         dummy, self.tmp_dir = mkstemp()
 
@@ -959,24 +960,38 @@ class TestOverrideMaintenanceMode(SimpleTestCase):
         (False, False, False),
     )
 
-    def test_context_processor(self):
+    def test_context_manager_override(self):
         with self.settings(MAINTENANCE_MODE_STATE_FILE_PATH=self.tmp_dir):
             for environ, override, result in self.override_cases:
                 core.set_maintenance_mode(environ)
-
                 with core.override_maintenance_mode(override):
                     self.assertEqual(core.get_maintenance_mode(), result)
+                self.assertEqual(core.get_maintenance_mode(), environ)
 
     def test_decorator(self):
         with self.settings(MAINTENANCE_MODE_STATE_FILE_PATH=self.tmp_dir):
             for environ, override, result in self.override_cases:
                 core.set_maintenance_mode(environ)
-
                 @core.override_maintenance_mode(override)
                 def test_function():
                     self.assertEqual(core.get_maintenance_mode(), result)
-
                 test_function()
+
+    def test_context_manager_on(self):
+        with self.settings(MAINTENANCE_MODE_STATE_FILE_PATH=self.tmp_dir):
+            for value in [True, False]:
+                core.set_maintenance_mode(value)
+                with core.maintenance_mode_on():
+                    self.assertEqual(core.get_maintenance_mode(), True)
+                self.assertEqual(core.get_maintenance_mode(), value)
+
+    def test_context_manager_off(self):
+        with self.settings(MAINTENANCE_MODE_STATE_FILE_PATH=self.tmp_dir):
+            for value in [True, False]:
+                core.set_maintenance_mode(value)
+                with core.maintenance_mode_off():
+                    self.assertEqual(core.get_maintenance_mode(), False)
+                self.assertEqual(core.get_maintenance_mode(), value)
 
 
 class TestGetMaintenanceResponse(SimpleTestCase):
