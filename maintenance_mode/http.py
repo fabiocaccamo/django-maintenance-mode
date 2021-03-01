@@ -93,9 +93,11 @@ def need_maintenance_response(request):
         return False
 
     try:
-        url_off = reverse('maintenance_mode_off')
+        url_off = reverse('maintenance_mode_off').replace(request.META['SCRIPT_NAME'], '')
 
         resolve(url_off)
+
+        print(f'Path Info: {request.path_info}')
 
         if url_off == request.path_info:
             return False
