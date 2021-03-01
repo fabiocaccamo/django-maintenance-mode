@@ -97,8 +97,6 @@ def need_maintenance_response(request):
 
         resolve(url_off)
 
-        print(f'Path Info: {request.path_info}')
-
         if url_off == request.path_info:
             return False
 
