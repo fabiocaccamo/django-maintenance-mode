@@ -430,6 +430,27 @@ class MaintenanceModeTestCase(TestCase):
         val = core.get_maintenance_mode()
         self.assertRedirects(response, '/')
         self.assertFalse(val)
+    
+    @override_settings(
+        FORCE_SCRIPT_NAME='/test'
+    )
+    def test_urls_with_scriptname(self):
+
+        self.__reset_state()
+
+        url = reverse('maintenance_mode_on')
+        request = self.request_factory.get(url)
+        response = self.client.get(url)
+        val = core.get_maintenance_mode()
+        self.assertRedirects(response, '{}/'.format(request.META.get('SCRIPT_NAME')), fetch_redirect_response=False)
+        self.assertFalse(val)
+
+        url = reverse('maintenance_mode_off')
+        request = self.request_factory.get(url)
+        response = self.client.get(url)
+        val = core.get_maintenance_mode()
+        self.assertRedirects(response, '{}/'.format(request.META.get('SCRIPT_NAME')), fetch_redirect_response=False)
+        self.assertFalse(val)
 
     def test_urls_superuser(self):
 

@@ -13,7 +13,9 @@ def maintenance_mode_off(request):
     if request.user.is_superuser:
         set_maintenance_mode(False)
 
-    return HttpResponseRedirect(request.META.get('SCRIPT_NAME', '/'))
+    redirect_to = request.META.get('SCRIPT_NAME', '/')
+
+    return HttpResponseRedirect('{}/'.format(redirect_to) if not redirect_to.endswith('/') else redirect_to)
 
 
 def maintenance_mode_on(request):
@@ -23,5 +25,7 @@ def maintenance_mode_on(request):
     """
     if request.user.is_superuser:
         set_maintenance_mode(True)
+    
+    redirect_to = request.META.get('SCRIPT_NAME', '/')
 
-    return HttpResponseRedirect(request.META.get('SCRIPT_NAME', '/'))
+    return HttpResponseRedirect('{}/'.format(redirect_to) if not redirect_to.endswith('/') else redirect_to)
