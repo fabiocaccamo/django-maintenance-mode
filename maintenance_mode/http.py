@@ -93,7 +93,11 @@ def need_maintenance_response(request):
         return False
 
     try:
-        url_off = reverse('maintenance_mode_off').replace(request.META['SCRIPT_NAME'], '')
+        script_name = request.META.get('SCRIPT_NAME')
+        url_off = reverse('maintenance_mode_off')
+        
+        if script_name:
+            url_off = url_off.replace(script_name, '', 1) if url_off.startswith(script_name) else url_off
 
         resolve(url_off)
 
