@@ -31,7 +31,7 @@ It doesn't use database and doesn't prevent database access.
 
 ## Configuration (optional)
 
-#### Settings
+### Settings
 All these settings are optional, if not defined in ``settings.py`` the default values (listed below) will be used.
 
 ```python
@@ -132,17 +132,6 @@ MAINTENANCE_MODE_STATUS_CODE = 503
 MAINTENANCE_MODE_RETRY_AFTER = 3600 # 1 hour
 ```
 
-#### URLs
-Add **maintenance_mode.urls** to ``urls.py`` if you want superusers able to set maintenance_mode using urls.
-
-```python
-urlpatterns = [
-    # ...
-    url(r'^maintenance-mode/', include('maintenance_mode.urls')),
-    # ...
-]
-```
-
 #### Context Processors
 Add **maintenance_mode.context_processors.maintenance_mode** to your context_processors list in ``settings.py`` if you want to access the maintenance_mode status in your templates.
 
@@ -177,7 +166,18 @@ with maintenance_mode_off():
     pass
 ```
 
-#### Views
+### URLs
+Add **maintenance_mode.urls** to ``urls.py`` if you want superusers able to set maintenance_mode using urls.
+
+```python
+urlpatterns = [
+    # ...
+    url(r'^maintenance-mode/', include('maintenance_mode.urls')),
+    # ...
+]
+```
+
+### Views
 You can force maintenance mode on/off at view level using view decorators:
 
 ```python
@@ -196,7 +196,7 @@ def my_view_b(request):
 
 ## Usage
 
-#### Python
+### Python
 ```python
 from maintenance_mode.core import get_maintenance_mode, set_maintenance_mode
 
@@ -225,20 +225,20 @@ class Command(BaseCommand):
 
 ```
 
-#### Templates
+### Templates
 ```html
 {% if maintenance_mode %}
 <!-- html -->
 {% endif %}
 ```
 
-#### Terminal
+### Terminal
 
 Run ``python manage.py maintenance_mode <on|off>``
 
 *(**This is not Heroku-friendly because** any execution of heroku run* `manage.py` *will be run on a separate worker dyno, not the web one. Therefore **the state-file is set but on the wrong machine. You should use a custom*** `MAINTENANCE_MODE_STATE_BACKEND`*.)*
 
-#### URLs
+### URLs
 Superusers can change maintenance-mode using the following urls:
 
 ``/maintenance-mode/off/``
