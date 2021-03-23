@@ -53,7 +53,7 @@ if not hasattr(settings, 'MAINTENANCE_MODE_STATE_FILE_PATH'):
     settings_path = settings_module.__file__
     settings_dir = os.path.dirname(settings_path)
     settings.MAINTENANCE_MODE_STATE_FILE_PATH = os.path.abspath(
-        os.path.join(os.sep, settings_dir,
+        os.path.join(settings_dir,
             settings.MAINTENANCE_MODE_STATE_FILE_NAME))
 
 if not hasattr(settings, 'MAINTENANCE_MODE_TEMPLATE'):
