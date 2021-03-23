@@ -15,7 +15,8 @@ else:
     from django.urls import reverse
 
 from maintenance_mode import (
-    backends, core, http, io, logging, middleware, utils, version, views, )
+    backends, core, http, io, middleware, utils, version, views, )
+from maintenance_mode.logging import RequireNotMaintenanceMode503
 from maintenance_mode.management.commands.maintenance_mode import (
     Command as MaintenanceModeCommand, )
 
@@ -212,6 +213,23 @@ class MaintenanceModeTestCase(TestCase):
         self.assertRaises(ValueError, backend.set_value, 2)
         self.assertRaises(ValueError, backend.set_value, 'test')
 
+    def test_backend_default_storage(self):
+
+        self.__reset_state()
+
+        settings.MAINTENANCE_MODE_STATE_BACKEND = 'maintenance_mode.backends.DefaultStorageBackend'
+
+        backend = core.get_maintenance_mode_backend()
+        self.assertEqual(backend.get_value(), False)
+
+        backend.set_value(True)
+        self.assertEqual(backend.get_value(), True)
+
+        backend.set_value(False)
+        self.assertEqual(backend.get_value(), False)
+
+        settings.MAINTENANCE_MODE_STATE_BACKEND = 'maintenance_mode.backends.LocalFileBackend'
+
     def test_backend_custom_invalid(self):
 
         self.__reset_state()
@@ -302,7 +320,7 @@ class MaintenanceModeTestCase(TestCase):
         class Record(object):
             status_code = 0
 
-        f = logging.RequireNotMaintenanceMode503()
+        f = RequireNotMaintenanceMode503()
         r = Record()
 
         settings.MAINTENANCE_MODE = True
