@@ -45,6 +45,9 @@ MAINTENANCE_MODE = None
 # custom backends must extend 'maintenance_mode.backends.AbstractStateBackend' class
 # and implement get_value(self) and set_value(self, val) methods
 MAINTENANCE_MODE_STATE_BACKEND = 'maintenance_mode.backends.LocalFileBackend'
+
+# alternatively it is possible to use the default storage backend
+MAINTENANCE_MODE_STATE_BACKEND = 'maintenance_mode.backends.DefaultStorageBackend'
 ```
 
 ```python
