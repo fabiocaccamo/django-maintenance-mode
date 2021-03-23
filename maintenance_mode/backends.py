@@ -32,7 +32,10 @@ class AbstractStateBackend(object):
 
 
 class DefaultStorageBackend(AbstractStateBackend):
-
+    """
+    django-maintenance-mode backend which uses the default storage.
+    Kindly provided by Dominik George https://github.com/Natureshadow
+    """
     def get_value(self):
         filename = settings.MAINTENANCE_MODE_STATE_FILE_NAME
         try:
@@ -50,7 +53,9 @@ class DefaultStorageBackend(AbstractStateBackend):
 
 
 class LocalFileBackend(AbstractStateBackend):
-
+    """
+    django-maintenance-mode backend which uses the local file-sistem.
+    """
     def get_value(self):
         value = read_file(settings.MAINTENANCE_MODE_STATE_FILE_PATH, '0')
         value = self.from_str_to_bool_value(value)
