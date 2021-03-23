@@ -15,7 +15,7 @@ else:
     from django.urls import reverse
 
 from maintenance_mode import (
-    backends, core, http, io, middleware, utils, version, views, )
+    backends, core, http, io, logging, middleware, utils, version, views, )
 from maintenance_mode.management.commands.maintenance_mode import (
     Command as MaintenanceModeCommand, )
 
@@ -294,6 +294,28 @@ class MaintenanceModeTestCase(TestCase):
         io.write_file(settings.MAINTENANCE_MODE_STATE_FILE_PATH, 'not bool')
         self.assertRaises(ValueError, core.get_maintenance_mode)
         self.assertRaises(TypeError, core.set_maintenance_mode, 'not bool')
+
+    def test_logging_filter(self):
+
+        self.__reset_state()
+
+        class Record(object):
+            status_code = 0
+
+        f = logging.RequireNotMaintenanceMode503()
+        r = Record()
+
+        settings.MAINTENANCE_MODE = True
+        r.status_code = 503
+        self.assertFalse(f.filter(r))
+        r.status_code = 200
+        self.assertTrue(f.filter(r))
+
+        settings.MAINTENANCE_MODE = False
+        r.status_code = 503
+        self.assertTrue(f.filter(r))
+        r.status_code = 200
+        self.assertTrue(f.filter(r))
 
     def test_management_commands(self):
 
