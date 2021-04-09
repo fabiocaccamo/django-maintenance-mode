@@ -269,10 +269,10 @@ Superusers can change maintenance-mode using the following urls:
 ## Testing
 ```bash
 # create python virtual environment
-virtualenv testing_django_maintanance_mode
+virtualenv testing_django_maintenance_mode
 
 # activate virtualenv
-cd testing_django_maintanance_mode && . bin/activate
+cd testing_django_maintenance_mode && . bin/activate
 
 # clone repo
 git clone https://github.com/fabiocaccamo/django-maintenance-mode.git src && cd src
