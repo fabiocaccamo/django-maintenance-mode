@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.16.1](https://github.com/fabiocaccamo/django-maintenance-mode/releases/tag/0.16.1) - 2021-09-24
+-   Fixed logging filter condition to disable emailing 503 errors to admins while maintenance mode is enabled. #72
+-   Added `python 3.9` and `django 3.2` to `tox` and `travis`.
+-   Added docstring to `backends`, fixed miscellaneous typo.
+-   Removed outdated `CONTEXT_PROCESSORS` reference from installation instructions.
+
 ## [0.16.0](https://github.com/fabiocaccamo/django-maintenance-mode/releases/tag/0.16.0) - 2021-11-23
 -   Added `maintenance_mode.backends.DefaultStorageBackend`.
 -   Added `maintenance_mode.logging.RequireNotMaintenanceMode503` logging filter. #72
