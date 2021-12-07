@@ -276,6 +276,10 @@ cd testing_django_maintenance_mode && . bin/activate
 # clone repo
 git clone https://github.com/fabiocaccamo/django-maintenance-mode.git src && cd src
 
+# install requirements
+pip install -r requirements.txt
+pip install -r requirements-test.txt
+
 # run tests
 tox
 # or
