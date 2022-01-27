@@ -2,16 +2,15 @@
 [![](https://img.shields.io/pypi/djversions/django-maintenance-mode?color=0C4B33&logo=django&logoColor=white&label=django)](https://www.djangoproject.com/)
 
 [![](https://img.shields.io/pypi/v/django-maintenance-mode.svg?color=blue&logo=pypi&logoColor=white)](https://pypi.org/project/django-maintenance-mode/)
-[![](https://pepy.tech/badge/django-maintenance-mode)](https://pepy.tech/project/django-maintenance-mode)
+[![](https://pepy.tech/badge/django-maintenance-mode/month)](https://pepy.tech/project/django-maintenance-mode)
 [![](https://img.shields.io/github/stars/fabiocaccamo/django-maintenance-mode?logo=github)](https://github.com/fabiocaccamo/django-maintenance-mode/)
 [![](https://badges.pufler.dev/visits/fabiocaccamo/django-maintenance-mode?label=visitors&color=blue)](https://badges.pufler.dev)
 [![](https://img.shields.io/pypi/l/django-maintenance-mode.svg?color=blue)](https://github.com/fabiocaccamo/django-maintenance-mode/blob/master/LICENSE.txt)
 
-[![](https://img.shields.io/github/workflow/status/fabiocaccamo/django-maintenance-mode/Python%20package?label=build&logo=github)](https://github.com/fabiocaccamo/django-maintenance-mode)
+[![](https://img.shields.io/github/workflow/status/fabiocaccamo/django-maintenance-mode/Test%20package?label=build&logo=github)](https://github.com/fabiocaccamo/django-maintenance-mode)
 [![](https://img.shields.io/codecov/c/gh/fabiocaccamo/django-maintenance-mode?logo=codecov)](https://codecov.io/gh/fabiocaccamo/django-maintenance-mode)
 [![](https://img.shields.io/codacy/grade/918668ac85e74206a4d8d95923548d79?logo=codacy)](https://www.codacy.com/app/fabiocaccamo/django-maintenance-mode)
 [![](https://img.shields.io/codeclimate/maintainability/fabiocaccamo/django-maintenance-mode?logo=code-climate)](https://codeclimate.com/github/fabiocaccamo/django-maintenance-mode/)
-[![](https://requires.io/github/fabiocaccamo/django-maintenance-mode/requirements.svg?branch=master)](https://requires.io/github/fabiocaccamo/django-maintenance-mode/requirements/?branch=master)
 
 # django-maintenance-mode
 django-maintenance-mode shows a 503 error page when **maintenance-mode** is **on**.
