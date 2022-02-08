@@ -11,5 +11,5 @@ from django.http import HttpResponse
 
 
 urlpatterns = [
-    re_path(r'^$', lambda x: HttpResponse()),
+    re_path(r"^$", lambda x: HttpResponse()),
 ]

@@ -10,7 +10,9 @@ else:
     from django.views import View
 
 from maintenance_mode.decorators import (
-    force_maintenance_mode_off, force_maintenance_mode_on, )
+    force_maintenance_mode_off,
+    force_maintenance_mode_on,
+)
 
 
 @force_maintenance_mode_off
@@ -24,7 +26,6 @@ def force_maintenance_mode_on_view(request):
 
 
 class ForceMaintenanceModeOffView(View):
-
     @method_decorator(force_maintenance_mode_off)
     def dispatch(self, *args, **kwargs):
         return super(ForceMaintenanceModeOffView, self).dispatch(*args, **kwargs)
@@ -34,7 +35,6 @@ class ForceMaintenanceModeOffView(View):
 
 
 class ForceMaintenanceModeOnView(View):
-
     @method_decorator(force_maintenance_mode_on)
     def dispatch(self, *args, **kwargs):
         return super(ForceMaintenanceModeOnView, self).dispatch(*args, **kwargs)

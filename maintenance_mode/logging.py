@@ -19,7 +19,7 @@ class RequireNotMaintenanceMode503(logging.Filter):
         Return False if maintenance mode is on and
         the given record has a status code of 503.
         """
-        status_code = getattr(record, 'status_code', None)
+        status_code = getattr(record, "status_code", None)
         if get_maintenance_mode() and status_code == 503:
             return False
         return True

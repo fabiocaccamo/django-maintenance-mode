@@ -8,19 +8,18 @@ from maintenance_mode.io import read_file, write_file
 
 
 class AbstractStateBackend(object):
-
     @staticmethod
     def from_bool_to_str_value(value):
         value = str(int(value))
-        if value not in ['0', '1']:
-            raise ValueError('state value is not 0|1')
+        if value not in ["0", "1"]:
+            raise ValueError("state value is not 0|1")
         return value
 
     @staticmethod
     def from_str_to_bool_value(value):
         value = value.strip()
-        if value not in ['0', '1']:
-            raise ValueError('state value is not 0|1')
+        if value not in ["0", "1"]:
+            raise ValueError("state value is not 0|1")
         value = bool(int(value))
         return value
 
@@ -36,10 +35,11 @@ class DefaultStorageBackend(AbstractStateBackend):
     django-maintenance-mode backend which uses the default storage.
     Kindly provided by Dominik George https://github.com/Natureshadow
     """
+
     def get_value(self):
         filename = settings.MAINTENANCE_MODE_STATE_FILE_NAME
         try:
-            with default_storage.open(filename, 'r') as statefile:
+            with default_storage.open(filename, "r") as statefile:
                 return self.from_str_to_bool_value(statefile.read())
         except IOError:
             return False
@@ -56,8 +56,9 @@ class LocalFileBackend(AbstractStateBackend):
     """
     django-maintenance-mode backend which uses the local file-sistem.
     """
+
     def get_value(self):
-        value = read_file(settings.MAINTENANCE_MODE_STATE_FILE_PATH, '0')
+        value = read_file(settings.MAINTENANCE_MODE_STATE_FILE_PATH, "0")
         value = self.from_str_to_bool_value(value)
         return value
 

@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
 from maintenance_mode.http import (
-    get_maintenance_response, need_maintenance_response, )
+    get_maintenance_response,
+    need_maintenance_response,
+)
 
 
 class MaintenanceModeMiddleware(object):
-
     def __init__(self, get_response=None):
         self.get_response = get_response
 

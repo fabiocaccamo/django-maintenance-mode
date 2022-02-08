@@ -11,6 +11,7 @@
 [![](https://img.shields.io/codecov/c/gh/fabiocaccamo/django-maintenance-mode?logo=codecov)](https://codecov.io/gh/fabiocaccamo/django-maintenance-mode)
 [![](https://img.shields.io/codacy/grade/918668ac85e74206a4d8d95923548d79?logo=codacy)](https://www.codacy.com/app/fabiocaccamo/django-maintenance-mode)
 [![](https://img.shields.io/codeclimate/maintainability/fabiocaccamo/django-maintenance-mode?logo=code-climate)](https://codeclimate.com/github/fabiocaccamo/django-maintenance-mode/)
+[![](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 # django-maintenance-mode
 django-maintenance-mode shows a 503 error page when **maintenance-mode** is **on**.
@@ -21,16 +22,16 @@ It doesn't use database and doesn't prevent database access.
 
 ## Installation
 
-1. Run ``pip install django-maintenance-mode`` or [download django-maintenance-mode](http://pypi.python.org/pypi/django-maintenance-mode) and add the **maintenance_mode** package to your project
-2. Add ``'maintenance_mode'`` to ``settings.INSTALLED_APPS`` before custom applications
-3. Add ``'maintenance_mode.middleware.MaintenanceModeMiddleware'`` to ``settings.MIDDLEWARE_CLASSES``/``settings.MIDDLEWARE`` as last middleware
-4. Add your custom ``templates/503.html`` file
+1. Run `pip install django-maintenance-mode` or [download django-maintenance-mode](http://pypi.python.org/pypi/django-maintenance-mode) and add the **maintenance_mode** package to your project
+2. Add `maintenance_mode` to `settings.INSTALLED_APPS` before custom applications
+3. Add `maintenance_mode.middleware.MaintenanceModeMiddleware` to `settings.MIDDLEWARE` as last middleware
+4. Add your custom `templates/503.html` file
 5. Restart your application server
 
 ## Configuration (optional)
 
 ### Settings
-All these settings are optional, if not defined in ``settings.py`` the default values (listed below) will be used.
+All these settings are optional, if not defined in `settings.py` the default values (listed below) will be used.
 
 ```python
 # if True the maintenance-mode will be activated
@@ -42,16 +43,16 @@ MAINTENANCE_MODE = None
 # if you want to use the db or cache, you can create a custom backend
 # custom backends must extend 'maintenance_mode.backends.AbstractStateBackend' class
 # and implement get_value(self) and set_value(self, val) methods
-MAINTENANCE_MODE_STATE_BACKEND = 'maintenance_mode.backends.LocalFileBackend'
+MAINTENANCE_MODE_STATE_BACKEND = "maintenance_mode.backends.LocalFileBackend"
 
 # alternatively it is possible to use the default storage backend
-MAINTENANCE_MODE_STATE_BACKEND = 'maintenance_mode.backends.DefaultStorageBackend'
+MAINTENANCE_MODE_STATE_BACKEND = "maintenance_mode.backends.DefaultStorageBackend"
 ```
 
 ```python
 # by default, a file named "maintenance_mode_state.txt" will be created in the settings.py directory
 # you can customize the state file path in case the default one is not writable
-MAINTENANCE_MODE_STATE_FILE_PATH = 'maintenance_mode_state.txt'
+MAINTENANCE_MODE_STATE_FILE_PATH = "maintenance_mode_state.txt"
 ```
 
 ```python
@@ -93,7 +94,7 @@ MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS = None
 ```
 Retrieve user's real IP address using [`django-ipware`](https://github.com/un33k/django-ipware):
 ```python
-MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS = 'ipware.ip.get_ip'
+MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS = "ipware.ip.get_ip"
 ```
 
 ```python
@@ -115,7 +116,7 @@ MAINTENANCE_MODE_REDIRECT_URL = None
 
 ```python
 # the template that will be shown by the maintenance-mode page
-MAINTENANCE_MODE_TEMPLATE = '503.html'
+MAINTENANCE_MODE_TEMPLATE = "503.html"
 ```
 
 ```python
@@ -134,16 +135,16 @@ MAINTENANCE_MODE_RETRY_AFTER = 3600 # 1 hour
 ```
 
 #### Context Processors
-Add **maintenance_mode.context_processors.maintenance_mode** to your context_processors list in ``settings.py`` if you want to access the maintenance_mode status in your templates.
+Add **maintenance_mode.context_processors.maintenance_mode** to your context_processors list in `settings.py` if you want to access the maintenance_mode status in your templates.
 
 ```python
 TEMPLATES = [
     {
         # ...
-        'OPTIONS': {
-            'context_processors': [
+        "OPTIONS": {
+            "context_processors": [
                 # ...
-                'maintenance_mode.context_processors.maintenance_mode',
+                "maintenance_mode.context_processors.maintenance_mode",
                 # ...
             ],
         },
@@ -157,13 +158,13 @@ You can disable emailing 503 errors to admins while maintenance mode is enabled:
 
 ```python
 LOGGING = {
-    'filters': {
-        'require_not_maintenance_mode_503': {
-            '()': 'maintenance_mode.logging.RequireNotMaintenanceMode503',
+    "filters": {
+        "require_not_maintenance_mode_503": {
+            "()": "maintenance_mode.logging.RequireNotMaintenanceMode503",
         },
         ...
     },
-    'handlers': {
+    "handlers": {
         ...
     },
     ...
@@ -186,12 +187,12 @@ with maintenance_mode_off():
 ```
 
 ### URLs
-Add **maintenance_mode.urls** to ``urls.py`` if you want superusers able to set maintenance_mode using urls.
+Add **maintenance_mode.urls** to `urls.py` if you want superusers able to set maintenance_mode using urls.
 
 ```python
 urlpatterns = [
     # ...
-    url(r'^maintenance-mode/', include('maintenance_mode.urls')),
+    url(r"^maintenance-mode/", include("maintenance_mode.urls")),
     # ...
 ]
 ```
@@ -234,13 +235,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        call_command('maintenance_mode', 'on')
+        call_command("maintenance_mode", "on")
 
         # call your command(s)
 
-        call_command('maintenance_mode', 'off')
-
-
+        call_command("maintenance_mode", "off")
 
 ```
 
@@ -260,9 +259,9 @@ Run ``python manage.py maintenance_mode <on|off>``
 ### URLs
 Superusers can change maintenance-mode using the following urls:
 
-``/maintenance-mode/off/``
+`/maintenance-mode/off/`
 
-``/maintenance-mode/on/``
+`/maintenance-mode/on/`
 
 ## Testing
 ```bash
