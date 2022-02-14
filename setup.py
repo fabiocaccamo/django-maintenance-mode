@@ -54,7 +54,12 @@ setup(
         "temporarily",
         "unavailable",
     ],
-    requires=["django(>=1.7)"],
+    requires=[
+        "django(>=1.7)",
+    ],
+    install_requires=[
+        "python-fsutil >= 0.6.0",
+    ],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Environment :: Web Environment",

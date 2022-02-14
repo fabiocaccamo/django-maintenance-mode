@@ -120,9 +120,7 @@ class MaintenanceModeTestCase(TestCase):
         self.request_factory = RequestFactory()
         self.middleware = middleware.MaintenanceModeMiddleware()
 
-        self.invalid_file_path = (
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZ:/" "maintenance_mode_state.txt"
-        )
+        self.invalid_file_path = "maintenance_mode_state_!#%&.txt"
 
         self.__reset_state()
 
