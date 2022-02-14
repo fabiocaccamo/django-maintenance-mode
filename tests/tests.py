@@ -196,8 +196,8 @@ class MaintenanceModeTestCase(TestCase):
 
         file_path = self.invalid_file_path
 
-        self.assertRaises(IOError, io.write_file, file_path, "test")
-        self.assertRaises(IOError, io.read_file, file_path)
+        self.assertRaises((IOError, OSError), io.write_file, file_path, "test")
+        self.assertRaises((IOError, OSError), io.read_file, file_path)
 
     def test_backend_local_file(self):
 
@@ -296,8 +296,8 @@ class MaintenanceModeTestCase(TestCase):
         file_path = settings.MAINTENANCE_MODE_STATE_FILE_PATH
         settings.MAINTENANCE_MODE_STATE_FILE_PATH = self.invalid_file_path
 
-        self.assertRaises(IOError, core.get_maintenance_mode)
-        self.assertRaises(IOError, core.set_maintenance_mode, True)
+        self.assertRaises((IOError, OSError), core.get_maintenance_mode)
+        self.assertRaises((IOError, OSError), core.set_maintenance_mode, True)
 
         settings.MAINTENANCE_MODE_STATE_FILE_PATH = file_path
 
@@ -375,17 +375,17 @@ class MaintenanceModeTestCase(TestCase):
         file_path = settings.MAINTENANCE_MODE_STATE_FILE_PATH
         settings.MAINTENANCE_MODE_STATE_FILE_PATH = self.invalid_file_path
 
-        with self.assertRaises(CommandError):
+        with self.assertRaises((CommandError, OSError)):
             call_command("maintenance_mode", "on")
 
-        with self.assertRaises(CommandError):
+        with self.assertRaises((CommandError, OSError)):
             call_command("maintenance_mode", "off")
 
-        with self.assertRaises(CommandError):
+        with self.assertRaises((CommandError, OSError)):
             cmd = MaintenanceModeCommand()
             cmd.get_maintenance_mode()
 
-        with self.assertRaises(CommandError):
+        with self.assertRaises((CommandError, OSError)):
             cmd = MaintenanceModeCommand()
             cmd.set_maintenance_mode(True)
 
