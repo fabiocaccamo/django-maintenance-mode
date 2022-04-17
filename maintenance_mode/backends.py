@@ -48,7 +48,7 @@ class DefaultStorageBackend(AbstractStateBackend):
         filename = settings.MAINTENANCE_MODE_STATE_FILE_NAME
         if default_storage.exists(filename):
             default_storage.delete(filename)
-        content = ContentFile(self.from_bool_to_str_value(value))
+        content = ContentFile(self.from_bool_to_str_value(value).encode())
         default_storage.save(filename, content)
 
 
