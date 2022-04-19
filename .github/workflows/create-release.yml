@@ -18,11 +18,11 @@ jobs:
         uses: ffurrer2/extract-release-notes@v1
 
       - name: Create release
-        uses: softprops/action-gh-release@v1
+        uses: ncipollo/release-action@v1
         with:
           body: ${{ steps.extract-release-notes.outputs.release_notes }}
           draft: false
           name: ${{ github.ref }}
           prerelease: false
-          tag_name: ${{ github.ref }}
+          tag: ${{ github.ref }}
           token: ${{ secrets.WORKFLOWS_CREATE_RELEASE_TOKEN }}
