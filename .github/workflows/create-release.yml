@@ -21,8 +21,4 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           body: ${{ steps.extract-release-notes.outputs.release_notes }}
-          draft: false
-          name: ${{ github.ref }}
-          prerelease: false
-          tag: ${{ github.ref }}
           token: ${{ secrets.WORKFLOWS_CREATE_RELEASE_TOKEN }}
