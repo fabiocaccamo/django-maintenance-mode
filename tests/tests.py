@@ -8,10 +8,10 @@ from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.test import (
     Client,
-    override_settings,
     RequestFactory,
     SimpleTestCase,
     TestCase,
+    override_settings,
 )
 
 if django.VERSION < (1, 10):
@@ -19,16 +19,7 @@ if django.VERSION < (1, 10):
 else:
     from django.urls import reverse
 
-from maintenance_mode import (
-    backends,
-    core,
-    http,
-    io,
-    middleware,
-    utils,
-    version,
-    views,
-)
+from maintenance_mode import backends, core, http, io, middleware, utils, version, views
 from maintenance_mode.logging import RequireNotMaintenanceMode503
 from maintenance_mode.management.commands.maintenance_mode import (
     Command as MaintenanceModeCommand,
@@ -46,10 +37,7 @@ import re
 import sys
 from tempfile import mkstemp
 
-from .views import (
-    force_maintenance_mode_off_view,
-    force_maintenance_mode_on_view,
-)
+from .views import force_maintenance_mode_off_view, force_maintenance_mode_on_view
 
 
 class NotImplementedBackend(backends.AbstractStateBackend):

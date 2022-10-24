@@ -3,7 +3,6 @@
 from __future__ import absolute_import
 
 import django
-
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 

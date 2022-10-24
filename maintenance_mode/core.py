@@ -23,9 +23,9 @@ except ImportError:
             return inner
 
 
-from django.utils.module_loading import import_string
-
 from functools import wraps
+
+from django.utils.module_loading import import_string
 
 from maintenance_mode.backends import AbstractStateBackend
 

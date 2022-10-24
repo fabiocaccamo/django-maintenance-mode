@@ -7,6 +7,7 @@
 [![](https://badges.pufler.dev/visits/fabiocaccamo/django-maintenance-mode?label=visitors&color=blue)](https://badges.pufler.dev)
 [![](https://img.shields.io/pypi/l/django-maintenance-mode.svg?color=blue)](https://github.com/fabiocaccamo/django-maintenance-mode/blob/master/LICENSE.txt)
 
+[![](https://results.pre-commit.ci/badge/github/fabiocaccamo/django-maintenance-mode/master.svg)](https://results.pre-commit.ci/latest/github/fabiocaccamo/django-maintenance-mode/master)
 [![](https://img.shields.io/github/workflow/status/fabiocaccamo/django-maintenance-mode/Test%20package?label=build&logo=github)](https://github.com/fabiocaccamo/django-maintenance-mode)
 [![](https://img.shields.io/codecov/c/gh/fabiocaccamo/django-maintenance-mode?logo=codecov)](https://codecov.io/gh/fabiocaccamo/django-maintenance-mode)
 [![](https://img.shields.io/codacy/grade/918668ac85e74206a4d8d95923548d79?logo=codacy)](https://www.codacy.com/app/fabiocaccamo/django-maintenance-mode)

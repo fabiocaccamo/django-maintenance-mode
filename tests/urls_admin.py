@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import django
-
 from django.contrib import admin
 
 if django.VERSION < (2, 0):
@@ -10,7 +9,6 @@ else:
     from django.urls import re_path
 
 from django.http import HttpResponse
-
 
 urlpatterns = [
     re_path(r"^$", lambda x: HttpResponse(), name="root"),

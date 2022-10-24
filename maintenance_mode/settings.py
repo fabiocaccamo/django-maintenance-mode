@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from django.conf import settings
-from django.utils.module_loading import import_module
-
-import fsutil
 import os
 
+import fsutil
+from django.conf import settings
+from django.utils.module_loading import import_module
 
 if not hasattr(settings, "MAINTENANCE_MODE"):
     settings.MAINTENANCE_MODE = None

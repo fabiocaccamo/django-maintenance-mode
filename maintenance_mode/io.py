@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import fsutil
 import os
+
+import fsutil
 
 
 def read_file(file_path, default_content=""):
