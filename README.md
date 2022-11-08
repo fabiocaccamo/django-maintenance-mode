@@ -193,7 +193,7 @@ Add **maintenance_mode.urls** to `urls.py` if you want superusers able to set ma
 ```python
 urlpatterns = [
     # ...
-    url(r"^maintenance-mode/", include("maintenance_mode.urls")),
+    re_path(r"^maintenance-mode/", include("maintenance_mode.urls")),
     # ...
 ]
 ```
