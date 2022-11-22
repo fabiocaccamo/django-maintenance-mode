@@ -36,8 +36,11 @@ class DefaultStorageBackend(AbstractStateBackend):
     Kindly provided by Dominik George https://github.com/Natureshadow
     """
 
+    def _get_filename(self):
+        return settings.MAINTENANCE_MODE_STATE_FILE_NAME
+
     def get_value(self):
-        filename = settings.MAINTENANCE_MODE_STATE_FILE_NAME
+        filename = self._get_filename()
         try:
             with default_storage.open(filename, "r") as statefile:
                 return self.from_str_to_bool_value(statefile.read())
@@ -45,7 +48,7 @@ class DefaultStorageBackend(AbstractStateBackend):
             return False
 
     def set_value(self, value):
-        filename = settings.MAINTENANCE_MODE_STATE_FILE_NAME
+        filename = self._get_filename()
         if default_storage.exists(filename):
             default_storage.delete(filename)
         content = ContentFile(self.from_bool_to_str_value(value).encode())
@@ -57,11 +60,14 @@ class LocalFileBackend(AbstractStateBackend):
     django-maintenance-mode backend which uses the local file-sistem.
     """
 
+    def _get_filepath(self):
+        return settings.MAINTENANCE_MODE_STATE_FILE_PATH
+
     def get_value(self):
-        value = read_file(settings.MAINTENANCE_MODE_STATE_FILE_PATH, "0")
+        value = read_file(self._get_filepath(), "0")
         value = self.from_str_to_bool_value(value)
         return value
 
     def set_value(self, value):
         value = self.from_bool_to_str_value(value)
-        write_file(settings.MAINTENANCE_MODE_STATE_FILE_PATH, value)
+        write_file(self._get_filepath(), value)
