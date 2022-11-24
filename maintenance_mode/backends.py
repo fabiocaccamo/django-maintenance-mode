@@ -3,6 +3,7 @@
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
+from django.contrib.staticfiles.storage import staticfiles_storage
 
 from maintenance_mode.io import read_file, write_file
 
@@ -53,6 +54,27 @@ class DefaultStorageBackend(AbstractStateBackend):
             default_storage.delete(filename)
         content = ContentFile(self.from_bool_to_str_value(value).encode())
         default_storage.save(filename, content)
+
+
+class StaticStorageBackend(AbstractStateBackend):
+    """
+    django-maintenance-mode backend which uses the staticfiles storage.
+    """
+
+    def get_value(self):
+        filename = settings.MAINTENANCE_MODE_STATE_FILE_NAME
+        try:
+            with staticfiles_storage.open(filename, "r") as statefile:
+                return self.from_str_to_bool_value(statefile.read())
+        except IOError:
+            return False
+
+    def set_value(self, value):
+        filename = settings.MAINTENANCE_MODE_STATE_FILE_NAME
+        if staticfiles_storage.exists(filename):
+            staticfiles_storage.delete(filename)
+        content = ContentFile(self.from_bool_to_str_value(value).encode())
+        staticfiles_storage.save(filename, content)
 
 
 class LocalFileBackend(AbstractStateBackend):
