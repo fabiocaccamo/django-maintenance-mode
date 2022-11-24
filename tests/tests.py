@@ -239,6 +239,8 @@ class MaintenanceModeTestCase(TestCase):
         settings.MAINTENANCE_MODE_STATE_BACKEND = (
             "maintenance_mode.backends.StaticStorageBackend"
         )
+        settings.STATIC_URL = "/static/"
+        settings.STATIC_ROOT = "static"
 
         backend = core.get_maintenance_mode_backend()
         self.assertEqual(backend.get_value(), False)
