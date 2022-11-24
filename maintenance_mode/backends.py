@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from django.conf import settings
+from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
-from django.contrib.staticfiles.storage import staticfiles_storage
 
 from maintenance_mode.io import read_file, write_file
 
