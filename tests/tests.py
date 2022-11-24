@@ -232,6 +232,27 @@ class MaintenanceModeTestCase(TestCase):
             "maintenance_mode.backends.LocalFileBackend"
         )
 
+    def test_backend_static_storage(self):
+
+        self.__reset_state()
+
+        settings.MAINTENANCE_MODE_STATE_BACKEND = (
+            "maintenance_mode.backends.StaticStorageBackend"
+        )
+
+        backend = core.get_maintenance_mode_backend()
+        self.assertEqual(backend.get_value(), False)
+
+        backend.set_value(True)
+        self.assertEqual(backend.get_value(), True)
+
+        backend.set_value(False)
+        self.assertEqual(backend.get_value(), False)
+
+        settings.MAINTENANCE_MODE_STATE_BACKEND = (
+            "maintenance_mode.backends.LocalFileBackend"
+        )
+
     def test_backend_custom_invalid(self):
 
         self.__reset_state()
