@@ -97,10 +97,7 @@ class MaintenanceModeTestCase(TestCase):
 
     def assertMaintenanceResponse(self, response):
         self.assertTemplateUsed(settings.MAINTENANCE_MODE_TEMPLATE)
-        if django.VERSION >= (1, 8):
-            self.assertEqual(
-                response.status_code, settings.MAINTENANCE_MODE_STATUS_CODE
-            )
+        self.assertEqual(response.status_code, settings.MAINTENANCE_MODE_STATUS_CODE)
 
     def assertOkResponse(self, response):
         self.assertEqual(response.status_code, 200)
