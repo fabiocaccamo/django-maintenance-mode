@@ -51,7 +51,7 @@ setup(
         "unavailable",
     ],
     requires=[
-        "django >= 2.2",
+        "django (>= 2.2)",
     ],
     install_requires=[
         "python-fsutil >= 0.7.0",
