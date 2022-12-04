@@ -51,10 +51,10 @@ setup(
         "unavailable",
     ],
     requires=[
-        "django(>=1.7)",
+        "django >= 2.2",
     ],
     install_requires=[
-        "python-fsutil >= 0.6.0",
+        "python-fsutil >= 0.7.0",
     ],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
