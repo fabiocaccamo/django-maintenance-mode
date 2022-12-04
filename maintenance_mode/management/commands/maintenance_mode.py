@@ -1,8 +1,3 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import absolute_import
-
-import django
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
@@ -63,15 +58,7 @@ class Command(BaseCommand):
         verbosity = int(options["verbosity"])
         verbose = True if verbosity == 3 else False
         interactive = options.get("interactive", False)
-
-        if django.VERSION < (1, 8):
-            if len(args) != 1:
-                raise CommandError("Expected 1 argument: %s" % (self.args,))
-
-            state = args[0]
-        else:
-            state = options["state"]
-
+        state = options["state"]
         state = state.lower()
         value = self.get_maintenance_mode()
 

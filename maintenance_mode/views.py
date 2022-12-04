@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from django.http import HttpResponseRedirect
 
 from maintenance_mode.core import set_maintenance_mode

@@ -1,6 +1,9 @@
-# -*- coding: utf-8 -*-
+import os
+import re
+import sys
+from io import StringIO
+from tempfile import mkstemp
 
-import django
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, User
 from django.core.exceptions import ImproperlyConfigured
@@ -13,29 +16,13 @@ from django.test import (
     TestCase,
     override_settings,
 )
-
-if django.VERSION < (1, 10):
-    from django.core.urlresolvers import reverse
-else:
-    from django.urls import reverse
+from django.urls import reverse
 
 from maintenance_mode import backends, core, http, io, middleware, utils, version, views
 from maintenance_mode.logging import RequireNotMaintenanceMode503
 from maintenance_mode.management.commands.maintenance_mode import (
     Command as MaintenanceModeCommand,
 )
-
-try:
-    # Python 2
-    from StringIO import StringIO
-except ImportError:
-    # Python 3
-    from io import StringIO
-
-import os
-import re
-import sys
-from tempfile import mkstemp
 
 from .views import force_maintenance_mode_off_view, force_maintenance_mode_on_view
 
@@ -60,13 +47,6 @@ def get_template_context(request):
         "maintenance_mode.middleware.MaintenanceModeMiddleware",
     ],
     ROOT_URLCONF="tests.urls",
-    # for django < 1.8
-    TEMPLATE_CONTEXT_PROCESSORS=(
-        "django.contrib.auth.context_processors.auth",
-        "django.core.context_processors.request",
-        "maintenance_mode.context_processors.maintenance_mode",
-    ),
-    # for django >= 1.8
     TEMPLATES=[
         {
             "BACKEND": "django.template.backends.django.DjangoTemplates",

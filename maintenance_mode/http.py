@@ -1,37 +1,16 @@
-# -*- coding: utf-8 -*-
+import re
+import sys
 
-import django
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-
-if django.VERSION < (2, 0):
-    from django.core.urlresolvers import NoReverseMatch, Resolver404, resolve, reverse
-else:
-    from django.urls import (
-        NoReverseMatch,
-        resolve,
-        Resolver404,
-        reverse,
-    )
-
-import re
-
 from django.shortcuts import redirect, render
 from django.template import RequestContext
+from django.urls import NoReverseMatch, Resolver404, resolve, reverse
 from django.utils.cache import add_never_cache_headers
 from django.utils.module_loading import import_string
 
 from maintenance_mode.core import get_maintenance_mode
 from maintenance_mode.utils import get_client_ip_address
-
-try:
-    # since python 3.7
-    pattern_class = re.Pattern
-except AttributeError:
-    # before python 3.7
-    pattern_class = re._pattern_type
-
-import sys
 
 
 def get_maintenance_response(request):
@@ -57,9 +36,6 @@ def get_maintenance_response(request):
         context = get_request_context_func(request=request)
 
     kwargs = {"context": context}
-    if django.VERSION < (1, 8):
-        kwargs = {"context_instance": RequestContext(request, context)}
-
     response = render(
         request,
         settings.MAINTENANCE_MODE_TEMPLATE,
@@ -110,35 +86,18 @@ def _need_maintenance_ignore_users(request):
     if not hasattr(request, "user"):
         return
 
-    if django.VERSION < (1, 10):
-        if (
-            settings.MAINTENANCE_MODE_IGNORE_ANONYMOUS_USER
-            and request.user.is_anonymous()
-        ):
-            return False
+    user = request.user
 
-        if (
-            settings.MAINTENANCE_MODE_IGNORE_AUTHENTICATED_USER
-            and request.user.is_authenticated()
-        ):
-            return False
-    else:
-        if (
-            settings.MAINTENANCE_MODE_IGNORE_ANONYMOUS_USER
-            and request.user.is_anonymous
-        ):
-            return False
-
-        if (
-            settings.MAINTENANCE_MODE_IGNORE_AUTHENTICATED_USER
-            and request.user.is_authenticated
-        ):
-            return False
-
-    if settings.MAINTENANCE_MODE_IGNORE_STAFF and request.user.is_staff:
+    if settings.MAINTENANCE_MODE_IGNORE_ANONYMOUS_USER and user.is_anonymous:
         return False
 
-    if settings.MAINTENANCE_MODE_IGNORE_SUPERUSER and request.user.is_superuser:
+    if settings.MAINTENANCE_MODE_IGNORE_AUTHENTICATED_USER and user.is_authenticated:
+        return False
+
+    if settings.MAINTENANCE_MODE_IGNORE_STAFF and user.is_staff:
+        return False
+
+    if settings.MAINTENANCE_MODE_IGNORE_SUPERUSER and user.is_superuser:
         return False
 
 
@@ -206,7 +165,7 @@ def _need_maintenance_ignore_urls(request):
         return
 
     for url in settings.MAINTENANCE_MODE_IGNORE_URLS:
-        if not isinstance(url, pattern_class):
+        if not isinstance(url, re.Pattern):
             url = str(url)
         url_re = re.compile(url)
         if url_re.match(request.path_info):

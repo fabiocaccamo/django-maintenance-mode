@@ -1,30 +1,8 @@
-# -*- coding: utf-8 -*-
+from contextlib import ContextDecorator
+from functools import wraps
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-
-try:
-    from contextlib import ContextDecorator
-except ImportError:
-    # ContextDecorator was introduced in Django 1.8
-    from django.utils.decorators import available_attrs
-
-    class ContextDecorator(object):
-        """
-        A base class that enables a context manager to also be used as a decorator.
-        """
-
-        def __call__(self, func):
-            @wraps(func, assigned=available_attrs(func))
-            def inner(*args, **kwargs):
-                with self:
-                    return func(*args, **kwargs)
-
-            return inner
-
-
-from functools import wraps
-
 from django.utils.module_loading import import_string
 
 from maintenance_mode.backends import AbstractStateBackend

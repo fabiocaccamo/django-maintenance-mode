@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from functools import wraps
 
 from maintenance_mode.http import get_maintenance_response

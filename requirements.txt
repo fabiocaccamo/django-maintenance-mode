@@ -1,2 +1,2 @@
-django >= 1.7.0
-python-fsutil >= 0.6.0
+django >= 2.2
+python-fsutil >= 0.7.0

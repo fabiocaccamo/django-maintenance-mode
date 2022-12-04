@@ -1,13 +1,6 @@
-# -*- coding: utf-8 -*-
-
-import django
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
-
-if django.VERSION < (1, 10):
-    from django.views.generic import View
-else:
-    from django.views import View
+from django.views import View
 
 from maintenance_mode.decorators import (
     force_maintenance_mode_off,

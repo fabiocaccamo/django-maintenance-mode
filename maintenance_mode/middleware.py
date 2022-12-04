@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from maintenance_mode.http import get_maintenance_response, need_maintenance_response
 
 

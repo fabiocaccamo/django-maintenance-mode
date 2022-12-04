@@ -1,14 +1,5 @@
-# -*- coding: utf-8 -*-
-
-import django
-
-if django.VERSION < (2, 0):
-    from django.conf.urls import include
-    from django.conf.urls import url as re_path
-else:
-    from django.urls import include, re_path
-
 from django.http import HttpResponse
+from django.urls import include, re_path
 
 from .views import (
     ForceMaintenanceModeOffView,
