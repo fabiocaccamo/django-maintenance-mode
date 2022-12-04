@@ -43,12 +43,7 @@ class Command(BaseCommand):
             self.set_maintenance_mode(value)
 
     def confirm(self, message):
-        # Fix for Python 2.x.
-        try:
-            input_func = raw_input
-        except NameError:
-            input_func = input
-
+        input_func = input
         answer = input_func(message)
         answer = answer.lower()
         return answer.find("y") == 0

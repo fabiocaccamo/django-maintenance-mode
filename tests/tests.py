@@ -40,7 +40,7 @@ def get_template_context(request):
 
 
 @override_settings(
-    MIDDLEWARE_CLASSES=[
+    MIDDLEWARE=[
         "django.contrib.sessions.middleware.SessionMiddleware",
         "django.middleware.common.CommonMiddleware",
         "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -370,14 +370,6 @@ class MaintenanceModeTestCase(TestCase):
         with self.assertRaises(CommandError):
             call_command("maintenance_mode", "hello world")
 
-    def test_management_commands_too_many_arguments(self):
-
-        self.__reset_state()
-
-        if django.VERSION < (1, 8):
-            with self.assertRaises(CommandError):
-                call_command("maintenance_mode", "on", "off")
-
     def test_management_commands_interactive(self):
 
         self.__reset_state()
@@ -562,7 +554,7 @@ class MaintenanceModeTestCase(TestCase):
         self.assertMaintenanceResponse(response)
 
     @override_settings(
-        MIDDLEWARE_CLASSES=[
+        MIDDLEWARE=[
             "django.contrib.sessions.middleware.SessionMiddleware",
             "django.middleware.common.CommonMiddleware",
             "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -660,7 +652,7 @@ class MaintenanceModeTestCase(TestCase):
             "maintenance_mode",
         ],
         ROOT_URLCONF="tests.urls_admin",
-        MIDDLEWARE_CLASSES=[
+        MIDDLEWARE=[
             "django.contrib.sessions.middleware.SessionMiddleware",
             "django.contrib.auth.middleware.AuthenticationMiddleware",
             "django.contrib.messages.middleware.MessageMiddleware",
@@ -905,10 +897,7 @@ class MaintenanceModeTestCase(TestCase):
         settings.MAINTENANCE_MODE_REDIRECT_URL = reverse("maintenance_mode_redirect")
         response = self.middleware.process_request(request)
         response.client = self.client
-        if django.VERSION < (1, 9):
-            self.assertEqual(response.url, settings.MAINTENANCE_MODE_REDIRECT_URL)
-        else:
-            self.assertRedirects(response, settings.MAINTENANCE_MODE_REDIRECT_URL)
+        self.assertRedirects(response, settings.MAINTENANCE_MODE_REDIRECT_URL)
 
         settings.MAINTENANCE_MODE_REDIRECT_URL = None
         response = self.middleware.process_request(request)
