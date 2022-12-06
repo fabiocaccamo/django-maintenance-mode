@@ -59,7 +59,7 @@ class LocalFileBackend(AbstractStateBackend):
     """
 
     def _get_filepath(self):
-        return "{}".format(settings.MAINTENANCE_MODE_STATE_FILE_PATH)
+        return f"{settings.MAINTENANCE_MODE_STATE_FILE_PATH}"
 
     def get_value(self):
         value = read_file(self._get_filepath(), "0")
