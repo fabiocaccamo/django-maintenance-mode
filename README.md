@@ -48,6 +48,10 @@ MAINTENANCE_MODE_STATE_BACKEND = "maintenance_mode.backends.LocalFileBackend"
 
 # alternatively it is possible to use the default storage backend
 MAINTENANCE_MODE_STATE_BACKEND = "maintenance_mode.backends.DefaultStorageBackend"
+
+# alternatively it is possible to use the static storage backend
+# make sure that STATIC_ROOT and SATIC_URL are also set
+MAINTENANCE_MODE_STATE_BACKEND = "maintenance_mode.backends.StaticStorageBackend"
 ```
 
 ```python
