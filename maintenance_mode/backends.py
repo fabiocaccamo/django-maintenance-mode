@@ -61,11 +61,10 @@ class StaticStorageBackend(AbstractStateBackend):
 
     def get_value(self):
         filename = settings.MAINTENANCE_MODE_STATE_FILE_NAME
-        try:
+        if staticfiles_storage.exists(filename):
             with staticfiles_storage.open(filename, "r") as statefile:
                 return self.from_str_to_bool_value(statefile.read())
-        except IOError:
-            return False
+        return False
 
     def set_value(self, value):
         filename = settings.MAINTENANCE_MODE_STATE_FILE_NAME
