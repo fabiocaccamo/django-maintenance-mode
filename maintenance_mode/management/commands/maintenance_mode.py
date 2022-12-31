@@ -20,7 +20,7 @@ class Command(BaseCommand):
         try:
             value = core.get_maintenance_mode()
             return value
-        except IOError:
+        except OSError:
             raise CommandError(
                 "Unable to read state file at: %s"
                 % (settings.MAINTENANCE_MODE_STATE_FILE_NAME,)
@@ -29,7 +29,7 @@ class Command(BaseCommand):
     def set_maintenance_mode(self, value):
         try:
             core.set_maintenance_mode(value)
-        except IOError:
+        except OSError:
             raise CommandError(
                 "Unable to write state file at: %s"
                 % (settings.MAINTENANCE_MODE_STATE_FILE_NAME,)
@@ -90,7 +90,7 @@ class Command(BaseCommand):
             )
 
         if verbose:
-            output = "maintenance mode: %s" % (
+            output = "maintenance mode: {}".format(
                 "on" if self.get_maintenance_mode() else "off",
             )
             self.stdout.write(output)

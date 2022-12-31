@@ -326,7 +326,7 @@ class MaintenanceModeTestCase(TestCase):
 
         self.__reset_state()
 
-        class Record(object):
+        class Record:
             status_code = 0
 
         f = RequireNotMaintenanceMode503()

@@ -21,7 +21,7 @@ def force_maintenance_mode_on_view(request):
 class ForceMaintenanceModeOffView(View):
     @method_decorator(force_maintenance_mode_off)
     def dispatch(self, *args, **kwargs):
-        return super(ForceMaintenanceModeOffView, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request):
         return HttpResponse()
@@ -30,7 +30,7 @@ class ForceMaintenanceModeOffView(View):
 class ForceMaintenanceModeOnView(View):
     @method_decorator(force_maintenance_mode_on)
     def dispatch(self, *args, **kwargs):
-        return super(ForceMaintenanceModeOnView, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request):
         return HttpResponse()

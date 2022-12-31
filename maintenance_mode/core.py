@@ -86,7 +86,7 @@ class maintenance_mode_on(override_maintenance_mode):
     """
 
     def __init__(self):
-        super(maintenance_mode_on, self).__init__(True)
+        super().__init__(True)
 
 
 class maintenance_mode_off(override_maintenance_mode):
@@ -95,4 +95,4 @@ class maintenance_mode_off(override_maintenance_mode):
     """
 
     def __init__(self):
-        super(maintenance_mode_off, self).__init__(False)
+        super().__init__(False)

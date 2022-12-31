@@ -6,7 +6,7 @@ from django.core.files.storage import default_storage
 from maintenance_mode.io import read_file, write_file
 
 
-class AbstractStateBackend(object):
+class AbstractStateBackend:
     @staticmethod
     def from_bool_to_str_value(value):
         value = str(int(value))
@@ -43,7 +43,7 @@ class DefaultStorageBackend(AbstractStateBackend):
         try:
             with default_storage.open(filename, "r") as statefile:
                 return self.from_str_to_bool_value(statefile.read())
-        except IOError:
+        except OSError:
             return False
 
     def set_value(self, value):
