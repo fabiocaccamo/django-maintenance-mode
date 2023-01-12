@@ -4,6 +4,7 @@ import sys
 from io import StringIO
 from tempfile import mkstemp
 
+import fsutil
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, User
 from django.core.exceptions import ImproperlyConfigured
@@ -88,7 +89,8 @@ class MaintenanceModeTestCase(TestCase):
         self.request_factory = RequestFactory()
         self.middleware = middleware.MaintenanceModeMiddleware()
 
-        self.invalid_file_path = "maintenance_mode_state_!#%&.txt"
+        # use an existing directory as filepath to be sure that an OSError is raised
+        self.invalid_file_path = fsutil.get_parent_dir(__file__)
 
         self.__reset_state()
 
