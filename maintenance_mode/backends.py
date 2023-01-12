@@ -40,11 +40,10 @@ class DefaultStorageBackend(AbstractStateBackend):
 
     def get_value(self):
         filename = self._get_filename()
-        try:
+        if default_storage.exists(filename):
             with default_storage.open(filename, "r") as statefile:
                 return self.from_str_to_bool_value(statefile.read())
-        except OSError:
-            return False
+        return False
 
     def set_value(self, value):
         filename = self._get_filename()
