@@ -4,10 +4,10 @@
 [![](https://img.shields.io/pypi/v/django-maintenance-mode.svg?color=blue&logo=pypi&logoColor=white)](https://pypi.org/project/django-maintenance-mode/)
 [![](https://pepy.tech/badge/django-maintenance-mode/month)](https://pepy.tech/project/django-maintenance-mode)
 [![](https://img.shields.io/github/stars/fabiocaccamo/django-maintenance-mode?logo=github)](https://github.com/fabiocaccamo/django-maintenance-mode/)
-[![](https://img.shields.io/pypi/l/django-maintenance-mode.svg?color=blue)](https://github.com/fabiocaccamo/django-maintenance-mode/blob/master/LICENSE.txt)
+[![](https://img.shields.io/pypi/l/django-maintenance-mode.svg?color=blue)](https://github.com/fabiocaccamo/django-maintenance-mode/blob/main/LICENSE.txt)
 
-[![](https://results.pre-commit.ci/badge/github/fabiocaccamo/django-maintenance-mode/master.svg)](https://results.pre-commit.ci/latest/github/fabiocaccamo/django-maintenance-mode/master)
-[![](https://img.shields.io/github/actions/workflow/status/fabiocaccamo/django-maintenance-mode/test-package.yml?branch=master&label=build&logo=github)](https://github.com/fabiocaccamo/django-maintenance-mode)
+[![](https://results.pre-commit.ci/badge/github/fabiocaccamo/django-maintenance-mode/main.svg)](https://results.pre-commit.ci/latest/github/fabiocaccamo/django-maintenance-mode/main)
+[![](https://img.shields.io/github/actions/workflow/status/fabiocaccamo/django-maintenance-mode/test-package.yml?branch=main&label=build&logo=github)](https://github.com/fabiocaccamo/django-maintenance-mode)
 [![](https://img.shields.io/codecov/c/gh/fabiocaccamo/django-maintenance-mode?logo=codecov)](https://codecov.io/gh/fabiocaccamo/django-maintenance-mode)
 [![](https://img.shields.io/codacy/grade/918668ac85e74206a4d8d95923548d79?logo=codacy)](https://www.codacy.com/app/fabiocaccamo/django-maintenance-mode)
 [![](https://img.shields.io/codeclimate/maintainability/fabiocaccamo/django-maintenance-mode?logo=code-climate)](https://codeclimate.com/github/fabiocaccamo/django-maintenance-mode/)
