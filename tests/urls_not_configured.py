@@ -1,6 +1,6 @@
 from django.http import HttpResponse
-from django.urls import re_path
+from django.urls import path
 
 urlpatterns = [
-    re_path(r"^$", lambda x: HttpResponse()),
+    path("", lambda x: HttpResponse()),
 ]
