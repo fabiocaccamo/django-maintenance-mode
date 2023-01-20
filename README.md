@@ -3,7 +3,7 @@
 
 [![](https://img.shields.io/pypi/v/django-maintenance-mode.svg?color=blue&logo=pypi&logoColor=white)](https://pypi.org/project/django-maintenance-mode/)
 [![](https://pepy.tech/badge/django-maintenance-mode/month)](https://pepy.tech/project/django-maintenance-mode)
-[![](https://img.shields.io/github/stars/fabiocaccamo/django-maintenance-mode?logo=github)](https://github.com/fabiocaccamo/django-maintenance-mode/)
+[![](https://img.shields.io/github/stars/fabiocaccamo/django-maintenance-mode?logo=github)](https://github.com/fabiocaccamo/django-maintenance-mode/stargazers)
 [![](https://img.shields.io/pypi/l/django-maintenance-mode.svg?color=blue)](https://github.com/fabiocaccamo/django-maintenance-mode/blob/main/LICENSE.txt)
 
 [![](https://results.pre-commit.ci/badge/github/fabiocaccamo/django-maintenance-mode/main.svg)](https://results.pre-commit.ci/latest/github/fabiocaccamo/django-maintenance-mode/main)
