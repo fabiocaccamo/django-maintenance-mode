@@ -1,5 +1,4 @@
 from contextlib import ContextDecorator
-from functools import wraps
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured

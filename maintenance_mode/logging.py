@@ -1,7 +1,5 @@
 import logging
 
-from django.conf import settings
-
 from maintenance_mode.core import get_maintenance_mode
 
 

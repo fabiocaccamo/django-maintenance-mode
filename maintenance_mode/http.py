@@ -4,7 +4,6 @@ import sys
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.shortcuts import redirect, render
-from django.template import RequestContext
 from django.urls import NoReverseMatch, Resolver404, resolve, reverse
 from django.utils.cache import add_never_cache_headers
 from django.utils.module_loading import import_string
