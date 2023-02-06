@@ -65,7 +65,6 @@ def get_template_context(request):
 )
 class MaintenanceModeTestCase(TestCase):
     def setUp(self):
-
         self.anonymous_user = AnonymousUser()
 
         self.authenticated_user = User.objects.create_user(
@@ -142,7 +141,6 @@ class MaintenanceModeTestCase(TestCase):
             pass
 
     def test_io(self):
-
         self.__reset_state()
 
         file_path = settings.MAINTENANCE_MODE_STATE_FILE_PATH
@@ -158,7 +156,6 @@ class MaintenanceModeTestCase(TestCase):
         self.assertEqual(val, "test")
 
     def test_io_invalid_file_path(self):
-
         self.__reset_state()
 
         file_path = self.invalid_file_path
@@ -167,7 +164,6 @@ class MaintenanceModeTestCase(TestCase):
         self.assertRaises((IOError, OSError), io.read_file, file_path)
 
     def test_backend_local_file(self):
-
         self.__reset_state()
 
         backend = core.get_maintenance_mode_backend()
@@ -180,7 +176,6 @@ class MaintenanceModeTestCase(TestCase):
         self.assertEqual(backend.get_value(), False)
 
     def test_backend_local_file_invalid_values(self):
-
         self.__reset_state()
 
         file_path = settings.MAINTENANCE_MODE_STATE_FILE_PATH
@@ -191,7 +186,6 @@ class MaintenanceModeTestCase(TestCase):
         self.assertRaises(ValueError, backend.set_value, "test")
 
     def test_backend_default_storage(self):
-
         self.__reset_state()
 
         settings.MAINTENANCE_MODE_STATE_BACKEND = (
@@ -212,7 +206,6 @@ class MaintenanceModeTestCase(TestCase):
         )
 
     def test_backend_static_storage(self):
-
         self.__reset_state()
 
         settings.MAINTENANCE_MODE_STATE_BACKEND = (
@@ -235,7 +228,6 @@ class MaintenanceModeTestCase(TestCase):
         )
 
     def test_backend_custom_invalid(self):
-
         self.__reset_state()
 
         backend = settings.MAINTENANCE_MODE_STATE_BACKEND
@@ -268,7 +260,6 @@ class MaintenanceModeTestCase(TestCase):
         settings.MAINTENANCE_MODE_STATE_BACKEND = backend
 
     def test_core(self):
-
         self.__reset_state()
 
         core.set_maintenance_mode(True)
@@ -280,7 +271,6 @@ class MaintenanceModeTestCase(TestCase):
         self.assertFalse(val)
 
     def test_core_invalid_file_path(self):
-
         self.__reset_state()
 
         file_path = settings.MAINTENANCE_MODE_STATE_FILE_PATH
@@ -292,7 +282,6 @@ class MaintenanceModeTestCase(TestCase):
         settings.MAINTENANCE_MODE_STATE_FILE_PATH = file_path
 
     def test_core_maintenance_enabled(self):
-
         self.__reset_state()
 
         core.set_maintenance_mode(False)
@@ -301,7 +290,6 @@ class MaintenanceModeTestCase(TestCase):
         self.assertTrue(val)
 
     def test_core_maintenance_disabled(self):
-
         self.__reset_state()
 
         core.set_maintenance_mode(True)
@@ -310,14 +298,12 @@ class MaintenanceModeTestCase(TestCase):
         self.assertFalse(val)
 
     def test_core_set_disabled(self):
-
         self.__reset_state()
 
         settings.MAINTENANCE_MODE = True
         self.assertRaises(ImproperlyConfigured, core.set_maintenance_mode, True)
 
     def test_core_invalid_argument(self):
-
         self.__reset_state()
 
         io.write_file(settings.MAINTENANCE_MODE_STATE_FILE_PATH, "not bool")
@@ -325,7 +311,6 @@ class MaintenanceModeTestCase(TestCase):
         self.assertRaises(TypeError, core.set_maintenance_mode, "not bool")
 
     def test_logging_filter(self):
-
         self.__reset_state()
 
         class Record:
@@ -347,7 +332,6 @@ class MaintenanceModeTestCase(TestCase):
         self.assertTrue(f.filter(r))
 
     def test_management_commands(self):
-
         self.__reset_state()
 
         call_command("maintenance_mode", "on")
@@ -359,7 +343,6 @@ class MaintenanceModeTestCase(TestCase):
         self.assertFalse(val)
 
     def test_management_commands_invalid_file_path(self):
-
         self.__reset_state()
 
         file_path = settings.MAINTENANCE_MODE_STATE_FILE_PATH
@@ -382,21 +365,18 @@ class MaintenanceModeTestCase(TestCase):
         settings.MAINTENANCE_MODE_STATE_FILE_PATH = file_path
 
     def test_management_commands_no_arguments(self):
-
         self.__reset_state()
 
         with self.assertRaises(CommandError):
             call_command("maintenance_mode")
 
     def test_management_commands_invalid_argument(self):
-
         self.__reset_state()
 
         with self.assertRaises(CommandError):
             call_command("maintenance_mode", "hello world")
 
     def test_management_commands_interactive(self):
-
         self.__reset_state()
 
         sys_stdin = sys.stdin
@@ -439,7 +419,6 @@ class MaintenanceModeTestCase(TestCase):
         sys.stdin = sys_stdin
 
     def test_management_commands_verbose(self):
-
         self.__reset_state()
 
         call_command("maintenance_mode", "on", verbosity=3)
@@ -459,7 +438,6 @@ class MaintenanceModeTestCase(TestCase):
         self.assertFalse(val)
 
     def test_urls(self):
-
         self.__reset_state()
 
         url = reverse("maintenance_mode_on")
@@ -475,7 +453,6 @@ class MaintenanceModeTestCase(TestCase):
         self.assertFalse(val)
 
     def test_urls_superuser(self):
-
         self.__reset_state()
 
         self.__login_superuser()
@@ -493,7 +470,6 @@ class MaintenanceModeTestCase(TestCase):
         self.__logout()
 
     def test_context_processor(self):
-
         self.__reset_state()
 
         core.set_maintenance_mode(True)
@@ -503,7 +479,6 @@ class MaintenanceModeTestCase(TestCase):
         core.set_maintenance_mode(False)
 
     def test_views(self):
-
         self.__reset_state()
 
         url = reverse("maintenance_mode_on")
@@ -519,7 +494,6 @@ class MaintenanceModeTestCase(TestCase):
         self.assertFalse(val)
 
     def test_views_superuser(self):
-
         self.__reset_state()
 
         url = reverse("maintenance_mode_on")
@@ -535,7 +509,6 @@ class MaintenanceModeTestCase(TestCase):
         self.assertFalse(val)
 
     def test_decorators_with_middleware(self):
-
         self.__reset_state()
 
         url = reverse("maintenance_mode_off_view_func")
@@ -587,7 +560,6 @@ class MaintenanceModeTestCase(TestCase):
         ]
     )
     def test_decorators_without_middleware(self):
-
         self.__reset_state()
 
         url = reverse("maintenance_mode_off_view_func")
@@ -639,7 +611,6 @@ class MaintenanceModeTestCase(TestCase):
         )
 
     def test_middleware_urls(self):
-
         self.__reset_state()
 
         settings.MAINTENANCE_MODE = True
@@ -654,7 +625,6 @@ class MaintenanceModeTestCase(TestCase):
             self.assertMaintenanceResponse(response)
 
     def test_middleware_anonymous_user(self):
-
         self.__reset_state()
 
         request = self.__get_anonymous_user_request("/")
@@ -686,7 +656,6 @@ class MaintenanceModeTestCase(TestCase):
         ],
     )
     def test_middleware_ignore_admin_site(self):
-
         self.__reset_state()
 
         settings.MAINTENANCE_MODE = True
@@ -725,7 +694,6 @@ class MaintenanceModeTestCase(TestCase):
         self.assertMaintenanceResponse(response)
 
     def test_middleware_ignore_admin_site_not_configured(self):
-
         self.__reset_state()
 
         settings.MAINTENANCE_MODE = True
@@ -753,7 +721,6 @@ class MaintenanceModeTestCase(TestCase):
         self.assertMaintenanceResponse(response)
 
     def test_middleware_ignore_ip_addresses(self):
-
         self.__reset_state()
 
         settings.MAINTENANCE_MODE = True
@@ -770,7 +737,6 @@ class MaintenanceModeTestCase(TestCase):
         self.assertMaintenanceResponse(response)
 
     def test_middleware_ignore_ip_addresses_get_client_ip_address(self):
-
         self.__reset_state()
 
         settings.MAINTENANCE_MODE = True
@@ -819,7 +785,6 @@ class MaintenanceModeTestCase(TestCase):
         self.assertMaintenanceResponse(response)
 
     def test_middleware_ignore_anonymous_user(self):
-
         self.__reset_state()
 
         settings.MAINTENANCE_MODE = True
@@ -834,7 +799,6 @@ class MaintenanceModeTestCase(TestCase):
         self.assertMaintenanceResponse(response)
 
     def test_middleware_ignore_authenticated_user(self):
-
         self.__reset_state()
 
         settings.MAINTENANCE_MODE = True
@@ -849,7 +813,6 @@ class MaintenanceModeTestCase(TestCase):
         self.assertMaintenanceResponse(response)
 
     def test_middleware_ignore_staff(self):
-
         self.__reset_state()
 
         settings.MAINTENANCE_MODE = True
@@ -864,7 +827,6 @@ class MaintenanceModeTestCase(TestCase):
         self.assertMaintenanceResponse(response)
 
     def test_middleware_ignore_superuser(self):
-
         self.__reset_state()
 
         settings.MAINTENANCE_MODE = True
@@ -879,7 +841,6 @@ class MaintenanceModeTestCase(TestCase):
         self.assertMaintenanceResponse(response)
 
     def test_middleware_ignore_tests(self):
-
         self.__reset_state()
 
         settings.MAINTENANCE_MODE = True
@@ -894,7 +855,6 @@ class MaintenanceModeTestCase(TestCase):
         self.assertMaintenanceResponse(response)
 
     def test_middleware_ignore_urls(self):
-
         self.__reset_state()
 
         settings.MAINTENANCE_MODE = True
@@ -913,7 +873,6 @@ class MaintenanceModeTestCase(TestCase):
         self.assertMaintenanceResponse(response)
 
     def test_middleware_redirect_url(self):
-
         self.__reset_state()
 
         settings.MAINTENANCE_MODE = True
@@ -929,7 +888,6 @@ class MaintenanceModeTestCase(TestCase):
         self.assertMaintenanceResponse(response)
 
     def test_middleware_get_template_context(self):
-
         self.__reset_state()
 
         settings.MAINTENANCE_MODE = True
@@ -975,7 +933,6 @@ class MaintenanceModeTestCase(TestCase):
         self.assertFalse(val)
 
     def test_version(self):
-
         v = version.__version__
         self.assertTrue(v != None)
         self.assertTrue(v != "")

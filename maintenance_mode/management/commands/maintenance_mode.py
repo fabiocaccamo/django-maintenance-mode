@@ -5,7 +5,6 @@ from maintenance_mode import core
 
 
 class Command(BaseCommand):
-
     args = "<on|off>"
     help = (
         "run python manage.py maintenance_mode %s "
@@ -49,7 +48,6 @@ class Command(BaseCommand):
         return answer.find("y") == 0
 
     def handle(self, *args, **options):
-
         verbosity = int(options["verbosity"])
         verbose = True if verbosity == 3 else False
         interactive = options.get("interactive", False)
@@ -58,7 +56,6 @@ class Command(BaseCommand):
         value = self.get_maintenance_mode()
 
         if state in ["on", "yes", "true", "1"]:
-
             if value:
                 if verbose:
                     self.stdout.write("maintenance mode is already on")
@@ -69,7 +66,6 @@ class Command(BaseCommand):
             )
 
         elif state in ["off", "no", "false", "0"]:
-
             if not value:
                 if verbose:
                     self.stdout.write("maintenance mode is already off")
