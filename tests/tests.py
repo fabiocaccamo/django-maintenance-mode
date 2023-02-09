@@ -19,7 +19,7 @@ from django.test import (
 )
 from django.urls import reverse
 
-from maintenance_mode import backends, core, http, io, middleware, utils, version, views
+from maintenance_mode import backends, core, http, io, middleware, utils, views
 from maintenance_mode.logging import RequireNotMaintenanceMode503
 from maintenance_mode.management.commands.maintenance_mode import (
     Command as MaintenanceModeCommand,
@@ -458,12 +458,12 @@ class MaintenanceModeTestCase(TestCase):
         self.__login_superuser()
 
         url = reverse("maintenance_mode_on")
-        response = self.client.get(url)
+        self.client.get(url)
         val = core.get_maintenance_mode()
         self.assertTrue(val)
 
         url = reverse("maintenance_mode_off")
-        response = self.client.get(url)
+        self.client.get(url)
         val = core.get_maintenance_mode()
         self.assertFalse(val)
 
@@ -931,15 +931,6 @@ class MaintenanceModeTestCase(TestCase):
         response = self.client.get("/")
         val = response.context.get("TEST_MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT", False)
         self.assertFalse(val)
-
-    def test_version(self):
-        v = version.__version__
-        self.assertTrue(v != None)
-        self.assertTrue(v != "")
-
-        v_re = re.compile(r"^([0-9]+)(\.([0-9]+)){1,2}$")
-        v_match = v_re.match(v)
-        self.assertTrue(v_match != None)
 
 
 class TestOverrideMaintenanceMode(SimpleTestCase):

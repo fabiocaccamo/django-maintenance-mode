@@ -1,0 +1,7 @@
+__author__ = "Fabio Caccamo"
+__copyright__ = "Copyright (c) 2016-present Fabio Caccamo"
+__description__ = "shows a 503 error page when maintenance-mode is on."
+__email__ = "fabio.caccamo@gmail.com"
+__license__ = "MIT"
+__title__ = "django-maintenance-mode"
+__version__ = "0.18.0"
