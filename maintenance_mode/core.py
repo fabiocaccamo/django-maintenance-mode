@@ -23,8 +23,7 @@ def get_maintenance_mode_backend():
             )
     except ImportError:
         raise ImproperlyConfigured(
-            "backend not found, check "
-            "'settings.MAINTENANCE_MODE_STATE_BACKEND' path."
+            "backend not found, check 'settings.MAINTENANCE_MODE_STATE_BACKEND' path."
         )
 
 
