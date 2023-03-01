@@ -967,7 +967,7 @@ class TestOverrideMaintenanceMode(SimpleTestCase):
 
                 @core.override_maintenance_mode(override)
                 def test_function():
-                    self.assertEqual(core.get_maintenance_mode(), result)
+                    self.assertEqual(core.get_maintenance_mode(), result)  # noqa: B023
 
                 test_function()
 

@@ -7,8 +7,8 @@ from maintenance_mode import core
 class Command(BaseCommand):
     args = "<on|off>"
     help = (
-        "run python manage.py maintenance_mode %s "
-        "to change maintenance-mode state" % args
+        f"run python manage.py maintenance_mode {args} "
+        "to change maintenance-mode state"
     )
 
     def add_arguments(self, parser):
@@ -19,20 +19,20 @@ class Command(BaseCommand):
         try:
             value = core.get_maintenance_mode()
             return value
-        except OSError:
+        except OSError as error:
             raise CommandError(
-                "Unable to read state file at: %s"
-                % (settings.MAINTENANCE_MODE_STATE_FILE_NAME,)
-            )
+                "Unable to read state file at: "
+                f"{settings.MAINTENANCE_MODE_STATE_FILE_NAME}"
+            ) from error
 
     def set_maintenance_mode(self, value):
         try:
             core.set_maintenance_mode(value)
-        except OSError:
+        except OSError as error:
             raise CommandError(
-                "Unable to write state file at: %s"
-                % (settings.MAINTENANCE_MODE_STATE_FILE_NAME,)
-            )
+                "Unable to write state file at: "
+                f"{settings.MAINTENANCE_MODE_STATE_FILE_NAME}"
+            ) from error
 
     def set_maintenance_mode_with_confirm(self, value, confirm_message, interactive):
         if interactive:
@@ -76,19 +76,11 @@ class Command(BaseCommand):
             )
 
         else:
-            raise CommandError(
-                "Invalid argument: '%s' "
-                "expected %s"
-                % (
-                    state,
-                    self.args,
-                )
-            )
+            raise CommandError(f"Invalid argument: {state!r} expected {self.args}")
 
         if verbose:
-            output = "maintenance mode: {}".format(
-                "on" if self.get_maintenance_mode() else "off",
-            )
+            state_str = "on" if self.get_maintenance_mode() else "off"
+            output = f"maintenance mode: {state_str}"
             self.stdout.write(output)
 
         return

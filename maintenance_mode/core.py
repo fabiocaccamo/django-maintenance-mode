@@ -21,10 +21,10 @@ def get_maintenance_mode_backend():
                 "backend doesn't extend "
                 "'maintenance_mode.backends.AbstractStateBackend' class."
             )
-    except ImportError:
+    except ImportError as error:
         raise ImproperlyConfigured(
             "backend not found, check 'settings.MAINTENANCE_MODE_STATE_BACKEND' path."
-        )
+        ) from error
 
 
 def get_maintenance_mode():

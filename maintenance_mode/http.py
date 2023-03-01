@@ -26,11 +26,11 @@ def get_maintenance_response(request):
             get_request_context_func = import_string(
                 settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT
             )
-        except ImportError:
+        except ImportError as error:
             raise ImproperlyConfigured(
                 "settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT "
                 "is not a valid function path."
-            )
+            ) from error
 
         context = get_request_context_func(request=request)
 
@@ -143,11 +143,11 @@ def _need_maintenance_ignore_ip_addresses(request):
             get_client_ip_address_func = import_string(
                 settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS
             )
-        except ImportError:
+        except ImportError as error:
             raise ImproperlyConfigured(
                 "settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS "
                 "is not a valid function path."
-            )
+            ) from error
         else:
             client_ip_address = get_client_ip_address_func(request)
     else:
