@@ -5,6 +5,10 @@ __pycache__/
 # C extensions
 *.so
 
+## Local setup
+.vscode/
+.venv/
+
 # Distribution / packaging
 .Python
 env/
@@ -44,7 +48,6 @@ coverage.xml
 *,cover
 
 # Translations
-*.mo
 *.pot
 
 # Django stuff:
@@ -55,4 +58,9 @@ docs/_build/
 
 # PyBuilder
 target/
+.idea/
+
+# custom
 maintenance_mode_state.txt
+screenshots
+TODO.txt
