@@ -227,10 +227,10 @@ from maintenance_mode.decorators import force_maintenance_mode_off, force_mainte
 
 urlpatterns = [
     # never return 503 response
-    path('', force_maintenance_mode_off(YourView.as_view()), name='my_view'),
+    path("", force_maintenance_mode_off(YourView.as_view()), name="my_view"),
 
     # Always return 503 response
-    path('', force_maintenance_mode_on(YourView.as_view()), name='my_view'),
+    path("", force_maintenance_mode_on(YourView.as_view()), name="my_view"),
 ]
 ```
 
