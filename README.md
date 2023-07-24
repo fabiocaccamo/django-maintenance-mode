@@ -202,7 +202,7 @@ urlpatterns = [
 ```
 
 ### Views
-You can force maintenance mode on/off at view level using view decorators:
+You can force maintenance mode on/off at view level using view decorators. Function-based views look like this:
 
 ```python
 from maintenance_mode.decorators import force_maintenance_mode_off, force_maintenance_mode_on
@@ -216,6 +216,20 @@ def my_view_a(request):
 def my_view_b(request):
     # always return 503 response
     pass
+```
+
+Ignore class-based views from URLs like this:
+
+```python
+from maintenance_mode.decorators import force_maintenance_mode_off, force_maintenance_mode_on
+
+urlpatterns = [
+    # never return 503 response
+    path('', force_maintenance_mode_off(YourView.as_view()), name='my_view'),
+
+    # Always return 503 response
+    path('', force_maintenance_mode_on(YourView.as_view()), name='my_view'),
+]
 ```
 
 ## Usage
