@@ -229,7 +229,7 @@ urlpatterns = [
     # never return 503 response
     path("", force_maintenance_mode_off(YourView.as_view()), name="my_view"),
 
-    # Always return 503 response
+    # always return 503 response
     path("", force_maintenance_mode_on(YourView.as_view()), name="my_view"),
 ]
 ```
