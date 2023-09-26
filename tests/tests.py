@@ -3,6 +3,7 @@ import re
 import sys
 from io import StringIO
 from tempfile import mkstemp
+from unittest.mock import patch
 
 import fsutil
 from django.conf import settings
@@ -222,6 +223,38 @@ class MaintenanceModeTestCase(TestCase):
 
         backend.set_value(False)
         self.assertEqual(backend.get_value(), False)
+
+        settings.MAINTENANCE_MODE_STATE_BACKEND = (
+            "maintenance_mode.backends.LocalFileBackend"
+        )
+
+    def test_backend_cache(self):
+        self.__reset_state()
+
+        settings.MAINTENANCE_MODE_STATE_BACKEND = (
+            "maintenance_mode.backends.CacheBackend"
+        )
+        settings.CACHES = {
+            "default": {
+                "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+                "LOCATION": "default",
+            }
+        }
+
+        backend = core.get_maintenance_mode_backend()
+        self.assertEqual(backend.get_value(), False)
+
+        backend.set_value(True)
+        self.assertEqual(backend.get_value(), True)
+
+        backend.set_value(False)
+        self.assertEqual(backend.get_value(), False)
+
+        with patch("maintenance_mode.backends.cache") as mock_cache:
+            mock_cache.get.side_effect = Exception
+            mock_cache.set.side_effect = Exception
+            backend.set_value(False)
+            self.assertEqual(backend.get_value(), True)
 
         settings.MAINTENANCE_MODE_STATE_BACKEND = (
             "maintenance_mode.backends.LocalFileBackend"
