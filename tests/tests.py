@@ -250,6 +250,15 @@ class MaintenanceModeTestCase(TestCase):
         backend.set_value(False)
         self.assertEqual(backend.get_value(), False)
 
+        # test with default MAINTENANCE_MODE_STATE_BACKEND_FALLBACK_VALUE setting
+        with patch("maintenance_mode.backends.cache") as mock_cache:
+            mock_cache.get.side_effect = Exception
+            mock_cache.set.side_effect = Exception
+            backend.set_value(False)
+            self.assertEqual(backend.get_value(), False)
+
+        # test with MAINTENANCE_MODE_STATE_BACKEND_FALLBACK_VALUE set to True
+        settings.MAINTENANCE_MODE_STATE_BACKEND_FALLBACK_VALUE = True
         with patch("maintenance_mode.backends.cache") as mock_cache:
             mock_cache.get.side_effect = Exception
             mock_cache.set.side_effect = Exception

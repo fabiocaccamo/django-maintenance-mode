@@ -107,11 +107,12 @@ class CacheBackend(AbstractStateBackend):
             value = cache.get("maintenance_mode", "0")
         except Exception as e:
             logger.warning(
-                "The following exception error happened while trying to get the maintenance mode cache key. "
-                "Maintenance mode is automatically set to on.\n"
+                "The following exception error happened while trying to get the"
+                "maintenance mode cache key. Maintenance mode is automatically set to"
+                "on.\n"
                 f"Exception: {e}"
             )
-            value = "1"
+            return settings.MAINTENANCE_MODE_STATE_BACKEND_FALLBACK_VALUE
         value = self.from_str_to_bool_value(value)
         return value
 
@@ -121,6 +122,7 @@ class CacheBackend(AbstractStateBackend):
             cache.set("maintenance_mode", value, None)
         except Exception as e:
             logger.warning(
-                "The following exception error happened while trying to set the maintenance mode cache key."
+                "The following exception error happened while trying to set the"
+                "maintenance mode cache key."
                 f"\nException: {e}"
             )
