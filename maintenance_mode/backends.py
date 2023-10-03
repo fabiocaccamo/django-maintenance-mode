@@ -1,9 +1,14 @@
+import logging
+
 from django.conf import settings
 from django.contrib.staticfiles.storage import staticfiles_storage
+from django.core.cache import cache
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 
 from maintenance_mode.io import read_file, write_file
+
+logger = logging.getLogger(__name__)
 
 
 class AbstractStateBackend:
@@ -89,3 +94,35 @@ class LocalFileBackend(AbstractStateBackend):
     def set_value(self, value):
         value = self.from_bool_to_str_value(value)
         write_file(self._get_filepath(), value)
+
+
+class CacheBackend(AbstractStateBackend):
+    """
+    django-maintenance-mode backend which uses
+    [Django's cache framework](https://docs.djangoproject.com/en/dev/topics/cache/#django-s-cache-framework).
+    """
+
+    def get_value(self):
+        try:
+            value = cache.get("maintenance_mode", "0")
+        except Exception as e:
+            logger.warning(
+                "The following exception error happened while trying to get the"
+                "maintenance mode cache key. Maintenance mode is automatically set to"
+                "on.\n"
+                f"Exception: {e}"
+            )
+            return settings.MAINTENANCE_MODE_STATE_BACKEND_FALLBACK_VALUE
+        value = self.from_str_to_bool_value(value)
+        return value
+
+    def set_value(self, value):
+        value = self.from_bool_to_str_value(value)
+        try:
+            cache.set("maintenance_mode", value, None)
+        except Exception as e:
+            logger.warning(
+                "The following exception error happened while trying to set the"
+                "maintenance mode cache key."
+                f"\nException: {e}"
+            )

@@ -138,6 +138,12 @@ MAINTENANCE_MODE_STATUS_CODE = 503
 MAINTENANCE_MODE_RETRY_AFTER = 3600 # 1 hour
 ```
 
+```python
+# The maintenance mode state to return when using the CacheBackend and Django is unable to connect to the cache.
+# Defaults to False.
+MAINTENANCE_MODE_STATE_BACKEND_FALLBACK_VALUE = False
+```
+
 #### Context Processors
 Add **maintenance_mode.context_processors.maintenance_mode** to your context_processors list in `settings.py` if you want to access the maintenance_mode status in your templates.
 
