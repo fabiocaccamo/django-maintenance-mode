@@ -62,3 +62,6 @@ if not hasattr(settings, "MAINTENANCE_MODE_STATUS_CODE"):
 
 if not hasattr(settings, "MAINTENANCE_MODE_RETRY_AFTER"):
     settings.MAINTENANCE_MODE_RETRY_AFTER = 3600
+
+if not hasattr(settings, "MAINTENANCE_MODE_STATE_BACKEND_FALLBACK_VALUE"):
+    settings.MAINTENANCE_MODE_STATE_BACKEND_FALLBACK_VALUE = False
