@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.19.0](https://github.com/fabiocaccamo/django-maintenance-mode/releases/tag/0.19.0) - 2023-10-03
+-   Add cache backend (`"maintenance_mode.backends.CacheBackend"`). #153 (by [@epicserve](https://github.com/epicserve) in #154)
+-   Bump requirements, Github actions and pre-commit hooks.
+
 ## [0.18.0](https://github.com/fabiocaccamo/django-maintenance-mode/releases/tag/0.18.0) - 2022-12-12
 -   Drop `Python < 3.8` and `Django < 2.2` support. #99
 -   Add backend for using default static storage (`"maintenance_mode.backends.StaticStorageBackend"`). (by [@matmair](https://github.com/matmair) in #97)
