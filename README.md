@@ -51,6 +51,15 @@ MAINTENANCE_MODE_STATE_BACKEND = "maintenance_mode.backends.DefaultStorageBacken
 # alternatively it is possible to use the static storage backend
 # make sure that STATIC_ROOT and STATIC_URL are also set
 MAINTENANCE_MODE_STATE_BACKEND = "maintenance_mode.backends.StaticStorageBackend"
+
+# alternatively it is possible to use the cache backend
+MAINTENANCE_MODE_STATE_BACKEND = "maintenance_mode.backends.CacheBackend"
+```
+
+```python
+# the fallback value that backends will return in case of failure
+# (actually this is only used by "maintenance_mode.backends.CacheBackend")
+MAINTENANCE_MODE_STATE_BACKEND_FALLBACK_VALUE = False
 ```
 
 ```python
@@ -136,12 +145,6 @@ MAINTENANCE_MODE_STATUS_CODE = 503
 ```python
 # the value in seconds of the Retry-After header during maintenance-mode
 MAINTENANCE_MODE_RETRY_AFTER = 3600 # 1 hour
-```
-
-```python
-# The maintenance mode state to return when using the CacheBackend and Django is unable to connect to the cache.
-# Defaults to False.
-MAINTENANCE_MODE_STATE_BACKEND_FALLBACK_VALUE = False
 ```
 
 #### Context Processors
