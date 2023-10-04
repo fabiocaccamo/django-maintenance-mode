@@ -53,6 +53,8 @@ MAINTENANCE_MODE_STATE_BACKEND = "maintenance_mode.backends.DefaultStorageBacken
 MAINTENANCE_MODE_STATE_BACKEND = "maintenance_mode.backends.StaticStorageBackend"
 
 # alternatively it is possible to use the cache backend
+# you can use a custom cache backend by adding a `maintenance_mode` entry to `settings.CACHES`,
+# otherwise the default cache backend will be used.
 MAINTENANCE_MODE_STATE_BACKEND = "maintenance_mode.backends.CacheBackend"
 ```
 

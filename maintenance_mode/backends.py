@@ -2,7 +2,7 @@ import logging
 
 from django.conf import settings
 from django.contrib.staticfiles.storage import staticfiles_storage
-from django.core.cache import cache
+from django.core.cache import cache, caches
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 
@@ -102,9 +102,17 @@ class CacheBackend(AbstractStateBackend):
     [Django's cache framework](https://docs.djangoproject.com/en/dev/topics/cache/#django-s-cache-framework).
     """
 
+    @staticmethod
+    def get_cache():
+        return (
+            caches["maintenance_mode"]
+            if "maintenance_mode" in settings.CACHES
+            else cache
+        )
+
     def get_value(self):
         try:
-            value = cache.get("maintenance_mode", "0")
+            value = self.get_cache().get("maintenance_mode", "0")
         except Exception as error:
             logger.warning(
                 "The following unexpected exception has been raised "
@@ -118,7 +126,7 @@ class CacheBackend(AbstractStateBackend):
     def set_value(self, value):
         value = self.from_bool_to_str_value(value)
         try:
-            cache.set("maintenance_mode", value, None)
+            self.get_cache().set("maintenance_mode", value, None)
         except Exception as error:
             logger.warning(
                 "The following unexpected exception has been raised "
