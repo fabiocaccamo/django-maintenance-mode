@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.20.0](https://github.com/fabiocaccamo/django-maintenance-mode/releases/tag/0.20.0) - 2023-12-05
+-   Add `Python 3.12` support.
+-   Add `Django 5.0` support.
+-   Speed-up test workflow.
+-   Bump requirements.
+-   Bump `pre-commit` hooks.
+
 ## [0.19.0](https://github.com/fabiocaccamo/django-maintenance-mode/releases/tag/0.19.0) - 2023-10-03
 -   Add cache backend (`"maintenance_mode.backends.CacheBackend"`). #153 (by [@epicserve](https://github.com/epicserve) in #154)
 -   Bump requirements, Github actions and pre-commit hooks.
