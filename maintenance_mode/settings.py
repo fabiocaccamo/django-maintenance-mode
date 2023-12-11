@@ -43,6 +43,9 @@ if not hasattr(settings, "MAINTENANCE_MODE_LOGOUT_AUTHENTICATED_USER"):
 if not hasattr(settings, "MAINTENANCE_MODE_REDIRECT_URL"):
     settings.MAINTENANCE_MODE_REDIRECT_URL = None
 
+if not hasattr(settings, "MAINTENANCE_MODE_RESPONSE_TYPE"):
+    settings.MAINTENANCE_MODE_RESPONSE_TYPE = "html"
+
 if not hasattr(settings, "MAINTENANCE_MODE_STATE_BACKEND"):
     settings.MAINTENANCE_MODE_STATE_BACKEND = (
         "maintenance_mode.backends.LocalFileBackend"

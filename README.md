@@ -136,6 +136,11 @@ MAINTENANCE_MODE_REDIRECT_URL = None
 ```
 
 ```python
+# the type of the response returned during maintenance mode, can be either "html" or "json"
+MAINTENANCE_MODE_RESPONSE_TYPE = "html"
+```
+
+```python
 # the template that will be shown by the maintenance-mode page
 MAINTENANCE_MODE_TEMPLATE = "503.html"
 ```

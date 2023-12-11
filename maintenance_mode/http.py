@@ -4,6 +4,7 @@ import sys
 from django.conf import settings
 from django.contrib.auth import logout
 from django.core.exceptions import ImproperlyConfigured
+from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import NoReverseMatch, Resolver404, resolve, reverse
 from django.utils.cache import add_never_cache_headers
@@ -13,15 +14,8 @@ from maintenance_mode.core import get_maintenance_mode
 from maintenance_mode.utils import get_client_ip_address
 
 
-def get_maintenance_response(request):
-    """
-    Return a '503 Service Unavailable' maintenance response.
-    """
-    if settings.MAINTENANCE_MODE_REDIRECT_URL:
-        return redirect(settings.MAINTENANCE_MODE_REDIRECT_URL)
-
+def get_maintenance_response_context(request):
     context = {}
-
     if settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT:
         try:
             get_request_context_func = import_string(
@@ -34,19 +28,57 @@ def get_maintenance_response(request):
             ) from error
 
         context = get_request_context_func(request=request)
+    return context
 
-    kwargs = {"context": context}
-    response = render(
-        request,
-        settings.MAINTENANCE_MODE_TEMPLATE,
-        status=settings.MAINTENANCE_MODE_STATUS_CODE,
-        **kwargs,
-    )
+
+def get_maintenance_response(request):
+    """
+    Return a '503 Service Unavailable' HTML or JSON response based on user preference.
+    """
+    if settings.MAINTENANCE_MODE_REDIRECT_URL:
+        return redirect(settings.MAINTENANCE_MODE_REDIRECT_URL)
+
+    response = None
+    response_type = settings.MAINTENANCE_MODE_RESPONSE_TYPE
+    if response_type == "html":
+        response = get_maintenance_html_response(request)
+    elif response_type == "json":
+        response = get_maintenance_json_response(request)
+    else:
+        raise ImproperlyConfigured(
+            "settings.MAINTENANCE_MODE_RESPONSE_TYPE value must be 'html' or 'json'."
+        )
 
     if settings.MAINTENANCE_MODE_RETRY_AFTER:
         response["Retry-After"] = settings.MAINTENANCE_MODE_RETRY_AFTER
 
     add_never_cache_headers(response)
+    return response
+
+
+def get_maintenance_html_response(request):
+    """
+    Return an HTML response for maintenance.
+    """
+    context = get_maintenance_response_context(request)
+    response = render(
+        request,
+        settings.MAINTENANCE_MODE_TEMPLATE,
+        status=settings.MAINTENANCE_MODE_STATUS_CODE,
+        context=context,
+    )
+    return response
+
+
+def get_maintenance_json_response(request):
+    """
+    Return a JSON response for maintenance.
+    """
+    context = get_maintenance_response_context(request)
+    response = JsonResponse(
+        context,
+        status=settings.MAINTENANCE_MODE_STATUS_CODE,
+    )
     return response
 
 

@@ -12,6 +12,7 @@ from django.contrib.auth.models import AnonymousUser, User
 from django.core.exceptions import ImproperlyConfigured
 from django.core.management import call_command
 from django.core.management.base import CommandError
+from django.http import HttpResponse, JsonResponse
 from django.test import (
     Client,
     RequestFactory,
@@ -999,6 +1000,26 @@ class MaintenanceModeTestCase(TestCase):
         response = self.client.get("/")
         val = response.context.get("TEST_MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT", False)
         self.assertFalse(val)
+
+    def test_middleware_response_type(self):
+        self.__reset_state()
+
+        settings.MAINTENANCE_MODE = True
+        request = self.__get_anonymous_user_request("/")
+
+        settings.MAINTENANCE_MODE_RESPONSE_TYPE = "none"
+        with self.assertRaises(ImproperlyConfigured):
+            self.middleware.process_request(request)
+
+        settings.MAINTENANCE_MODE_RESPONSE_TYPE = "json"
+        response = self.middleware.process_request(request)
+        self.assertMaintenanceResponse(response)
+        self.assertTrue(isinstance(response, JsonResponse))
+
+        settings.MAINTENANCE_MODE_RESPONSE_TYPE = "html"
+        response = self.middleware.process_request(request)
+        self.assertMaintenanceResponse(response)
+        self.assertTrue(isinstance(response, HttpResponse))
 
 
 class TestOverrideMaintenanceMode(SimpleTestCase):
