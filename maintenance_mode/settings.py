@@ -10,8 +10,8 @@ if not hasattr(settings, "MAINTENANCE_MODE"):
 if not hasattr(settings, "MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS"):
     settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS = None
 
-if not hasattr(settings, "MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT"):
-    settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = None
+if not hasattr(settings, "MAINTENANCE_MODE_GET_CONTEXT"):
+    settings.MAINTENANCE_MODE_GET_CONTEXT = None
 
 if not hasattr(settings, "MAINTENANCE_MODE_IGNORE_ADMIN_SITE"):
     settings.MAINTENANCE_MODE_IGNORE_ADMIN_SITE = None
@@ -46,10 +46,16 @@ if not hasattr(settings, "MAINTENANCE_MODE_REDIRECT_URL"):
 if not hasattr(settings, "MAINTENANCE_MODE_RESPONSE_TYPE"):
     settings.MAINTENANCE_MODE_RESPONSE_TYPE = "html"
 
+if not hasattr(settings, "MAINTENANCE_MODE_RETRY_AFTER"):
+    settings.MAINTENANCE_MODE_RETRY_AFTER = 3600
+
 if not hasattr(settings, "MAINTENANCE_MODE_STATE_BACKEND"):
     settings.MAINTENANCE_MODE_STATE_BACKEND = (
         "maintenance_mode.backends.LocalFileBackend"
     )
+
+if not hasattr(settings, "MAINTENANCE_MODE_STATE_BACKEND_FALLBACK_VALUE"):
+    settings.MAINTENANCE_MODE_STATE_BACKEND_FALLBACK_VALUE = False
 
 if not hasattr(settings, "MAINTENANCE_MODE_STATE_FILE_NAME"):
     settings.MAINTENANCE_MODE_STATE_FILE_NAME = "maintenance_mode_state.txt"
@@ -60,14 +66,8 @@ if not hasattr(settings, "MAINTENANCE_MODE_STATE_FILE_PATH"):
         settings_module.__file__, settings.MAINTENANCE_MODE_STATE_FILE_NAME
     )
 
-if not hasattr(settings, "MAINTENANCE_MODE_TEMPLATE"):
-    settings.MAINTENANCE_MODE_TEMPLATE = "503.html"
-
 if not hasattr(settings, "MAINTENANCE_MODE_STATUS_CODE"):
     settings.MAINTENANCE_MODE_STATUS_CODE = 503
 
-if not hasattr(settings, "MAINTENANCE_MODE_RETRY_AFTER"):
-    settings.MAINTENANCE_MODE_RETRY_AFTER = 3600
-
-if not hasattr(settings, "MAINTENANCE_MODE_STATE_BACKEND_FALLBACK_VALUE"):
-    settings.MAINTENANCE_MODE_STATE_BACKEND_FALLBACK_VALUE = False
+if not hasattr(settings, "MAINTENANCE_MODE_TEMPLATE"):
+    settings.MAINTENANCE_MODE_TEMPLATE = "503.html"
