@@ -1,6 +1,7 @@
 import os
 import re
 import sys
+from importlib import import_module
 from io import StringIO
 from tempfile import mkstemp
 from unittest.mock import patch
@@ -99,30 +100,32 @@ class MaintenanceModeTestCase(TestCase):
 
     def assertMaintenanceResponse(self, response):
         self.assertTemplateUsed(settings.MAINTENANCE_MODE_TEMPLATE)
+        self.assertTrue(response is not None)
         self.assertEqual(response.status_code, settings.MAINTENANCE_MODE_STATUS_CODE)
 
     def assertOkResponse(self, response):
+        self.assertTrue(response is not None)
         self.assertEqual(response.status_code, 200)
 
-    def __get_anonymous_user_request(self, url):
+    def __get_request_for_user_and_url(self, user, url):
         request = self.request_factory.get(url)
-        request.user = self.anonymous_user
+        request.user = user
+        engine = import_module(settings.SESSION_ENGINE)
+        request.session = engine.SessionStore()
+        request.session.save()
         return request
+
+    def __get_anonymous_user_request(self, url):
+        return self.__get_request_for_user_and_url(self.anonymous_user, url)
 
     def __get_authenticated_user_request(self, url):
-        request = self.request_factory.get(url)
-        request.user = self.authenticated_user
-        return request
+        return self.__get_request_for_user_and_url(self.authenticated_user, url)
 
     def __get_staff_user_request(self, url):
-        request = self.request_factory.get(url)
-        request.user = self.staff_user
-        return request
+        return self.__get_request_for_user_and_url(self.staff_user, url)
 
     def __get_superuser_request(self, url):
-        request = self.request_factory.get(url)
-        request.user = self.superuser
-        return request
+        return self.__get_request_for_user_and_url(self.superuser, url)
 
     def __login_staff_user(self):
         self.client.login(username="staff-user", password="test")
@@ -823,6 +826,29 @@ class MaintenanceModeTestCase(TestCase):
 
         settings.MAINTENANCE_MODE_IGNORE_IP_ADDRESSES = None
         settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS = None
+        response = self.middleware.process_request(request)
+        self.assertMaintenanceResponse(response)
+
+    def test_middleware_logout_authenticated_user(self):
+        self.__reset_state()
+
+        settings.MAINTENANCE_MODE = True
+
+        settings.MAINTENANCE_MODE_IGNORE_ANONYMOUS_USER = True
+        settings.MAINTENANCE_MODE_LOGOUT_AUTHENTICATED_USER = True
+        request = self.__get_authenticated_user_request("/")
+        response = self.middleware.process_request(request)
+        self.assertEqual(response, None)
+
+        settings.MAINTENANCE_MODE_IGNORE_ANONYMOUS_USER = False
+        settings.MAINTENANCE_MODE_LOGOUT_AUTHENTICATED_USER = True
+        request = self.__get_authenticated_user_request("/")
+        response = self.middleware.process_request(request)
+        self.assertMaintenanceResponse(response)
+
+        settings.MAINTENANCE_MODE_IGNORE_ANONYMOUS_USER = False
+        settings.MAINTENANCE_MODE_LOGOUT_AUTHENTICATED_USER = False
+        request = self.__get_authenticated_user_request("/")
         response = self.middleware.process_request(request)
         self.assertMaintenanceResponse(response)
 

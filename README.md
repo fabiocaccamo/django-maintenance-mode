@@ -126,6 +126,11 @@ MAINTENANCE_MODE_IGNORE_TESTS = False
 ```
 
 ```python
+# if True authenticated users will be logged out from their current session
+MAINTENANCE_MODE_LOGOUT_AUTHENTICATED_USER = False
+```
+
+```python
 # the absolute url where users will be redirected to during maintenance-mode
 MAINTENANCE_MODE_REDIRECT_URL = None
 ```

@@ -2,6 +2,7 @@ import re
 import sys
 
 from django.conf import settings
+from django.contrib.auth import logout
 from django.core.exceptions import ImproperlyConfigured
 from django.shortcuts import redirect, render
 from django.urls import NoReverseMatch, Resolver404, resolve, reverse
@@ -39,7 +40,7 @@ def get_maintenance_response(request):
         request,
         settings.MAINTENANCE_MODE_TEMPLATE,
         status=settings.MAINTENANCE_MODE_STATUS_CODE,
-        **kwargs
+        **kwargs,
     )
     response["Retry-After"] = settings.MAINTENANCE_MODE_RETRY_AFTER
     add_never_cache_headers(response)
@@ -86,6 +87,10 @@ def _need_maintenance_ignore_users(request):
         return
 
     user = request.user
+
+    if settings.MAINTENANCE_MODE_LOGOUT_AUTHENTICATED_USER and user.is_authenticated:
+        logout(request)
+        user = request.user
 
     if settings.MAINTENANCE_MODE_IGNORE_ANONYMOUS_USER and user.is_anonymous:
         return False
