@@ -42,7 +42,10 @@ def get_maintenance_response(request):
         status=settings.MAINTENANCE_MODE_STATUS_CODE,
         **kwargs,
     )
-    response["Retry-After"] = settings.MAINTENANCE_MODE_RETRY_AFTER
+
+    if settings.MAINTENANCE_MODE_RETRY_AFTER:
+        response["Retry-After"] = settings.MAINTENANCE_MODE_RETRY_AFTER
+
     add_never_cache_headers(response)
     return response
 
