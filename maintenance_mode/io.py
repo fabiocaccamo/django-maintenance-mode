@@ -8,7 +8,7 @@ def read_file(file_path, default_content=""):
     Returns the file content.
     """
     if not fsutil.exists(file_path):
-        fsutil.write_file(file_path, default_content)
+        fsutil.write_file(file_path, default_content, atomic=True)
     return fsutil.read_file(file_path) or default_content
 
 
@@ -17,4 +17,4 @@ def write_file(file_path, content):
     Write file at the specified path with content.
     If file exists, it will be overwritten.
     """
-    fsutil.write_file(file_path, content)
+    fsutil.write_file(file_path, content, atomic=True)
