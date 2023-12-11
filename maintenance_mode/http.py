@@ -16,15 +16,14 @@ from maintenance_mode.utils import get_client_ip_address
 
 def get_maintenance_response_context(request):
     context = {}
-    if settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT:
+    if settings.MAINTENANCE_MODE_GET_CONTEXT:
         try:
             get_request_context_func = import_string(
-                settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT
+                settings.MAINTENANCE_MODE_GET_CONTEXT
             )
         except ImportError as error:
             raise ImproperlyConfigured(
-                "settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT "
-                "is not a valid function path."
+                "settings.MAINTENANCE_MODE_GET_CONTEXT is not a valid function path."
             ) from error
 
         context = get_request_context_func(request=request)

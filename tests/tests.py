@@ -40,7 +40,7 @@ def get_client_ip_address(request):
 
 
 def get_template_context(request):
-    return {"TEST_MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT": True}
+    return {"TEST_MAINTENANCE_MODE_GET_CONTEXT": True}
 
 
 @override_settings(
@@ -961,22 +961,18 @@ class MaintenanceModeTestCase(TestCase):
 
         settings.MAINTENANCE_MODE = True
 
-        settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = (
-            "tests.tests.get_template_context"
-        )
+        settings.MAINTENANCE_MODE_GET_CONTEXT = "tests.tests.get_template_context"
         response = self.client.get("/")
-        val = response.context.get("TEST_MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT", False)
+        val = response.context.get("TEST_MAINTENANCE_MODE_GET_CONTEXT", False)
         self.assertTrue(val)
 
         get_template_context_error = False
         try:
-            settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = (
+            settings.MAINTENANCE_MODE_GET_CONTEXT = (
                 "tests.tests_invalid.get_template_context_invalid"
             )
             response = self.client.get("/")
-            val = response.context.get(
-                "TEST_MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT", False
-            )
+            val = response.context.get("TEST_MAINTENANCE_MODE_GET_CONTEXT", False)
             self.assertFalse(val)
         except ImproperlyConfigured:
             get_template_context_error = True
@@ -984,21 +980,19 @@ class MaintenanceModeTestCase(TestCase):
 
         get_template_context_error = False
         try:
-            settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = (
+            settings.MAINTENANCE_MODE_GET_CONTEXT = (
                 "tests.tests.get_template_context_invalid"
             )
             response = self.client.get("/")
-            val = response.context.get(
-                "TEST_MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT", False
-            )
+            val = response.context.get("TEST_MAINTENANCE_MODE_GET_CONTEXT", False)
             self.assertFalse(val)
         except ImproperlyConfigured:
             get_template_context_error = True
         self.assertTrue(get_template_context_error)
 
-        settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = None
+        settings.MAINTENANCE_MODE_GET_CONTEXT = None
         response = self.client.get("/")
-        val = response.context.get("TEST_MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT", False)
+        val = response.context.get("TEST_MAINTENANCE_MODE_GET_CONTEXT", False)
         self.assertFalse(val)
 
     def test_middleware_response_type(self):
@@ -1084,7 +1078,7 @@ class TestGetMaintenanceResponse(SimpleTestCase):
         # Clean up settings
         settings.MAINTENANCE_MODE_REDIRECT_URL = None
         settings.MAINTENANCE_MODE_TEMPLATE = "503.html"
-        settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = None
+        settings.MAINTENANCE_MODE_GET_CONTEXT = None
 
     def test_redirect(self):
         settings.MAINTENANCE_MODE_REDIRECT_URL = "http://redirect.example.cz/"
@@ -1096,7 +1090,7 @@ class TestGetMaintenanceResponse(SimpleTestCase):
 
     def test_no_context(self):
         settings.MAINTENANCE_MODE_TEMPLATE = "503.html"
-        settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = None
+        settings.MAINTENANCE_MODE_GET_CONTEXT = None
 
         response = http.get_maintenance_response(RequestFactory().get("/dummy/"))
 
@@ -1109,9 +1103,7 @@ class TestGetMaintenanceResponse(SimpleTestCase):
 
     def test_custom_context(self):
         settings.MAINTENANCE_MODE_TEMPLATE = "503.html"
-        settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = (
-            "tests.tests.get_template_context"
-        )
+        settings.MAINTENANCE_MODE_GET_CONTEXT = "tests.tests.get_template_context"
 
         response = http.get_maintenance_response(RequestFactory().get("/dummy/"))
 
@@ -1123,9 +1115,7 @@ class TestGetMaintenanceResponse(SimpleTestCase):
         self.assertIn("max-age=0", response["Cache-Control"])
 
     def test_invalid_context_function(self):
-        settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = (
-            "invalid.invalid-context-function"
-        )
+        settings.MAINTENANCE_MODE_GET_CONTEXT = "invalid.invalid-context-function"
 
         self.assertRaisesMessage(
             ImproperlyConfigured,

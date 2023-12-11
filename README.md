@@ -114,6 +114,11 @@ MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS = "ipware.ip.get_ip"
 ```
 
 ```python
+# the path of the function that will return the response context -> 'myapp.mymodule.myfunction'
+MAINTENANCE_MODE_GET_CONTEXT = None
+```
+
+```python
 # list of urls that will not be affected by the maintenance-mode
 # urls will be used to compile regular expressions objects
 MAINTENANCE_MODE_IGNORE_URLS = ()
@@ -143,11 +148,6 @@ MAINTENANCE_MODE_RESPONSE_TYPE = "html"
 ```python
 # the template that will be shown by the maintenance-mode page
 MAINTENANCE_MODE_TEMPLATE = "503.html"
-```
-
-```python
-# the path of the function that will return the template context -> 'myapp.mymodule.myfunction'
-MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT = None
 ```
 
 ```python
