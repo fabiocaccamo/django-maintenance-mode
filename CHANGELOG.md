@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.21.0](https://github.com/fabiocaccamo/django-maintenance-mode/releases/tag/0.21.0) - 2023-12-11
+-   Add `MAINTENANCE_MODE_LOGOUT_AUTHENTICATED_USER` setting support. #139
+-   Add `MAINTENANCE_MODE_RESPONSE_TYPE` (`html` or `json`) setting support. #160
+-   Renamed `settings.MAINTENANCE_MODE_GET_TEMPLATE_CONTEXT` to `settings.MAINTENANCE_MODE_GET_CONTEXT`.
+-   Write state file atomically in `maintenance_mode.backends.LocalFileBackend`. #162
+-   Set maintenance mode response `Retry-After` only if `MAINTENANCE_MODE_RETRY_AFTER` setting is not `0` or `None`.
+-   Replace `black` and `isort` with `ruff-format`.
+-   Bump requirements.
+-   Bump `pre-commit` hooks.
+
 ## [0.20.0](https://github.com/fabiocaccamo/django-maintenance-mode/releases/tag/0.20.0) - 2023-12-05
 -   Add `Python 3.12` support.
 -   Add `Django 5.0` support.
