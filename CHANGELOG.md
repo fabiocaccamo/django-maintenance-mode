@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.21.1](https://github.com/fabiocaccamo/django-maintenance-mode/releases/tag/0.21.1) - 2024-01-24
+-   Fix `manage.py maintenance_mode on/off` changes permissions of state file. #172
+-   Bump requirements and `pre-commit` hooks.
+
 ## [0.21.0](https://github.com/fabiocaccamo/django-maintenance-mode/releases/tag/0.21.0) - 2023-12-11
 -   Add `MAINTENANCE_MODE_LOGOUT_AUTHENTICATED_USER` setting support. #139
 -   Add `MAINTENANCE_MODE_RESPONSE_TYPE` (`html` or `json`) setting support. #160
