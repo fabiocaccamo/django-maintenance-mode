@@ -17,7 +17,7 @@ def set_file_permissions(filepath):
     Sets the file permissions by inheriting
     them from the directory that contains it.
     """
-    dirpath, filename = fsutil.split_filepath(filepath)
+    dirpath, _ = fsutil.split_filepath(filepath)
     dirpath_permissions = fsutil.get_permissions(dirpath)
     fsutil.set_permissions(filepath, dirpath_permissions)
 
