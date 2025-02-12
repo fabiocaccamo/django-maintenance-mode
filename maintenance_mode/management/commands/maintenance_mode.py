@@ -7,8 +7,7 @@ from maintenance_mode import core
 class Command(BaseCommand):
     args = "<on|off>"
     help = (
-        f"run python manage.py maintenance_mode {args} "
-        "to change maintenance-mode state"
+        f"run python manage.py maintenance_mode {args} to change maintenance-mode state"
     )
 
     def add_arguments(self, parser):
