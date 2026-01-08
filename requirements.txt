@@ -1,2 +1,2 @@
 django >= 2.2
-python-fsutil == 0.15.0
+python-fsutil == 0.16.0
