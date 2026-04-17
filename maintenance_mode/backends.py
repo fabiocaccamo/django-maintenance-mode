@@ -104,6 +104,9 @@ class CacheBackend(AbstractStateBackend):
 
     @staticmethod
     def get_cache():
+        cache_name = settings.MAINTENANCE_MODE_STATE_BACKEND_CACHE
+        if cache_name:
+            return caches[cache_name]
         return (
             caches["maintenance_mode"]
             if "maintenance_mode" in settings.CACHES

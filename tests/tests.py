@@ -273,6 +273,39 @@ class MaintenanceModeTestCase(TestCase):
             "maintenance_mode.backends.LocalFileBackend"
         )
 
+    def test_backend_cache_with_named_cache(self):
+        self.__reset_state()
+
+        with override_settings(
+            CACHES={
+                "default": {
+                    "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+                    "LOCATION": "default",
+                },
+                "my_custom_cache": {
+                    "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+                    "LOCATION": "my_custom_cache",
+                },
+            },
+            MAINTENANCE_MODE_STATE_BACKEND_CACHE="my_custom_cache",
+        ):
+            settings.MAINTENANCE_MODE_STATE_BACKEND = (
+                "maintenance_mode.backends.CacheBackend"
+            )
+
+            backend = core.get_maintenance_mode_backend()
+            self.assertEqual(backend.get_value(), False)
+
+            backend.set_value(True)
+            self.assertEqual(backend.get_value(), True)
+
+            backend.set_value(False)
+            self.assertEqual(backend.get_value(), False)
+
+        settings.MAINTENANCE_MODE_STATE_BACKEND = (
+            "maintenance_mode.backends.LocalFileBackend"
+        )
+
     def test_backend_custom_invalid(self):
         self.__reset_state()
 
