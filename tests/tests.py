@@ -288,7 +288,7 @@ class MaintenanceModeTestCase(TestCase):
                 },
             },
             MAINTENANCE_MODE_STATE_BACKEND="maintenance_mode.backends.CacheBackend",
-            MAINTENANCE_MODE_STATE_BACKEND_CACHE="my_custom_cache",
+            MAINTENANCE_MODE_CACHE_BACKEND="my_custom_cache",
         ):
             backend = core.get_maintenance_mode_backend()
             self.assertEqual(backend.get_value(), False)
@@ -298,6 +298,23 @@ class MaintenanceModeTestCase(TestCase):
 
             backend.set_value(False)
             self.assertEqual(backend.get_value(), False)
+
+    def test_backend_cache_with_invalid_named_cache(self):
+        self.__reset_state()
+
+        with override_settings(
+            CACHES={
+                "default": {
+                    "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+                    "LOCATION": "default",
+                },
+            },
+            MAINTENANCE_MODE_STATE_BACKEND="maintenance_mode.backends.CacheBackend",
+            MAINTENANCE_MODE_CACHE_BACKEND="non_existent_cache",
+        ):
+            backend = core.get_maintenance_mode_backend()
+            self.assertRaises(ImproperlyConfigured, backend.get_value)
+            self.assertRaises(ImproperlyConfigured, backend.set_value, False)
 
     def test_backend_custom_invalid(self):
         self.__reset_state()

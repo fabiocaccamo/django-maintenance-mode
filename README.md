@@ -63,7 +63,7 @@ MAINTENANCE_MODE_STATE_BACKEND = "maintenance_mode.backends.CacheBackend"
 # if set, it specifies the name of the cache (from settings.CACHES) to use with CacheBackend.
 # if None, a cache named "maintenance_mode" will be used if present in settings.CACHES,
 # otherwise the default cache will be used.
-MAINTENANCE_MODE_STATE_BACKEND_CACHE = None
+MAINTENANCE_MODE_CACHE_BACKEND = None
 ```
 
 ```python
