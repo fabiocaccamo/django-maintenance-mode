@@ -120,10 +120,9 @@ class CacheBackend(AbstractStateBackend):
         )
 
     def get_value(self):
+        cache = self.get_cache()
         try:
-            value = self.get_cache().get("maintenance_mode", "0")
-        except ImproperlyConfigured:
-            raise
+            value = cache.get("maintenance_mode", "0")
         except Exception as error:
             logger.warning(
                 "The following unexpected exception has been raised "
@@ -136,10 +135,9 @@ class CacheBackend(AbstractStateBackend):
 
     def set_value(self, value):
         value = self.from_bool_to_str_value(value)
+        cache = self.get_cache()
         try:
-            self.get_cache().set("maintenance_mode", value, None)
-        except ImproperlyConfigured:
-            raise
+            cache.set("maintenance_mode", value, None)
         except Exception as error:
             logger.warning(
                 "The following unexpected exception has been raised "

@@ -22,6 +22,8 @@ from django.test import (
 )
 from django.urls import reverse
 
+from django.core.cache import caches
+
 from maintenance_mode import backends, core, http, io, middleware, utils, views
 from maintenance_mode.logging import RequireNotMaintenanceMode503
 from maintenance_mode.management.commands.maintenance_mode import (
@@ -291,13 +293,20 @@ class MaintenanceModeTestCase(TestCase):
             MAINTENANCE_MODE_CACHE_BACKEND="my_custom_cache",
         ):
             backend = core.get_maintenance_mode_backend()
+
+            # Pre-populate the two caches with opposite values so that any
+            # accidental read from the default cache would produce the wrong result.
+            caches["default"].set("maintenance_mode", "1")
+            caches["my_custom_cache"].set("maintenance_mode", "0")
+
+            # get_value must read from the named cache (False), not default (True)
             self.assertEqual(backend.get_value(), False)
 
+            # set_value must write to the named cache only
             backend.set_value(True)
-            self.assertEqual(backend.get_value(), True)
-
-            backend.set_value(False)
-            self.assertEqual(backend.get_value(), False)
+            self.assertEqual(caches["my_custom_cache"].get("maintenance_mode"), "1")
+            # default cache must remain unchanged
+            self.assertEqual(caches["default"].get("maintenance_mode"), "1")
 
     def test_backend_cache_with_invalid_named_cache(self):
         self.__reset_state()
