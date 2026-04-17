@@ -110,7 +110,8 @@ class CacheBackend(AbstractStateBackend):
             if cache_name not in settings.CACHES:
                 raise ImproperlyConfigured(
                     f"Cache '{cache_name}' specified in "
-                    "'MAINTENANCE_MODE_CACHE_BACKEND' is not defined in settings.CACHES."
+                    "'MAINTENANCE_MODE_CACHE_BACKEND' is not defined in "
+                    "settings.CACHES."
                 )
             return caches[cache_name]
         return (
