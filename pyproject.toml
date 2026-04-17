@@ -41,6 +41,7 @@ classifiers = [
     "Topic :: Software Development :: Build Tools",
 ]
 dependencies = [
+    "django >= 4.2",
     "python-fsutil >= 0.16.0, < 1.0.0",
 ]
 dynamic = ["version"]
