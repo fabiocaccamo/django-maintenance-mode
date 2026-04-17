@@ -287,12 +287,9 @@ class MaintenanceModeTestCase(TestCase):
                     "LOCATION": "my_custom_cache",
                 },
             },
+            MAINTENANCE_MODE_STATE_BACKEND="maintenance_mode.backends.CacheBackend",
             MAINTENANCE_MODE_STATE_BACKEND_CACHE="my_custom_cache",
         ):
-            settings.MAINTENANCE_MODE_STATE_BACKEND = (
-                "maintenance_mode.backends.CacheBackend"
-            )
-
             backend = core.get_maintenance_mode_backend()
             self.assertEqual(backend.get_value(), False)
 
@@ -301,10 +298,6 @@ class MaintenanceModeTestCase(TestCase):
 
             backend.set_value(False)
             self.assertEqual(backend.get_value(), False)
-
-        settings.MAINTENANCE_MODE_STATE_BACKEND = (
-            "maintenance_mode.backends.LocalFileBackend"
-        )
 
     def test_backend_custom_invalid(self):
         self.__reset_state()
