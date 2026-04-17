@@ -9,6 +9,7 @@ from unittest.mock import patch
 import fsutil
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, User
+from django.core.cache import caches
 from django.core.exceptions import ImproperlyConfigured
 from django.core.management import call_command
 from django.core.management.base import CommandError
@@ -21,8 +22,6 @@ from django.test import (
     override_settings,
 )
 from django.urls import reverse
-
-from django.core.cache import caches
 
 from maintenance_mode import backends, core, http, io, middleware, utils, views
 from maintenance_mode.logging import RequireNotMaintenanceMode503
