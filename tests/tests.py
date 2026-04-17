@@ -9,6 +9,7 @@ from unittest.mock import patch
 import fsutil
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, User
+from django.core.cache import caches
 from django.core.exceptions import ImproperlyConfigured
 from django.core.management import call_command
 from django.core.management.base import CommandError
@@ -272,6 +273,56 @@ class MaintenanceModeTestCase(TestCase):
         settings.MAINTENANCE_MODE_STATE_BACKEND = (
             "maintenance_mode.backends.LocalFileBackend"
         )
+
+    def test_backend_cache_with_named_cache(self):
+        self.__reset_state()
+
+        with override_settings(
+            CACHES={
+                "default": {
+                    "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+                    "LOCATION": "default",
+                },
+                "my_custom_cache": {
+                    "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+                    "LOCATION": "my_custom_cache",
+                },
+            },
+            MAINTENANCE_MODE_STATE_BACKEND="maintenance_mode.backends.CacheBackend",
+            MAINTENANCE_MODE_CACHE_BACKEND="my_custom_cache",
+        ):
+            backend = core.get_maintenance_mode_backend()
+
+            # Pre-populate the two caches with opposite values so that any
+            # accidental read from the default cache would produce the wrong result.
+            caches["default"].set("maintenance_mode", "1")
+            caches["my_custom_cache"].set("maintenance_mode", "0")
+
+            # get_value must read from the named cache (False), not default (True)
+            self.assertEqual(backend.get_value(), False)
+
+            # set_value must write to the named cache only
+            backend.set_value(True)
+            self.assertEqual(caches["my_custom_cache"].get("maintenance_mode"), "1")
+            # default cache must remain unchanged
+            self.assertEqual(caches["default"].get("maintenance_mode"), "1")
+
+    def test_backend_cache_with_invalid_named_cache(self):
+        self.__reset_state()
+
+        with override_settings(
+            CACHES={
+                "default": {
+                    "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+                    "LOCATION": "default",
+                },
+            },
+            MAINTENANCE_MODE_STATE_BACKEND="maintenance_mode.backends.CacheBackend",
+            MAINTENANCE_MODE_CACHE_BACKEND="non_existent_cache",
+        ):
+            backend = core.get_maintenance_mode_backend()
+            self.assertRaises(ImproperlyConfigured, backend.get_value)
+            self.assertRaises(ImproperlyConfigured, backend.set_value, False)
 
     def test_backend_custom_invalid(self):
         self.__reset_state()

@@ -54,6 +54,9 @@ if not hasattr(settings, "MAINTENANCE_MODE_STATE_BACKEND"):
         "maintenance_mode.backends.LocalFileBackend"
     )
 
+if not hasattr(settings, "MAINTENANCE_MODE_CACHE_BACKEND"):
+    settings.MAINTENANCE_MODE_CACHE_BACKEND = None
+
 if not hasattr(settings, "MAINTENANCE_MODE_STATE_BACKEND_FALLBACK_VALUE"):
     settings.MAINTENANCE_MODE_STATE_BACKEND_FALLBACK_VALUE = False
 
