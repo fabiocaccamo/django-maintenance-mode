@@ -10,6 +10,9 @@ if not hasattr(settings, "MAINTENANCE_MODE"):
 if not hasattr(settings, "MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS"):
     settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS = None
 
+if not hasattr(settings, "MAINTENANCE_MODE_GET_AUTHENTICATED_USER"):
+    settings.MAINTENANCE_MODE_GET_AUTHENTICATED_USER = None
+
 if not hasattr(settings, "MAINTENANCE_MODE_GET_CONTEXT"):
     settings.MAINTENANCE_MODE_GET_CONTEXT = None
 

@@ -129,6 +129,23 @@ MAINTENANCE_MODE_GET_CONTEXT = None
 ```
 
 ```python
+# the path of the function that will return the authenticated user given the request object -> 'myapp.mymodule.myfunction'
+# useful when the authentication is not session-based (eg. JWT or token authentication with django-rest-framework)
+# and 'request.user' is not populated by the authentication middleware,
+# the function must return a user instance or None (in this case 'request.user' will be used)
+# eg. using 'djangorestframework-simplejwt':
+# def get_authenticated_user(request):
+#     from rest_framework_simplejwt.authentication import JWTAuthentication
+#     from rest_framework_simplejwt.exceptions import InvalidToken
+#     try:
+#         result = JWTAuthentication().authenticate(request)
+#         return result[0] if result else None
+#     except InvalidToken:
+#         return None
+MAINTENANCE_MODE_GET_AUTHENTICATED_USER = None
+```
+
+```python
 # list of urls that will not be affected by the maintenance-mode
 # urls will be used to compile regular expressions objects
 MAINTENANCE_MODE_IGNORE_URLS = ()

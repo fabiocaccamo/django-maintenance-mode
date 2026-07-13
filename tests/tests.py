@@ -52,6 +52,11 @@ def get_response_type_invalid(request):
     return "xml"
 
 
+def get_authenticated_user(request):
+    username = request.META.get("AUTHENTICATED_USER_FIELD")
+    return User.objects.filter(username=username).first() if username else None
+
+
 @override_settings(
     MIDDLEWARE=[
         "django.contrib.sessions.middleware.SessionMiddleware",
@@ -997,6 +1002,38 @@ class MaintenanceModeTestCase(TestCase):
         settings.MAINTENANCE_MODE_IGNORE_AUTHENTICATED_USER = False
         response = self.middleware.process_request(request)
         self.assertMaintenanceResponse(response)
+
+    def test_middleware_get_authenticated_user(self):
+        self.__reset_state()
+
+        settings.MAINTENANCE_MODE = True
+        settings.MAINTENANCE_MODE_IGNORE_STAFF = True
+
+        # simulate a non-session authenticated request (eg. JWT):
+        # request.user is anonymous, the custom function returns the staff user
+        settings.MAINTENANCE_MODE_GET_AUTHENTICATED_USER = (
+            "tests.tests.get_authenticated_user"
+        )
+        request = self.__get_anonymous_user_request("/")
+        request.META["AUTHENTICATED_USER_FIELD"] = "staff-user"
+        response = self.middleware.process_request(request)
+        self.assertEqual(response, None)
+
+        # the custom function returns None -> fallback to request.user
+        request = self.__get_anonymous_user_request("/")
+        response = self.middleware.process_request(request)
+        self.assertMaintenanceResponse(response)
+
+        # invalid function path
+        settings.MAINTENANCE_MODE_GET_AUTHENTICATED_USER = (
+            "tests.tests_invalid.get_authenticated_user"
+        )
+        request = self.__get_anonymous_user_request("/")
+        with self.assertRaises(ImproperlyConfigured):
+            self.middleware.process_request(request)
+
+        settings.MAINTENANCE_MODE_GET_AUTHENTICATED_USER = None
+        settings.MAINTENANCE_MODE_IGNORE_STAFF = False
 
     def test_middleware_ignore_staff(self):
         self.__reset_state()

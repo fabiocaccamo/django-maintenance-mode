@@ -155,11 +155,27 @@ def _need_maintenance_logout_user(user):
     return logout_authenticated_user
 
 
-def _need_maintenance_ignore_users(request):
-    if not hasattr(request, "user"):
-        return
+def _get_maintenance_authenticated_user(request):
+    if settings.MAINTENANCE_MODE_GET_AUTHENTICATED_USER:
+        try:
+            get_authenticated_user_func = import_string(
+                settings.MAINTENANCE_MODE_GET_AUTHENTICATED_USER
+            )
+        except ImportError as error:
+            raise ImproperlyConfigured(
+                "settings.MAINTENANCE_MODE_GET_AUTHENTICATED_USER "
+                "is not a valid function path."
+            ) from error
+        user = get_authenticated_user_func(request=request)
+        if user is not None:
+            return user
+    return getattr(request, "user", None)
 
-    user = request.user
+
+def _need_maintenance_ignore_users(request):
+    user = _get_maintenance_authenticated_user(request)
+    if user is None:
+        return
 
     if _need_maintenance_logout_user(user):
         logout(request)
