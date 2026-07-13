@@ -8,24 +8,18 @@ from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import NoReverseMatch, Resolver404, resolve, reverse
 from django.utils.cache import add_never_cache_headers
-from django.utils.module_loading import import_string
 
 from maintenance_mode.core import get_maintenance_mode
-from maintenance_mode.utils import get_client_ip_address
+from maintenance_mode.utils import get_client_ip_address, import_function
 
 
 def get_maintenance_response_context(request):
     context = {}
     if settings.MAINTENANCE_MODE_GET_CONTEXT:
-        try:
-            get_request_context_func = import_string(
-                settings.MAINTENANCE_MODE_GET_CONTEXT
-            )
-        except ImportError as error:
-            raise ImproperlyConfigured(
-                "settings.MAINTENANCE_MODE_GET_CONTEXT is not a valid function path."
-            ) from error
-
+        get_request_context_func = import_function(
+            settings.MAINTENANCE_MODE_GET_CONTEXT,
+            "MAINTENANCE_MODE_GET_CONTEXT",
+        )
         context = get_request_context_func(request=request)
     return context
 
@@ -40,13 +34,10 @@ def get_maintenance_response_type(request):
         return response_type
     # response type can be the path of a function that
     # will be called with the request and must return 'html' or 'json'
-    try:
-        get_response_type_func = import_string(response_type)
-    except ImportError as error:
-        raise ImproperlyConfigured(
-            "settings.MAINTENANCE_MODE_RESPONSE_TYPE value must be "
-            "'html', 'json' or a valid function path."
-        ) from error
+    get_response_type_func = import_function(
+        response_type,
+        "MAINTENANCE_MODE_RESPONSE_TYPE",
+    )
     response_type = get_response_type_func(request=request)
     if response_type not in response_types:
         raise ImproperlyConfigured(
@@ -157,15 +148,10 @@ def _need_maintenance_logout_user(user):
 
 def _get_maintenance_authenticated_user(request):
     if settings.MAINTENANCE_MODE_GET_AUTHENTICATED_USER:
-        try:
-            get_authenticated_user_func = import_string(
-                settings.MAINTENANCE_MODE_GET_AUTHENTICATED_USER
-            )
-        except ImportError as error:
-            raise ImproperlyConfigured(
-                "settings.MAINTENANCE_MODE_GET_AUTHENTICATED_USER "
-                "is not a valid function path."
-            ) from error
+        get_authenticated_user_func = import_function(
+            settings.MAINTENANCE_MODE_GET_AUTHENTICATED_USER,
+            "MAINTENANCE_MODE_GET_AUTHENTICATED_USER",
+        )
         user = get_authenticated_user_func(request=request)
         if user is not None:
             return user
@@ -233,17 +219,11 @@ def _need_maintenance_ignore_ip_addresses(request):
         return
 
     if settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS:
-        try:
-            get_client_ip_address_func = import_string(
-                settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS
-            )
-        except ImportError as error:
-            raise ImproperlyConfigured(
-                "settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS "
-                "is not a valid function path."
-            ) from error
-        else:
-            client_ip_address = get_client_ip_address_func(request)
+        get_client_ip_address_func = import_function(
+            settings.MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS,
+            "MAINTENANCE_MODE_GET_CLIENT_IP_ADDRESS",
+        )
+        client_ip_address = get_client_ip_address_func(request)
     else:
         client_ip_address = get_client_ip_address(request)
 

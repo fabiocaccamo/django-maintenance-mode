@@ -57,6 +57,9 @@ def get_authenticated_user(request):
     return User.objects.filter(username=username).first() if username else None
 
 
+NOT_A_FUNCTION = "not-a-function"
+
+
 @override_settings(
     MIDDLEWARE=[
         "django.contrib.sessions.middleware.SessionMiddleware",
@@ -1028,6 +1031,12 @@ class MaintenanceModeTestCase(TestCase):
         settings.MAINTENANCE_MODE_GET_AUTHENTICATED_USER = (
             "tests.tests_invalid.get_authenticated_user"
         )
+        request = self.__get_anonymous_user_request("/")
+        with self.assertRaises(ImproperlyConfigured):
+            self.middleware.process_request(request)
+
+        # path to a non-callable object
+        settings.MAINTENANCE_MODE_GET_AUTHENTICATED_USER = "tests.tests.NOT_A_FUNCTION"
         request = self.__get_anonymous_user_request("/")
         with self.assertRaises(ImproperlyConfigured):
             self.middleware.process_request(request)
