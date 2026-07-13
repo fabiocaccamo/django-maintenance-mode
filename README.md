@@ -25,9 +25,12 @@ It doesn't use database and doesn't prevent database access.
 
 1. Run `pip install django-maintenance-mode` or [download django-maintenance-mode](http://pypi.python.org/pypi/django-maintenance-mode) and add the **maintenance_mode** package to your project
 2. Add `maintenance_mode` to `settings.INSTALLED_APPS` before custom applications
-3. Add `maintenance_mode.middleware.MaintenanceModeMiddleware` to `settings.MIDDLEWARE` as last middleware
+3. Add `maintenance_mode.middleware.MaintenanceModeMiddleware` to `settings.MIDDLEWARE` as last middleware *(see note below)*
 4. Add your custom `templates/503.html` file
 5. Restart your application server
+
+> [!NOTE]
+> **Middleware position:** placing the middleware last is fine for most projects, but it means that all the previous middleware (eg. session and authentication middleware, which may hit the database) will still run while maintenance mode is on. If you need to prevent that, for example during database migrations or automated cloud/kubernetes deployments, place `maintenance_mode.middleware.MaintenanceModeMiddleware` **before** the middleware you want to skip (even top-most), and use `MAINTENANCE_MODE_IGNORE_URLS` to keep specific URLs accessible (eg. the admin or a liveness/health-check endpoint). Be aware that any functionality provided by the skipped middleware (eg. `request.user`) won't be available in maintenance mode, therefore user-based settings (`MAINTENANCE_MODE_IGNORE_ANONYMOUS_USER`, `MAINTENANCE_MODE_IGNORE_AUTHENTICATED_USER`, `MAINTENANCE_MODE_IGNORE_STAFF`, `MAINTENANCE_MODE_IGNORE_SUPERUSER`, `MAINTENANCE_MODE_LOGOUT_AUTHENTICATED_USER`) won't have any effect.
 
 ## Configuration (optional)
 
