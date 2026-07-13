@@ -30,6 +30,32 @@ def get_maintenance_response_context(request):
     return context
 
 
+def get_maintenance_response_type(request):
+    """
+    Return the maintenance response type ('html' or 'json') for the given request.
+    """
+    response_types = ("html", "json")
+    response_type = settings.MAINTENANCE_MODE_RESPONSE_TYPE
+    if response_type in response_types:
+        return response_type
+    # response type can be the path of a function that
+    # will be called with the request and must return 'html' or 'json'
+    try:
+        get_response_type_func = import_string(response_type)
+    except ImportError as error:
+        raise ImproperlyConfigured(
+            "settings.MAINTENANCE_MODE_RESPONSE_TYPE value must be "
+            "'html', 'json' or a valid function path."
+        ) from error
+    response_type = get_response_type_func(request=request)
+    if response_type not in response_types:
+        raise ImproperlyConfigured(
+            "settings.MAINTENANCE_MODE_RESPONSE_TYPE function "
+            "return value must be 'html' or 'json'."
+        )
+    return response_type
+
+
 def get_maintenance_response(request):
     """
     Return a '503 Service Unavailable' HTML or JSON response based on user preference.
@@ -38,15 +64,11 @@ def get_maintenance_response(request):
         return redirect(settings.MAINTENANCE_MODE_REDIRECT_URL)
 
     response = None
-    response_type = settings.MAINTENANCE_MODE_RESPONSE_TYPE
+    response_type = get_maintenance_response_type(request)
     if response_type == "html":
         response = get_maintenance_html_response(request)
     elif response_type == "json":
         response = get_maintenance_json_response(request)
-    else:
-        raise ImproperlyConfigured(
-            "settings.MAINTENANCE_MODE_RESPONSE_TYPE value must be 'html' or 'json'."
-        )
 
     if settings.MAINTENANCE_MODE_RETRY_AFTER:
         response["Retry-After"] = settings.MAINTENANCE_MODE_RETRY_AFTER

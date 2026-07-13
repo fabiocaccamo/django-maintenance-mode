@@ -44,6 +44,14 @@ def get_template_context(request):
     return {"TEST_MAINTENANCE_MODE_GET_CONTEXT": True}
 
 
+def get_response_type(request):
+    return "json" if request.path_info.startswith("/api") else "html"
+
+
+def get_response_type_invalid(request):
+    return "xml"
+
+
 @override_settings(
     MIDDLEWARE=[
         "django.contrib.sessions.middleware.SessionMiddleware",
@@ -1123,6 +1131,41 @@ class MaintenanceModeTestCase(TestCase):
         response = self.middleware.process_request(request)
         self.assertMaintenanceResponse(response)
         self.assertTrue(isinstance(response, HttpResponse))
+
+    def test_middleware_response_type_function(self):
+        self.__reset_state()
+
+        settings.MAINTENANCE_MODE = True
+
+        settings.MAINTENANCE_MODE_RESPONSE_TYPE = "tests.tests.get_response_type"
+        request = self.__get_anonymous_user_request("/api/test/")
+        response = self.middleware.process_request(request)
+        self.assertMaintenanceResponse(response)
+        self.assertTrue(isinstance(response, JsonResponse))
+
+        request = self.__get_anonymous_user_request("/")
+        response = self.middleware.process_request(request)
+        self.assertMaintenanceResponse(response)
+        self.assertFalse(isinstance(response, JsonResponse))
+        self.assertTrue(isinstance(response, HttpResponse))
+
+        # function returning an invalid value
+        settings.MAINTENANCE_MODE_RESPONSE_TYPE = (
+            "tests.tests.get_response_type_invalid"
+        )
+        request = self.__get_anonymous_user_request("/")
+        with self.assertRaises(ImproperlyConfigured):
+            self.middleware.process_request(request)
+
+        # invalid function path
+        settings.MAINTENANCE_MODE_RESPONSE_TYPE = (
+            "tests.tests_invalid.get_response_type"
+        )
+        request = self.__get_anonymous_user_request("/")
+        with self.assertRaises(ImproperlyConfigured):
+            self.middleware.process_request(request)
+
+        settings.MAINTENANCE_MODE_RESPONSE_TYPE = "html"
 
 
 class TestOverrideMaintenanceMode(SimpleTestCase):

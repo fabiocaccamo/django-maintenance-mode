@@ -166,7 +166,12 @@ MAINTENANCE_MODE_REDIRECT_URL = None
 ```
 
 ```python
-# the type of the response returned during maintenance mode, can be either "html" or "json"
+# the type of the response returned during maintenance mode, can be either "html" or "json",
+# or the path of a function that will be called with the request as argument
+# and must return "html" or "json" -> 'myapp.mymodule.myfunction'
+# eg. return a json response for api urls and an html response for all the others:
+# def get_response_type(request):
+#     return "json" if request.path_info.startswith("/api") else "html"
 MAINTENANCE_MODE_RESPONSE_TYPE = "html"
 ```
 
