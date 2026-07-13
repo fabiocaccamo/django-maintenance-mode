@@ -141,8 +141,23 @@ MAINTENANCE_MODE_IGNORE_TESTS = False
 ```
 
 ```python
-# if True authenticated users will be logged out from their current session
+# if True all authenticated users (staff users and superusers included) will be logged out from their current session
 MAINTENANCE_MODE_LOGOUT_AUTHENTICATED_USER = False
+```
+
+```python
+# if None (default) staff users inherit the MAINTENANCE_MODE_LOGOUT_AUTHENTICATED_USER behavior,
+# set it explicitly to True/False to override it
+MAINTENANCE_MODE_LOGOUT_STAFF_USER = None
+```
+
+```python
+# if None (default) superusers inherit the MAINTENANCE_MODE_LOGOUT_AUTHENTICATED_USER behavior,
+# set it explicitly to True/False to override it
+# eg. logout all users except superusers:
+# MAINTENANCE_MODE_LOGOUT_AUTHENTICATED_USER = True
+# MAINTENANCE_MODE_LOGOUT_SUPERUSER = False
+MAINTENANCE_MODE_LOGOUT_SUPERUSER = None
 ```
 
 ```python

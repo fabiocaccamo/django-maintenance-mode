@@ -116,13 +116,30 @@ def _need_maintenance_from_url(request):
         pass
 
 
+def _need_maintenance_logout_user(user):
+    if not user.is_authenticated:
+        return False
+    logout_authenticated_user = settings.MAINTENANCE_MODE_LOGOUT_AUTHENTICATED_USER
+    logout_staff_user = settings.MAINTENANCE_MODE_LOGOUT_STAFF_USER
+    logout_superuser = settings.MAINTENANCE_MODE_LOGOUT_SUPERUSER
+    if user.is_superuser:
+        if logout_superuser is not None:
+            return logout_superuser
+        return logout_authenticated_user
+    if user.is_staff:
+        if logout_staff_user is not None:
+            return logout_staff_user
+        return logout_authenticated_user
+    return logout_authenticated_user
+
+
 def _need_maintenance_ignore_users(request):
     if not hasattr(request, "user"):
         return
 
     user = request.user
 
-    if settings.MAINTENANCE_MODE_LOGOUT_AUTHENTICATED_USER and user.is_authenticated:
+    if _need_maintenance_logout_user(user):
         logout(request)
         user = request.user
 

@@ -40,6 +40,12 @@ if not hasattr(settings, "MAINTENANCE_MODE_IGNORE_URLS"):
 if not hasattr(settings, "MAINTENANCE_MODE_LOGOUT_AUTHENTICATED_USER"):
     settings.MAINTENANCE_MODE_LOGOUT_AUTHENTICATED_USER = False
 
+if not hasattr(settings, "MAINTENANCE_MODE_LOGOUT_STAFF_USER"):
+    settings.MAINTENANCE_MODE_LOGOUT_STAFF_USER = None
+
+if not hasattr(settings, "MAINTENANCE_MODE_LOGOUT_SUPERUSER"):
+    settings.MAINTENANCE_MODE_LOGOUT_SUPERUSER = None
+
 if not hasattr(settings, "MAINTENANCE_MODE_REDIRECT_URL"):
     settings.MAINTENANCE_MODE_REDIRECT_URL = None
 

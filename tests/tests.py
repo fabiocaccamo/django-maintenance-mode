@@ -904,6 +904,64 @@ class MaintenanceModeTestCase(TestCase):
         response = self.middleware.process_request(request)
         self.assertMaintenanceResponse(response)
 
+    def test_middleware_logout_staff_user(self):
+        self.__reset_state()
+
+        settings.MAINTENANCE_MODE = True
+
+        # default (None): staff user inherits LOGOUT_AUTHENTICATED_USER behavior
+        settings.MAINTENANCE_MODE_LOGOUT_AUTHENTICATED_USER = True
+        settings.MAINTENANCE_MODE_LOGOUT_STAFF_USER = None
+        request = self.__get_staff_user_request("/")
+        self.middleware.process_request(request)
+        self.assertTrue(request.user.is_anonymous)
+
+        # explicit False: staff user is not logged out
+        settings.MAINTENANCE_MODE_LOGOUT_AUTHENTICATED_USER = True
+        settings.MAINTENANCE_MODE_LOGOUT_STAFF_USER = False
+        request = self.__get_staff_user_request("/")
+        self.middleware.process_request(request)
+        self.assertTrue(request.user.is_authenticated)
+
+        # explicit True: staff user is logged out
+        settings.MAINTENANCE_MODE_LOGOUT_AUTHENTICATED_USER = False
+        settings.MAINTENANCE_MODE_LOGOUT_STAFF_USER = True
+        request = self.__get_staff_user_request("/")
+        self.middleware.process_request(request)
+        self.assertTrue(request.user.is_anonymous)
+
+        settings.MAINTENANCE_MODE_LOGOUT_AUTHENTICATED_USER = False
+        settings.MAINTENANCE_MODE_LOGOUT_STAFF_USER = None
+
+    def test_middleware_logout_superuser(self):
+        self.__reset_state()
+
+        settings.MAINTENANCE_MODE = True
+
+        # default (None): superuser inherits LOGOUT_AUTHENTICATED_USER behavior
+        settings.MAINTENANCE_MODE_LOGOUT_AUTHENTICATED_USER = True
+        settings.MAINTENANCE_MODE_LOGOUT_SUPERUSER = None
+        request = self.__get_superuser_request("/")
+        self.middleware.process_request(request)
+        self.assertTrue(request.user.is_anonymous)
+
+        # explicit False: superuser is not logged out
+        settings.MAINTENANCE_MODE_LOGOUT_AUTHENTICATED_USER = True
+        settings.MAINTENANCE_MODE_LOGOUT_SUPERUSER = False
+        request = self.__get_superuser_request("/")
+        self.middleware.process_request(request)
+        self.assertTrue(request.user.is_authenticated)
+
+        # explicit True: superuser is logged out
+        settings.MAINTENANCE_MODE_LOGOUT_AUTHENTICATED_USER = False
+        settings.MAINTENANCE_MODE_LOGOUT_SUPERUSER = True
+        request = self.__get_superuser_request("/")
+        self.middleware.process_request(request)
+        self.assertTrue(request.user.is_anonymous)
+
+        settings.MAINTENANCE_MODE_LOGOUT_AUTHENTICATED_USER = False
+        settings.MAINTENANCE_MODE_LOGOUT_SUPERUSER = None
+
     def test_middleware_ignore_anonymous_user(self):
         self.__reset_state()
 
