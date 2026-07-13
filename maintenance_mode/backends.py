@@ -81,7 +81,7 @@ class StaticStorageBackend(AbstractStateBackend):
 
 class LocalFileBackend(AbstractStateBackend):
     """
-    django-maintenance-mode backend which uses the local file-sistem.
+    django-maintenance-mode backend which uses the local file system.
     """
 
     def _get_filepath(self):
