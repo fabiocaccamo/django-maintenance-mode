@@ -30,7 +30,7 @@ It doesn't use database and doesn't prevent database access.
 5. Restart your application server
 
 > [!NOTE]
-> **Middleware position:** placing the middleware last is fine for most projects, but it means that all the previous middleware (eg. session and authentication middleware, which may hit the database) will still run while maintenance mode is on. If you need to prevent that, for example during database migrations or automated cloud/kubernetes deployments, place `maintenance_mode.middleware.MaintenanceModeMiddleware` **before** the middleware you want to skip (even top-most), and use `MAINTENANCE_MODE_IGNORE_URLS` to keep specific URLs accessible (eg. the admin or a liveness/health-check endpoint). Be aware that any functionality provided by the skipped middleware (eg. `request.user`) won't be available in maintenance mode, therefore user-based settings (`MAINTENANCE_MODE_IGNORE_ANONYMOUS_USER`, `MAINTENANCE_MODE_IGNORE_AUTHENTICATED_USER`, `MAINTENANCE_MODE_IGNORE_STAFF`, `MAINTENANCE_MODE_IGNORE_SUPERUSER`, `MAINTENANCE_MODE_LOGOUT_AUTHENTICATED_USER`) won't have any effect.
+> **Middleware position:** by default the middleware runs last, so preceding middleware (session, auth, etc.) still executes during maintenance mode. To skip that (eg. during DB migrations or automated deployments), move `MaintenanceModeMiddleware` higher up and use `MAINTENANCE_MODE_IGNORE_URLS` to keep specific URLs accessible. Note: skipping middleware also disables its features (eg. `request.user`), so user-based settings (`MAINTENANCE_MODE_IGNORE_*USER`) won't work.
 
 ## Configuration (optional)
 
