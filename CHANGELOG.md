@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.23.0](https://github.com/fabiocaccamo/django-maintenance-mode/releases/tag/0.23.0) - 2026-07-13
+-   Add `Python 3.14` and `Django 6.0` support.
+-   Add scheduled maintenance mode support: `set_maintenance_mode(True, start=..., end=...)` and `manage.py maintenance_mode on --start ... --end ...` (maintenance mode automatically activates/deactivates itself based on the scheduled datetimes). #64
+    -   Note for custom state backends consumers: `get_value()` now returns `bool` or `dict` (scheduled state), and the state file format is extended accordingly (running `maintenance_mode off` restores the plain bool format).
+-   Add `MAINTENANCE_MODE_LOGOUT_STAFF_USER` and `MAINTENANCE_MODE_LOGOUT_SUPERUSER` settings to override the `MAINTENANCE_MODE_LOGOUT_AUTHENTICATED_USER` behavior for staff users and superusers (if `None`, default, they inherit the `MAINTENANCE_MODE_LOGOUT_AUTHENTICATED_USER` behavior). #191
+-   Allow `MAINTENANCE_MODE_RESPONSE_TYPE` to be the path of a function that receives the request and returns the response type (`"html"` or `"json"`). #204
+-   Add `MAINTENANCE_MODE_GET_AUTHENTICATED_USER` setting to support non-session authentication (eg. `JWT` / token authentication with `django-rest-framework`). #233
+-   Improve middleware position docs. #251
+
 ## [0.22.0](https://github.com/fabiocaccamo/django-maintenance-mode/releases/tag/0.22.0) - 2025-04-03
 -   Add `Python 3.13` and `Django 5.1` / `Django 5.2` support.
 -   Drop `Python 3.8`, `Python 3.9` and `Django 3.x` support.
