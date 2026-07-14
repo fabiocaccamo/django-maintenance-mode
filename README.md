@@ -47,6 +47,9 @@ MAINTENANCE_MODE = None
 # if you want to use the db or cache, you can create a custom backend
 # custom backends must extend 'maintenance_mode.backends.AbstractStateBackend' class
 # and implement get_value(self) and set_value(self, val) methods
+# (use the 'from_state_to_str_value' / 'from_str_to_state_value' class methods
+# to serialize/deserialize the state value, they support both plain bool values
+# and scheduled maintenance state)
 MAINTENANCE_MODE_STATE_BACKEND = "maintenance_mode.backends.LocalFileBackend"
 
 # alternatively it is possible to use the default storage backend
@@ -314,6 +317,23 @@ set_maintenance_mode(True)
 if get_maintenance_mode():
     set_maintenance_mode(False)
 ```
+It is also possible to schedule maintenance mode with `start` and/or `end` datetimes *(datetime objects or ISO 8601 strings, naive datetimes are interpreted using the project time zone)*, maintenance mode will automatically activate/deactivate itself accordingly:
+```python
+from datetime import timedelta
+
+from django.utils import timezone
+
+from maintenance_mode.core import set_maintenance_mode
+
+# maintenance mode from 01:00 to 03:00 (auto on/off)
+set_maintenance_mode(True, start="2026-07-14 01:00", end="2026-07-14 03:00")
+
+# maintenance mode on, automatically off after 2 hours (fail-safe, no cron needed)
+set_maintenance_mode(True, end=timezone.now() + timedelta(hours=2))
+
+# any set call overwrites the current state/schedule (last-write-wins)
+set_maintenance_mode(False)
+```
 or
 ```python
 from django.core.management import call_command
@@ -342,6 +362,23 @@ class Command(BaseCommand):
 ### Terminal
 
 Run ``python manage.py maintenance_mode <on|off>``
+
+The `on` state supports optional `--start` and `--end` datetime options *(ISO 8601 format)*:
+
+```bash
+# maintenance mode from 01:00 to 03:00 (auto on/off)
+python manage.py maintenance_mode on --start "2026-07-14 01:00" --end "2026-07-14 03:00"
+
+# maintenance mode on, automatically off at 03:00 (fail-safe, no extra cron job needed)
+python manage.py maintenance_mode on --end "2026-07-14 03:00"
+```
+
+For recurring maintenance windows, combine this command with a cron job:
+
+```cron
+# maintenance mode every sunday from 01:00 to 02:00 (single job, auto-off)
+0 1 * * sun python manage.py maintenance_mode on --end "$(date +\%Y-\%m-\%dT02:00:00)"
+```
 
 *(**This is not Heroku-friendly because** any execution of heroku run* `manage.py` *will be run on a separate worker dyno, not the web one. Therefore **the state-file is set but on the wrong machine. You should use a custom*** `MAINTENANCE_MODE_STATE_BACKEND`*.)*
 

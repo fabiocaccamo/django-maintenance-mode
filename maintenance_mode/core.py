@@ -5,6 +5,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.utils.module_loading import import_string
 
 from maintenance_mode.backends import AbstractStateBackend
+from maintenance_mode.utils import get_now_datetime, parse_aware_datetime
 
 
 def get_maintenance_mode_backend():
@@ -27,6 +28,19 @@ def get_maintenance_mode_backend():
         ) from error
 
 
+def _get_maintenance_mode_by_schedule(state):
+    """
+    Evaluate a schedule state ({"start": ..., "end": ...})
+    against the current datetime.
+    """
+    start = parse_aware_datetime(state.get("start"))
+    end = parse_aware_datetime(state.get("end"))
+    now = get_now_datetime()
+    started = start is None or start <= now
+    ended = end is not None and end <= now
+    return started and not ended
+
+
 def get_maintenance_mode():
     """
     Get maintenance_mode state from state file.
@@ -37,12 +51,17 @@ def get_maintenance_mode():
         return settings.MAINTENANCE_MODE
 
     backend = get_maintenance_mode_backend()
-    return backend.get_value()
+    value = backend.get_value()
+    if isinstance(value, dict):
+        value = _get_maintenance_mode_by_schedule(value)
+    return value
 
 
-def set_maintenance_mode(value):
+def set_maintenance_mode(value, start=None, end=None):
     """
-    Set maintenance_mode state to state file.
+    Set maintenance_mode state to state file,
+    optionally scheduled with start and/or end datetimes
+    (datetime objects or ISO 8601 strings).
     """
 
     # If maintenance mode is defined in settings, it can't be changed.
@@ -53,6 +72,20 @@ def set_maintenance_mode(value):
 
     if not isinstance(value, bool):
         raise TypeError("value argument type is not boolean")
+
+    if start is not None or end is not None:
+        if value is not True:
+            raise ValueError("start / end arguments can only be used with value True")
+        start = parse_aware_datetime(start)
+        end = parse_aware_datetime(end)
+        if start is not None and end is not None and start >= end:
+            raise ValueError("start argument value must be < end argument value")
+        if end is not None and end <= get_now_datetime():
+            raise ValueError("end argument value must be in the future")
+        value = {
+            "start": start.isoformat() if start else None,
+            "end": end.isoformat() if end else None,
+        }
 
     backend = get_maintenance_mode_backend()
     backend.set_value(value)
@@ -71,11 +104,13 @@ class override_maintenance_mode(ContextDecorator):
         self.old_value = None
 
     def __enter__(self):
-        self.old_value = get_maintenance_mode()
+        backend = get_maintenance_mode_backend()
+        self.old_value = backend.get_value()
         set_maintenance_mode(self.value)
 
     def __exit__(self, exc_type, exc_value, traceback):
-        set_maintenance_mode(self.old_value)
+        backend = get_maintenance_mode_backend()
+        backend.set_value(self.old_value)
 
 
 class maintenance_mode_on(override_maintenance_mode):

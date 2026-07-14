@@ -1,7 +1,9 @@
+import builtins
 import os
 import re
 import sys
-from importlib import import_module
+from datetime import datetime, timedelta
+from importlib import import_module, reload
 from io import StringIO
 from tempfile import mkstemp
 from unittest.mock import patch
@@ -11,6 +13,7 @@ from django.conf import settings
 from django.contrib.auth.models import AnonymousUser, User
 from django.core.cache import caches
 from django.core.exceptions import ImproperlyConfigured
+from django.core.files.storage import default_storage
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.http import HttpResponse, JsonResponse
@@ -22,6 +25,7 @@ from django.test import (
     override_settings,
 )
 from django.urls import reverse
+from django.utils import timezone
 
 from maintenance_mode import backends, core, http, io, middleware, utils, views
 from maintenance_mode.logging import RequireNotMaintenanceMode503
@@ -197,6 +201,42 @@ class MaintenanceModeTestCase(TestCase):
         backend.set_value(False)
         self.assertEqual(backend.get_value(), False)
 
+    def test_backend_schedule_state(self):
+        self.__reset_state()
+
+        backend = core.get_maintenance_mode_backend()
+        state = {"start": None, "end": "2026-07-14T03:00:00+00:00"}
+        backend.set_value(state)
+        self.assertEqual(backend.get_value(), state)
+
+        # plain bool state still works after a schedule state
+        backend.set_value(True)
+        self.assertEqual(backend.get_value(), True)
+
+    def test_backend_schedule_state_invalid_values(self):
+        self.__reset_state()
+
+        backend = core.get_maintenance_mode_backend()
+
+        # invalid schedule state values
+        self.assertRaises(ValueError, backend.set_value, {})
+        self.assertRaises(ValueError, backend.set_value, {"invalid-key": "1"})
+        self.assertRaises(ValueError, backend.set_value, {"start": None, "end": None})
+
+        # invalid schedule state values read from the state file
+        file_path = settings.MAINTENANCE_MODE_STATE_FILE_PATH
+        io.write_file(file_path, "{}")
+        self.assertRaises(ValueError, backend.get_value)
+        io.write_file(file_path, '{"invalid-key": "1"}')
+        self.assertRaises(ValueError, backend.get_value)
+
+        # bool-only serialization methods don't support schedule state
+        self.assertRaises(
+            ValueError,
+            backend.from_bool_to_str_value,
+            {"start": None, "end": "2026-07-14T03:00:00+00:00"},
+        )
+
     def test_backend_local_file_invalid_values(self):
         self.__reset_state()
 
@@ -213,6 +253,10 @@ class MaintenanceModeTestCase(TestCase):
         settings.MAINTENANCE_MODE_STATE_BACKEND = (
             "maintenance_mode.backends.DefaultStorageBackend"
         )
+
+        # remove possible state file leftover from previous test runs
+        # to ensure the "state file doesn't exist" branch is covered
+        default_storage.delete(settings.MAINTENANCE_MODE_STATE_FILE_NAME)
 
         backend = core.get_maintenance_mode_backend()
         self.assertEqual(backend.get_value(), False)
@@ -235,6 +279,13 @@ class MaintenanceModeTestCase(TestCase):
         )
         settings.STATIC_URL = "/static/"
         settings.STATIC_ROOT = "static"
+
+        # remove possible state file leftover from previous test runs
+        # to ensure the "state file doesn't exist" branch is covered
+        # (deferred import because staticfiles_storage setup requires STATIC_URL)
+        from django.contrib.staticfiles.storage import staticfiles_storage
+
+        staticfiles_storage.delete(settings.MAINTENANCE_MODE_STATE_FILE_NAME)
 
         backend = core.get_maintenance_mode_backend()
         self.assertEqual(backend.get_value(), False)
@@ -423,6 +474,123 @@ class MaintenanceModeTestCase(TestCase):
         self.assertRaises(ValueError, core.get_maintenance_mode)
         self.assertRaises(TypeError, core.set_maintenance_mode, "not bool")
 
+    def test_core_schedule(self):
+        self.__reset_state()
+
+        one_hour = timedelta(hours=1)
+
+        # active schedule (started, not ended)
+        core.set_maintenance_mode(
+            True, start=timezone.now() - one_hour, end=timezone.now() + one_hour
+        )
+        self.assertTrue(core.get_maintenance_mode())
+
+        # future schedule (not started yet)
+        core.set_maintenance_mode(True, start=timezone.now() + one_hour)
+        self.assertFalse(core.get_maintenance_mode())
+
+        # expired schedule (already ended, written directly to the state file)
+        backend = core.get_maintenance_mode_backend()
+        backend.set_value(
+            {"start": None, "end": (timezone.now() - one_hour).isoformat()}
+        )
+        self.assertFalse(core.get_maintenance_mode())
+
+        # started, end unlimited
+        core.set_maintenance_mode(True, start=timezone.now() - one_hour)
+        self.assertTrue(core.get_maintenance_mode())
+
+        # start unlimited, not ended
+        core.set_maintenance_mode(True, end=timezone.now() + one_hour)
+        self.assertTrue(core.get_maintenance_mode())
+
+        # ISO 8601 strings support
+        start_str = (timezone.now() - one_hour).isoformat()
+        end_str = (timezone.now() + one_hour).isoformat()
+        core.set_maintenance_mode(True, start=start_str, end=end_str)
+        self.assertTrue(core.get_maintenance_mode())
+
+        # naive datetimes support
+        core.set_maintenance_mode(
+            True,
+            start=datetime.now() - one_hour,
+            end=datetime.now() + one_hour,
+        )
+        self.assertTrue(core.get_maintenance_mode())
+
+        # last-write-wins: plain values overwrite the schedule
+        core.set_maintenance_mode(True, end=timezone.now() + one_hour)
+        core.set_maintenance_mode(False)
+        self.assertFalse(core.get_maintenance_mode())
+
+    def test_core_schedule_invalid_arguments(self):
+        self.__reset_state()
+
+        one_hour = timedelta(hours=1)
+
+        # schedule with value False
+        self.assertRaises(
+            ValueError,
+            core.set_maintenance_mode,
+            False,
+            end=timezone.now() + one_hour,
+        )
+
+        # start >= end
+        self.assertRaises(
+            ValueError,
+            core.set_maintenance_mode,
+            True,
+            start=timezone.now() + one_hour,
+            end=timezone.now() - one_hour,
+        )
+
+        # end in the past
+        self.assertRaises(
+            ValueError,
+            core.set_maintenance_mode,
+            True,
+            end=timezone.now() - one_hour,
+        )
+
+        # invalid datetime string
+        self.assertRaises(
+            ValueError, core.set_maintenance_mode, True, end="not-a-datetime"
+        )
+
+        # invalid datetime type
+        self.assertRaises(TypeError, core.set_maintenance_mode, True, end=True)
+
+    def test_core_schedule_override(self):
+        self.__reset_state()
+
+        one_hour = timedelta(hours=1)
+
+        # override preserves the schedule state
+        core.set_maintenance_mode(True, end=timezone.now() + one_hour)
+        with core.override_maintenance_mode(False):
+            self.assertFalse(core.get_maintenance_mode())
+        self.assertTrue(core.get_maintenance_mode())
+        backend = core.get_maintenance_mode_backend()
+        self.assertIsInstance(backend.get_value(), dict)
+
+    @override_settings(USE_TZ=False)
+    def test_core_schedule_without_use_tz(self):
+        self.__reset_state()
+
+        one_hour = timedelta(hours=1)
+
+        core.set_maintenance_mode(
+            True, start=datetime.now() - one_hour, end=datetime.now() + one_hour
+        )
+        self.assertTrue(core.get_maintenance_mode())
+
+        backend = core.get_maintenance_mode_backend()
+        backend.set_value(
+            {"start": None, "end": (timezone.now() - one_hour).isoformat()}
+        )
+        self.assertFalse(core.get_maintenance_mode())
+
     def test_logging_filter(self):
         self.__reset_state()
 
@@ -489,6 +657,48 @@ class MaintenanceModeTestCase(TestCase):
         with self.assertRaises(CommandError):
             call_command("maintenance_mode", "hello world")
 
+    def test_management_commands_schedule(self):
+        self.__reset_state()
+
+        one_hour = timedelta(hours=1)
+
+        # active schedule
+        call_command(
+            "maintenance_mode", "on", end=(timezone.now() + one_hour).isoformat()
+        )
+        self.assertTrue(core.get_maintenance_mode())
+
+        # schedule overwrites even if maintenance mode is already on
+        call_command(
+            "maintenance_mode", "on", start=(timezone.now() + one_hour).isoformat()
+        )
+        self.assertFalse(core.get_maintenance_mode())
+
+        # invalid datetime value
+        with self.assertRaises(CommandError):
+            call_command("maintenance_mode", "on", end="not-a-datetime")
+
+        # schedule options with 'off' state
+        with self.assertRaises(CommandError):
+            call_command(
+                "maintenance_mode", "off", end=(timezone.now() + one_hour).isoformat()
+            )
+
+        # 'off' clears a stored schedule even if not active yet
+        call_command(
+            "maintenance_mode", "on", start=(timezone.now() + one_hour).isoformat()
+        )
+        call_command("maintenance_mode", "off")
+        backend = core.get_maintenance_mode_backend()
+        self.assertEqual(backend.get_value(), False)
+
+        # plain 'on' overwrites a stored active schedule
+        call_command(
+            "maintenance_mode", "on", end=(timezone.now() + one_hour).isoformat()
+        )
+        call_command("maintenance_mode", "on")
+        self.assertEqual(backend.get_value(), True)
+
     def test_management_commands_interactive(self):
         self.__reset_state()
 
@@ -549,6 +759,37 @@ class MaintenanceModeTestCase(TestCase):
         call_command("maintenance_mode", "off", verbosity=3)
         val = core.get_maintenance_mode()
         self.assertFalse(val)
+
+        out = StringIO()
+        call_command(
+            "maintenance_mode",
+            "on",
+            end=(timezone.now() + timedelta(hours=1)).isoformat(),
+            verbosity=3,
+            stdout=out,
+        )
+        val = core.get_maintenance_mode()
+        self.assertTrue(val)
+        self.assertIn("scheduled", out.getvalue())
+
+        call_command("maintenance_mode", "off", verbosity=3)
+        val = core.get_maintenance_mode()
+        self.assertFalse(val)
+
+    def test_package_import_with_improperly_configured_settings(self):
+        import maintenance_mode
+
+        real_import = builtins.__import__
+
+        def fake_import(name, globals=None, locals=None, fromlist=(), level=0):
+            if name == "maintenance_mode" and fromlist and "settings" in fromlist:
+                raise ImproperlyConfigured("Settings are not configured.")
+            return real_import(name, globals, locals, fromlist, level)
+
+        with patch("builtins.__import__", fake_import):
+            reload(maintenance_mode)
+
+        reload(maintenance_mode)
 
     def test_urls(self):
         self.__reset_state()
@@ -1024,6 +1265,12 @@ class MaintenanceModeTestCase(TestCase):
 
         # the custom function returns None -> fallback to request.user
         request = self.__get_anonymous_user_request("/")
+        response = self.middleware.process_request(request)
+        self.assertMaintenanceResponse(response)
+
+        # request without user (eg. auth middleware not installed)
+        settings.MAINTENANCE_MODE_GET_AUTHENTICATED_USER = None
+        request = self.request_factory.get("/")
         response = self.middleware.process_request(request)
         self.assertMaintenanceResponse(response)
 
