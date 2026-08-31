@@ -207,7 +207,7 @@ MAINTENANCE_MODE_STATUS_CODE = 503
 
 ```python
 # the value in seconds of the Retry-After header during maintenance-mode
-MAINTENANCE_MODE_RETRY_AFTER = 3600 # 1 hour
+MAINTENANCE_MODE_RETRY_AFTER = 3600  # 1 hour
 ```
 
 #### Context Processors
@@ -279,12 +279,17 @@ You can force maintenance mode on/off at view level using view decorators:
 #### Function-based views
 
 ```python
-from maintenance_mode.decorators import force_maintenance_mode_off, force_maintenance_mode_on
+from maintenance_mode.decorators import (
+    force_maintenance_mode_off,
+    force_maintenance_mode_on,
+)
+
 
 @force_maintenance_mode_off
 def my_view_a(request):
     # never return 503 response
     pass
+
 
 @force_maintenance_mode_on
 def my_view_b(request):
@@ -295,12 +300,14 @@ def my_view_b(request):
 #### Class-based views
 
 ```python
-from maintenance_mode.decorators import force_maintenance_mode_off, force_maintenance_mode_on
+from maintenance_mode.decorators import (
+    force_maintenance_mode_off,
+    force_maintenance_mode_on,
+)
 
 urlpatterns = [
     # never return 503 response
     path("", force_maintenance_mode_off(YourView.as_view()), name="my_view"),
-
     # always return 503 response
     path("", force_maintenance_mode_on(YourView.as_view()), name="my_view"),
 ]
@@ -341,7 +348,6 @@ from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-
     def handle(self, *args, **options):
 
         call_command("maintenance_mode", "on")
@@ -349,7 +355,6 @@ class Command(BaseCommand):
         # call your command(s)
 
         call_command("maintenance_mode", "off")
-
 ```
 
 ### Templates
